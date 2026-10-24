@@ -7,7 +7,12 @@ import android.provider.Settings
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
+import com.kyant.shapes.RoundedRectangle
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.WindowInsets
@@ -49,8 +54,6 @@ import com.oxygenupdater.icons.Crowdsource
 import com.oxygenupdater.icons.DeleteSweep
 import com.oxygenupdater.icons.Language
 import com.oxygenupdater.icons.LockOpen
-import com.oxygenupdater.icons.LogoNotification
-import com.oxygenupdater.icons.Logos
 import com.oxygenupdater.icons.Mobile
 import com.oxygenupdater.icons.Notifications
 import com.oxygenupdater.icons.Palette
@@ -156,11 +159,20 @@ fun SettingsScreen(
             subtitle = null,
         )
 
-        SettingsItem(
+        GroupedRow(
+            title = stringResource(R.string.app_name),
+            value = "v${BuildConfig.VERSION_NAME}",
+            chevron = true,
             onClick = openAboutScreen,
-            icon = Logos.LogoNotification,
-            titleResId = R.string.app_name,
-            subtitle = "v${BuildConfig.VERSION_NAME}",
+            leading = {
+                Image(
+                    painter = painterResource(R.drawable.app_logo),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clip(RoundedRectangle(8.dp))
+                )
+            },
         )
     }
 

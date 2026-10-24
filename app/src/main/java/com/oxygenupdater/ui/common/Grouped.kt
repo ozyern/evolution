@@ -164,6 +164,7 @@ fun GroupedRow(
     enabled: Boolean = true,
     titleColor: Color = Color.Unspecified,
     onClick: (() -> Unit)? = null,
+    leading: (@Composable () -> Unit)? = null,
     trailing: (@Composable RowScope.() -> Unit)? = null,
 ) = Row(
     verticalAlignment = Alignment.CenterVertically,
@@ -176,7 +177,7 @@ fun GroupedRow(
         .padding(horizontal = 16.dp, vertical = 10.dp)
 ) {
     val colorScheme = MaterialTheme.colorScheme
-    if (icon != null) GroupedIcon(icon, iconTint)
+    if (leading != null) leading() else if (icon != null) GroupedIcon(icon, iconTint)
 
     Column(Modifier.weight(1f)) {
         Text(

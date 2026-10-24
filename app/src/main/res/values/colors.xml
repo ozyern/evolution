@@ -5,7 +5,9 @@
 	<color name="colorPrimary">@color/oneplus_red_600</color>
 	<color name="colorPositive">@color/green_500</color>
 	<color name="foreground">#212121</color>
-	<color name="splashBackgroundColor">@color/colorPrimary</color>
+	<!-- The logo is drawn on black -->
+	<color name="launcherBackgroundColor">#FF000000</color>
+	<color name="splashBackgroundColor">@color/launcherBackgroundColor</color>
 
 	<color name="white">#ffffff</color>
 

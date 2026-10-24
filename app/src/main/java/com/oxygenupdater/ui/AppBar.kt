@@ -10,6 +10,7 @@ import androidx.compose.animation.core.AnimationState
 import androidx.compose.animation.core.DecayAnimationSpec
 import androidx.compose.animation.core.animateDecay
 import androidx.compose.animation.core.animateTo
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.gestures.Orientation
@@ -31,6 +32,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -54,6 +56,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
@@ -62,6 +65,7 @@ import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -76,8 +80,6 @@ import androidx.compose.ui.util.lerp
 import com.oxygenupdater.BuildConfig
 import com.oxygenupdater.R
 import com.oxygenupdater.icons.ArrowBack
-import com.oxygenupdater.icons.LogoNotification
-import com.oxygenupdater.icons.Logos
 import com.oxygenupdater.icons.Symbols
 import com.oxygenupdater.ui.common.rememberState
 import kotlin.math.abs
@@ -127,7 +129,13 @@ fun TopAppBar(
                     .padding(horizontal = 4.dp)
                     .testTag(AppBar_IconButtonTestTag)
             ) {
-                if (root) Icon(Logos.LogoNotification, stringResource(R.string.about))
+                if (root) Image(
+                    painter = painterResource(R.drawable.app_logo),
+                    contentDescription = stringResource(R.string.about),
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(CircleShape)
+                )
                 else Icon(Symbols.ArrowBack, null)
             }
 

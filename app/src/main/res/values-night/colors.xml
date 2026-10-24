@@ -4,5 +4,5 @@
 	<color name="colorPrimary">@color/oneplus_red_400</color>
 	<color name="colorPositive">@color/green_300</color>
 	<color name="foreground">@color/white</color>
-	<color name="splashBackgroundColor">@color/background</color>
+	<color name="splashBackgroundColor">@color/launcherBackgroundColor</color>
 </resources>
