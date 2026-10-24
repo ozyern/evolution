@@ -7,7 +7,6 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.work.WorkManager
-import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.oxygenupdater.apis.DownloadApi
 import com.oxygenupdater.apis.ServerApi
 import com.oxygenupdater.database.LocalAppDb
@@ -103,10 +102,6 @@ object NotificationModule {
 @Module
 @InstallIn(SingletonComponent::class)
 object MiscellaneousModule {
-
-    @Singleton
-    @Provides
-    fun appUpdateManager(@ApplicationContext context: Context) = AppUpdateManagerFactory.create(context)
 
     @Singleton
     @Provides

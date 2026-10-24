@@ -25,9 +25,6 @@
 	<string name="server_status_warning">Some features may not work properly.</string>
 
 	<!-- New app version message strings -->
-	<string name="new_app_version">There\'s an app update available (%1$s). Tap here to open the Play Store and update the app.</string>
-	<string name="new_app_version_inapp_downloaded">The app update has been downloaded</string>
-	<string name="new_app_version_inapp_failed">The app update could not be installed. Tap here to open the Play Store and update the app.</string>
 
 	<!-- Downloader strings-->
 	<string name="grant_all_files_access">Please enable \"All files access\" for the app, which is used only for downloading OTA ZIPs to the topmost directory of internal storage</string>
@@ -89,13 +86,10 @@
 	<string name="summary_please_wait">Please wait…</string>
 	<string name="summary_update_method">Select a device first</string>
 	<string name="summary_important_notifications_disabled">Some important notifications are disabled:</string>
-	<string name="summary_privacy_policy">View online</string>
-	<string name="summary_rate_app">Leave a 5 star review</string>
 
 	<string name="label_theme">Theme</string>
 	<string name="label_language">Language</string>
 	<string name="label_privacy_policy">Privacy policy</string>
-	<string name="label_rate_app">Rate this app</string>
 
 	<string name="theme_light">Light</string>
 	<string name="theme_dark">Dark</string>
@@ -121,6 +115,24 @@
 	<string name="settings_saving">Your settings are still being saved. If this takes too long: Check your network connection, exit the app and start it again.</string>
 
 	<string name="settings_advanced_mode">Advanced mode</string>
+	<string name="device_support_supported">Supported</string>
+	<string name="device_support_not_supported">Not supported</string>
+	<string name="update_available">Update available</string>
+	<string name="update_release_notes">Release notes</string>
+	<string name="update_details">Details</string>
+	<string name="onboarding_welcome_title">Welcome to %1$s</string>
+	<string name="onboarding_feature_updates_title">Updates, sooner</string>
+	<string name="onboarding_feature_updates_text">Get the latest OxygenOS &amp; ColorOS updates without waiting for staged rollouts.</string>
+	<string name="onboarding_feature_root_title">Works when rooted</string>
+	<string name="onboarding_feature_root_text">Update your phone even if it\'s rooted.</string>
+	<string name="onboarding_feature_notes_title">Know what\'s new</string>
+	<string name="onboarding_feature_notes_text">Read the release notes for your current and upcoming versions.</string>
+	<string name="onboarding_feature_news_title">Stay in the loop</string>
+	<string name="onboarding_feature_news_text">Read the latest OPPO &amp; OnePlus news.</string>
+	<string name="onboarding_setup_header">Your device</string>
+	<string name="onboarding_continue">Continue</string>
+	<string name="device_china_not_on_server">This China model is recognised, but the update server doesn\'t provide China (ColorOS China) firmware yet, so updates can\'t be checked for it.</string>
+	<string name="settings_footer_free">Evolution is free, with no ads or in-app purchases.</string>
 	<string name="settings_pure_black">Pure black (AMOLED) in dark theme</string>
 	<string name="settings_advanced_mode_explanation">"Normally, the app shows you updates based on your current OS version. With advanced mode, the latest available update will always be shown regardless of device/version compatibility.
 
@@ -246,8 +258,6 @@ This can be useful if you want to:"</string>
 	<string name="contribute_successful_notification_text">Thanks for sharing OTA URLs with us!</string>
 
 	<!-- Error strings-->
-	<string name="error_app_outdated">Oh no!</string>
-	<string name="error_app_outdated_message">This version of the app is outdated. It\'s time to update it! Tap on \"Google Play\" below. Within Google Play, tap on \"Update\".</string>
 	<string name="error_app_requires_network_connection">No connection</string>
 	<string name="error_google_play_button_text">Google Play</string>
 	<string name="error_maintenance">Server maintenance</string>

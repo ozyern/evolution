@@ -30,9 +30,6 @@
 
 	<!-- New app version message strings -->
 	<!-- TODO: translate these 3 strings below -->
-	<string name="new_app_version">There\'s an app update available (%1$s). Tap here to open the Play Store and update the app.</string>
-	<string name="new_app_version_inapp_downloaded">The app update has been downloaded</string>
-	<string name="new_app_version_inapp_failed">The app update could not be installed. Tap here to open the Play Store and update the app.</string>
 
 	<!-- Downloader strings-->
 	<!-- TODO: translate these 5 strings below -->
@@ -91,12 +88,9 @@
 	<string name="summary_update_method">إختر جهازاً أولاً</string>
 	<!-- TODO: check the following translation -->
 	<string name="summary_important_notifications_disabled">تم تعطيل بعض الإشعارات المهمة:</string>
-	<string name="summary_privacy_policy">مشاهدة حية</string>
-	<string name="summary_rate_app">أترك مراجعة من خمس نجوم</string>
 	<string name="label_theme">الشكل</string>
 	<string name="label_language">لغة</string>
 	<string name="label_privacy_policy">سياسة الخصوصية</string>
-	<string name="label_rate_app">قيم هذا التطبيق</string>
 	<string name="theme_light">فاتح</string>
 	<string name="theme_dark">داكن</string>
 	<string name="theme_system">النظام</string>
@@ -239,8 +233,6 @@
 	<string name="contribute_successful_notification_text">نشكرك على مشاركة عناوين OTA معنا!</string>
 
 	<!-- Error strings-->
-	<string name="error_app_outdated">كلا!</string>
-	<string name="error_app_outdated_message">هذا الإصدار من التطبيق قديم. لقد حان الوقت لتحديثه! اضغط على \"متجر بلاي\" أدناه. ومن داخل متجر بلاي ، انقر فوق زر \"تحديث\".</string>
 	<string name="error_app_requires_network_connection">لا يوجد إتصال</string>
 	<string name="error_google_play_button_text">متجر بلاي</string>
 	<string name="error_maintenance">صيانة الخادم</string>

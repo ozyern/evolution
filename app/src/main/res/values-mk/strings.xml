@@ -25,9 +25,6 @@
 	<string name="server_status_warning">Некои функции може да не работат правилно.</string>
 
 	<!-- New app version message strings -->
-	<string name="new_app_version">Има ново ажурирање за апликацијата (%1$s). Притиснете овде за да отворите Play Store и да ја ажурирате апликацијата.</string>
-	<string name="new_app_version_inapp_downloaded">Ажурирањето за апликацијата е превземено</string>
-	<string name="new_app_version_inapp_failed">Ажурирањето за апликацијата неможеше да се инсталира. Притиснете овде за да отворите Play Store и да ја ажурирате апликацијата.</string>
 
 	<!-- Downloader strings-->
 	<string name="grant_all_files_access">Ве молиме овозможете \"All files access\" за апликацијата, која се користи само за превземање на OTA ZIP датотеки, во најгорната гранка на внатрешната меморија</string>
@@ -90,13 +87,10 @@
 	<string name="summary_please_wait">Ве молиме почекајте…</string>
 	<string name="summary_update_method">Најпрво изберете уред</string>
 	<string name="summary_important_notifications_disabled">Некои по важни нотификации се оневозможени:</string>
-	<string name="summary_privacy_policy">Погледнете онлајн</string>
-	<string name="summary_rate_app">Оставете преглед од 5 ѕвезди</string>
 
 	<string name="label_theme">Тема</string>
 	<string name="label_language">Јазик</string>
 	<string name="label_privacy_policy">Полиса за приватност</string>
-	<string name="label_rate_app">Оценете ја оваа апликација</string>
 
 	<string name="theme_light">Светло</string>
 	<string name="theme_dark">Темно</string>
@@ -241,8 +235,6 @@
 	<string name="contribute_successful_notification_text">Ви благодариме што споделивте OTA URL-адреси со нас!</string>
 
 	<!-- Error strings-->
-	<string name="error_app_outdated">Ох не!</string>
-	<string name="error_app_outdated_message">Оваа верзија на апликацијата е застарена. Време е да ја ажурирате! Притиснете на \"Google Play\" подоле. Во Google Play, притиснете на \"Ажурирај\".</string>
 	<string name="error_app_requires_network_connection">Нема конекција</string>
 	<string name="error_google_play_button_text">Google Play</string>
 	<string name="error_maintenance">Одржување на серверот</string>

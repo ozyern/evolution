@@ -30,9 +30,6 @@
 
 	<!-- New app version message strings -->
 	<!-- TODO: translate these 3 strings below -->
-	<string name="new_app_version">There\'s an app update available (%1$s). Tap here to open the Play Store and update the app.</string>
-	<string name="new_app_version_inapp_downloaded">The app update has been downloaded</string>
-	<string name="new_app_version_inapp_failed">The app update could not be installed. Tap here to open the Play Store and update the app.</string>
 
 	<!-- Downloader strings-->
 	<!-- TODO: translate these 5 strings below -->
@@ -96,13 +93,10 @@
 	<string name="summary_update_method">เลือกอุปกรณ์</string>
 	<!-- TODO: check the following translation -->
 	<string name="summary_important_notifications_disabled">การแจ้งเตือนที่สำคัญบางอย่างถูกปิดใช้งาน:</string>
-	<string name="summary_privacy_policy">ดูออนไลน์</string>
-	<string name="summary_rate_app">ถ้าชอบพวกเรากรุณาให้ 5 ดาว</string>
 
 	<string name="label_theme">ธีม</string>
 	<string name="label_language">ภาษา</string>
 	<string name="label_privacy_policy">นโยบายความเป็นส่วนตัว</string>
-	<string name="label_rate_app">ประเมินแอพ</string>
 
 	<string name="theme_light">สว่าง</string>
 	<string name="theme_dark">มือ</string>
@@ -254,8 +248,6 @@
 	<string name="contribute_successful_notification_text">ขอบคุณที่แบ่งปัน OTA URLs กับเรา!</string>
 
 	<!-- Error strings-->
-	<string name="error_app_outdated">ไม่นะ!</string>
-	<string name="error_app_outdated_message">แอพเวอร์ชันนี้ล้าสมัยแล้ว ได้เวลาอัปเดตแล้ว! แตะที่ \"Google Play \" ด้านล่าง ภายใน Google Play ให้แตะที่ \"อัปเดต \"</string>
 	<string name="error_app_requires_network_connection">ไม่มีการเชื่อมต่อ</string>
 	<string name="error_google_play_button_text">Google Play</string>
 	<string name="error_maintenance">การบำรุงรักษาเซิร์ฟเวอร์</string>

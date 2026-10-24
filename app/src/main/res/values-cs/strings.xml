@@ -25,12 +25,6 @@
 	<string name="server_status_warning">Některé funkce nemusí fungovat správně.</string>
 
 	<!-- Řetězce zpráv nové verze aplikace -->
-	<string name="new_app_version">K dispozici je aktualizace aplikace (%1$s). Klepnutím sem otevřete Obchod Play a aktualizujte aplikaci.</string>
-	<string name="new_app_version_inapp_downloaded">Aktualizace aplikace byla stažena</string>
-	<string name="new_app_version_inapp_failed">Aktualizaci aplikace se nepodařilo nainstalovat. Klepnutím sem otevřete Obchod Play a aktualizujte aplikaci.</string>.
-
-	<!-- Řetězce downloaderu-->
-	<string name="grant_all_files_access">Prosím povolte \"Přístup ke všem souborům\" pro aplikaci, která se používá pouze pro stahování OTA ZIP do nejvyššího adresáře interního úložiště</string>
 	<string name="download">Stáhnout aktualizaci</string>
 	<string name="downloaded">Aktualizace stažena</string>
 	<string name="downloading">Stahování aktualizace…</string>
@@ -90,13 +84,10 @@
 	<string name="summary_update_method">Nejprve vyberte zařízení</string>
 	<!-- TODO: check the following translation -->
 	<string name="summary_important_notifications_disabled">Některá důležitá oznámení jsou zakázána:</string>
-	<string name="summary_privacy_policy">Podívat se online</string>
-	<string name="summary_rate_app">Zanechat pětihvězdičkové hodnocení</string>
 
 	<string name="label_theme">Téma</string>
 	<string name="label_language">Jazyk</string>
 	<string name="label_privacy_policy">Zásady ochrany osobních údajů</string>
-	<string name="label_rate_app">Hodnotit tuto aplikaci</string>
 
 	<string name="theme_light">Světlý</string>
 	<string name="theme_dark">Tmavý</string>
@@ -243,8 +234,6 @@ To může být užitečné, pokud chcete:"</string>
 	<string name="contribute_successful_notification_text">Děkujeme, že jste s námi sdíleli adresy URL OTA!</string>
 
 	<!-- Chybové řetězce-->
-	<string name="error_app_outdated">Ale ne!</string>
-	<string name="error_app_outdated_message">Tato verze aplikace je zastaralá. Je čas ji aktualizovat! Klepněte na \"Google Play\" níže. V Google Play klepněte na \"Aktualizovat\".</string>
 	<string name="error_app_requires_network_connection">Není připojení</string>
 	<string name="error_google_play_button_text">Google Play</string>
 	<string name="error_maintenance">Údržba serveru</string>

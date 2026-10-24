@@ -7,26 +7,17 @@ import android.provider.Settings
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.compose.foundation.background
-import androidx.compose.foundation.basicMarquee
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.getValue
@@ -34,28 +25,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import coil3.imageLoader
+import com.kyant.backdrop.backdrops.rememberCanvasBackdrop
 import com.oxygenupdater.BuildConfig
 import com.oxygenupdater.R
 import com.oxygenupdater.extensions.formatFileSize
 import com.oxygenupdater.extensions.launch
 import com.oxygenupdater.extensions.openAppLocalePage
-import com.oxygenupdater.extensions.openPlayStorePage
 import com.oxygenupdater.extensions.rememberCustomTabsIntent
 import com.oxygenupdater.extensions.showToast
-import com.oxygenupdater.icons.Check
 import com.oxygenupdater.icons.CloudDownload
 import com.oxygenupdater.icons.Crowdsource
 import com.oxygenupdater.icons.DeleteSweep
@@ -67,7 +55,6 @@ import com.oxygenupdater.icons.Mobile
 import com.oxygenupdater.icons.Notifications
 import com.oxygenupdater.icons.Palette
 import com.oxygenupdater.icons.Policy
-import com.oxygenupdater.icons.Star
 import com.oxygenupdater.icons.Symbols
 import com.oxygenupdater.icons.TripOrigin
 import com.oxygenupdater.internal.settings.KeyAdvancedMode
@@ -78,10 +65,11 @@ import com.oxygenupdater.models.UpdateMethod
 import com.oxygenupdater.ui.SettingsListConfig
 import com.oxygenupdater.ui.Theme
 import com.oxygenupdater.ui.common.ConditionalNavBarPadding
-import com.oxygenupdater.ui.common.animatedClickable
-import com.oxygenupdater.ui.common.modifierDefaultPadding
-import com.oxygenupdater.ui.common.modifierDefaultPaddingStartTopEnd
-import com.oxygenupdater.ui.common.modifierMaxWidth
+import com.oxygenupdater.ui.common.GroupedColumn
+import com.oxygenupdater.ui.common.GroupedRow
+import com.oxygenupdater.ui.common.GroupedSection
+import com.oxygenupdater.ui.common.groupedCardColor
+import com.oxygenupdater.ui.common.liquid.LiquidToggle
 import com.oxygenupdater.ui.common.rememberState
 import com.oxygenupdater.ui.currentLocale
 import com.oxygenupdater.ui.dialogs.AdvancedModeSheet
@@ -120,79 +108,63 @@ fun SettingsScreen(
     getPrefStr: (key: String, default: String) -> String,
     getPrefBool: (key: String, default: Boolean) -> Boolean,
     persistBool: (key: String, value: Boolean) -> Unit,
-) = Column(
+) = GroupedColumn(
     Modifier
         .verticalScroll(rememberScrollState())
         .testTag(SettingsScreenTestTag)
 ) {
-    // region Support us
-    // Contributing OTA URLs is the only item left here (the app no longer has purchases),
-    // and it's available only on rooted devices, so skip the section entirely otherwise.
-    if (ContributorUtils.isAtLeastQAndPossiblyRooted) Column(Modifier.background(MaterialTheme.colorScheme.surfaceContainer)) {
-        Header(R.string.preference_header_support)
+    GroupedSection(header = stringResource(R.string.preference_header_device)) {
+        DeviceChooser(config = deviceConfig, getPrefStr = getPrefStr, onSelect = onDeviceSelect)
+        MethodChooser(config = methodConfig, getPrefStr = getPrefStr, onSelect = onMethodSelect)
+        Notifications()
+    }
 
+    GroupedSection(header = stringResource(R.string.preference_header_ui)) {
+        Theme(onSelect = onThemeSelect)
+        SettingsSwitchItem(
+            checked = pureBlack,
+            onCheckedChange = onPureBlackChange,
+            icon = Symbols.TripOrigin,
+            iconTint = IconGray,
+            titleResId = R.string.settings_pure_black,
+        )
+        Language()
+    }
+
+    GroupedSection(header = stringResource(R.string.preference_header_advanced)) {
+        AdvancedMode(getPrefBool = getPrefBool, onChange = onAdvancedModeChange)
+        // Contributing OTA URLs is available only on (possibly) rooted devices
         BecomeContributor(
             getPrefBool = getPrefBool,
             onContributorEnrollmentChange = onContributorEnrollmentChange,
         )
+        ClearCache()
     }
-    // endregion
-
-    // region Device
-    Header(R.string.preference_header_device)
-
-    DeviceChooser(config = deviceConfig, getPrefStr = getPrefStr, onSelect = onDeviceSelect)
-    MethodChooser(config = methodConfig, getPrefStr = getPrefStr, onSelect = onMethodSelect)
-
-    Notifications()
-    // endregion
-
-    // region UI
-    Header(R.string.preference_header_ui)
-    Theme(onSelect = onThemeSelect)
-    SettingsSwitchItem(
-        checked = pureBlack,
-        onCheckedChange = onPureBlackChange,
-        icon = Symbols.TripOrigin,
-        titleResId = R.string.settings_pure_black,
-    )
-    Language()
-    // endregion
-
-    // region Advanced
-    Header(R.string.preference_header_advanced)
-    AdvancedMode(getPrefBool = getPrefBool, onChange = onAdvancedModeChange)
-    ClearCache()
-    // endregion
-
-    // region About
-    Header(R.string.preference_header_about)
 
     val context = LocalContext.current
     val customTabIntent = rememberCustomTabsIntent()
-    SettingsItem(
-        // Use Chrome Custom Tabs to open the privacy policy link
-        onClick = { customTabIntent.launch(context, "https://oxygenupdater.com/privacy/") },
-        icon = Symbols.Policy,
-        titleResId = R.string.label_privacy_policy,
-        subtitle = stringResource(R.string.summary_privacy_policy),
-    )
+    GroupedSection(
+        header = stringResource(R.string.preference_header_about),
+        footer = stringResource(R.string.settings_footer_free),
+    ) {
+        SettingsItem(
+            // Use Chrome Custom Tabs to open the privacy policy link
+            onClick = { customTabIntent.launch(context, "https://oxygenupdater.com/privacy/") },
+            icon = Symbols.Policy,
+            iconTint = IconBlue,
+            titleResId = R.string.label_privacy_policy,
+            subtitle = null,
+        )
 
-    SettingsItem(
-        onClick = context::openPlayStorePage,
-        icon = Symbols.Star,
-        titleResId = R.string.label_rate_app,
-        subtitle = stringResource(R.string.summary_rate_app),
-    )
+        SettingsItem(
+            onClick = openAboutScreen,
+            icon = Logos.LogoNotification,
+            titleResId = R.string.app_name,
+            subtitle = "v${BuildConfig.VERSION_NAME}",
+        )
+    }
 
-    SettingsItem(
-        onClick = openAboutScreen,
-        icon = Logos.LogoNotification,
-        titleResId = R.string.app_name,
-        subtitle = "v${BuildConfig.VERSION_NAME}",
-    )
-    // endregion
-
+    Spacer(Modifier.height(24.dp))
     ConditionalNavBarPadding(navType)
 }
 
@@ -213,6 +185,7 @@ fun DeviceChooser(
     SettingsItem(
         onClick = { showSheet = true },
         icon = Symbols.Mobile,
+        iconTint = IconBlue,
         titleResId = R.string.settings_device,
         subtitle = subtitle,
         subtitleIsError = subtitle == notSelected,
@@ -248,6 +221,7 @@ fun MethodChooser(
     SettingsItem(
         onClick = { showSheet = true },
         icon = Symbols.CloudDownload,
+        iconTint = IconGreen,
         titleResId = R.string.settings_update_method,
         subtitle = subtitle,
         subtitleIsError = subtitle == notSelected,
@@ -274,6 +248,7 @@ private fun BecomeContributor(
     if (ContributorUtils.isAtLeastQAndPossiblyRooted) SettingsItem(
         onClick = { showSheet = true },
         icon = Symbols.Crowdsource,
+        iconTint = IconPink,
         titleResId = R.string.contribute,
         subtitle = stringResource(R.string.settings_contribute_label),
     )
@@ -334,6 +309,7 @@ private fun Notifications() {
             context.startActivity(intent)
         },
         icon = Symbols.Notifications,
+        iconTint = IconRed,
         titleResId = R.string.preference_header_notifications,
         subtitle = notifSummary,
         subtitleIsError = subtitleIsError,
@@ -346,6 +322,7 @@ private fun Theme(onSelect: (Theme) -> Unit) {
     SettingsItem(
         onClick = { showSheet = true },
         icon = Symbols.Palette,
+        iconTint = IconIndigo,
         titleResId = R.string.label_theme,
         subtitle = stringResource(LocalTheme.current.titleResId),
     )
@@ -382,6 +359,7 @@ private fun Language() {
             }
         },
         icon = Symbols.Language,
+        iconTint = IconTeal,
         titleResId = R.string.label_language,
         subtitle = language,
     )
@@ -410,6 +388,7 @@ private fun AdvancedMode(
             advancedMode = it
         },
         icon = Symbols.LockOpen,
+        iconTint = IconOrange,
         titleResId = R.string.settings_advanced_mode,
         showWarning = { showSheet = true },
     )
@@ -466,6 +445,7 @@ private fun ClearCache() {
             }
         },
         icon = Symbols.DeleteSweep,
+        iconTint = IconGray,
         titleResId = R.string.settings_clear_cache,
         subtitle = context.formatFileSize(size),
         enabled = size != 0L,
@@ -478,6 +458,8 @@ fun SettingsSwitchItem(
     onCheckedChange: (checked: Boolean) -> Unit,
     icon: ImageVector,
     @StringRes titleResId: Int,
+    iconTint: Color = MaterialTheme.colorScheme.primary,
+    subtitle: String? = null,
     showWarning: (() -> Unit)? = null,
 ) {
     val checkedChange by rememberUpdatedState<(checked: Boolean) -> Unit> {
@@ -487,39 +469,28 @@ fun SettingsSwitchItem(
         }
     }
 
-    SettingsItem(
-        onClick = { checkedChange(!checked) },
+    // The glass thumb refracts the card behind it
+    val cardColor = groupedCardColor
+    val backdrop = rememberCanvasBackdrop { drawRect(cardColor) }
+    GroupedRow(
+        title = stringResource(titleResId),
         icon = icon,
-        titleResId = titleResId,
-        subtitle = stringResource(if (checked) R.string.summary_on else R.string.summary_off),
+        iconTint = iconTint,
+        subtitle = subtitle,
+        onClick = { checkedChange(!checked) },
+        modifier = Modifier.windowInsetsPadding(
+            // Leave space for 2/3-button nav bar in landscape mode
+            WindowInsets.systemBars.only(WindowInsetsSides.Horizontal)
+        ),
     ) {
-        Switch(
-            checked = checked,
-            onCheckedChange = checkedChange,
-            thumbContent = {
-                if (!checked) return@Switch
-                Icon(Symbols.Check, null, Modifier.size(SwitchDefaults.IconSize))
-            },
-            modifier = Modifier.windowInsetsPadding(
-                // Leave space for 2/3-button nav bar in landscape mode
-                WindowInsets.systemBars.only(WindowInsetsSides.Horizontal)
-            )
-        )
+        LiquidToggle(checked = checked, onCheckedChange = checkedChange, backdrop = backdrop)
     }
 }
 
-@Composable
-@NonRestartableComposable
-private fun Header(@StringRes textResId: Int) {
-    HorizontalDivider()
-    Text(
-        text = stringResource(textResId),
-        color = MaterialTheme.colorScheme.primary,
-        style = MaterialTheme.typography.bodySmall,
-        modifier = modifierDefaultPaddingStartTopEnd
-    )
-}
-
+/**
+ * iOS-style settings row. Short, single-line [subtitle]s are shown as a trailing value
+ * (like iOS "Detail" cells); longer ones, and errors, are shown below the title.
+ */
 @Composable
 @NonRestartableComposable
 fun SettingsItem(
@@ -529,42 +500,33 @@ fun SettingsItem(
     subtitle: String?,
     subtitleIsError: Boolean = false,
     enabled: Boolean = true,
+    iconTint: Color = MaterialTheme.colorScheme.primary,
     content: @Composable (RowScope.() -> Unit)? = null,
-) = Row(
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = modifierMaxWidth
-        .alpha(if (enabled) 1f else 0.38f)
-        .animatedClickable(enabled, onClick)
-        .then(modifierDefaultPadding) // must be after `clickable`
 ) {
-    val colorScheme = MaterialTheme.colorScheme
-    val typography = MaterialTheme.typography
-
-    Icon(icon, stringResource(R.string.icon), tint = colorScheme.primary)
-
-    Column(
-        Modifier
-            .weight(1f)
-            .padding(start = 16.dp, end = if (content != null) 16.dp else 0.dp)
-    ) {
-        Text(
-            text = stringResource(titleResId),
-            style = typography.titleMedium,
-            maxLines = 1,
-            modifier = Modifier.basicMarquee()
-        )
-
-        if (subtitle != null) Text(
-            text = subtitle,
-            color = if (subtitleIsError) colorScheme.error else colorScheme.onSurfaceVariant,
-            overflow = TextOverflow.Ellipsis, maxLines = 10,
-            style = typography.bodyMedium,
-        )
-    }
-
-    // Extra content if callers want to re-use the same RowScope
-    if (content != null) content()
+    val asValue = subtitle != null && !subtitleIsError && subtitle.length <= 18 && '\n' !in subtitle
+    GroupedRow(
+        title = stringResource(titleResId),
+        icon = icon,
+        iconTint = iconTint,
+        subtitle = if (asValue) null else subtitle,
+        subtitleIsError = subtitleIsError,
+        value = if (asValue) subtitle else null,
+        chevron = content == null,
+        enabled = enabled,
+        onClick = onClick,
+        trailing = content,
+    )
 }
+
+// Apple system colours, used for setting icons
+private val IconBlue = Color(0xFF007AFF)
+private val IconGreen = Color(0xFF34C759)
+private val IconRed = Color(0xFFFF3B30)
+private val IconOrange = Color(0xFFFF9500)
+private val IconIndigo = Color(0xFF5856D6)
+private val IconTeal = Color(0xFF30B0C7)
+private val IconPink = Color(0xFFFF2D55)
+private val IconGray = Color(0xFF8E8E93)
 
 @VisibleForTesting
 val DeviceSearchFilter: (Device, String) -> Boolean = { device, query ->

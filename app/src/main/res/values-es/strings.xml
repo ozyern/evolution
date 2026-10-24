@@ -30,9 +30,6 @@
 
 	<!-- New app version message strings -->
 	<!-- TODO: translate these 3 strings below -->
-	<string name="new_app_version">There\'s an app update available (%1$s). Tap here to open the Play Store and update the app.</string>
-	<string name="new_app_version_inapp_downloaded">The app update has been downloaded</string>
-	<string name="new_app_version_inapp_failed">The app update could not be installed. Tap here to open the Play Store and update the app.</string>
 
 	<!-- Downloader strings-->
 	<!-- TODO: translate these 5 strings below -->
@@ -97,13 +94,10 @@
 	<string name="summary_update_method">Selecciona un dispositivo primero</string>
 	<!-- TODO: check the following translation -->
 	<string name="summary_important_notifications_disabled">Algunas notificaciones importantes están desactivadas:</string>
-	<string name="summary_privacy_policy">Ver online</string>
-	<string name="summary_rate_app">Deja un comentario de 5 estrellas</string>
 
 	<string name="label_theme">Tema</string>
 	<string name="label_language">Idioma</string>
 	<string name="label_privacy_policy">Política de privacidad</string>
-	<string name="label_rate_app">Califica esta aplicación</string>
 
 	<string name="theme_light">Claro</string>
 	<string name="theme_dark">Oscuro</string>
@@ -255,8 +249,6 @@ Esto puede ser útil si quieres:"</string>
 	<string name="contribute_successful_notification_text">¡Gracias por compartir con nosotros las URL de las OTA!</string>
 
 	<!-- Error strings-->
-	<string name="error_app_outdated">¡Oh no!</string>
-	<string name="error_app_outdated_message">La versión de la app está desactualizada. ¡Es hora de actualizarla! Pulsa en \"Google Play\" abajo. Dentro de Google Play, presiona \"Actualizar\".</string>
 	<string name="error_app_requires_network_connection">Sin conexión</string>
 	<string name="error_google_play_button_text">Google Play</string>
 	<string name="error_maintenance">Servidor en mantenimiento</string>

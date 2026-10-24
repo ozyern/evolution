@@ -24,9 +24,6 @@
 	<string name="server_status_warning">Manche Features funktionieren möglicherweiße nicht richtig.</string>
 
 	<!-- New app version message strings -->
-	<string name="new_app_version">Es ist ein Update verfügbar (%1$s). Tippen Sie hier, um in den Play Store zu gelangen.</string>
-	<string name="new_app_version_inapp_downloaded">Das App Update wurde heruntergeladen</string>
-	<string name="new_app_version_inapp_failed">Das App Update konnte nicht installiert werden. Tippen Sie hier, um in den Play Store zu gelangen.</string>
 
 	<!-- Downloader strings -->
 	<!-- TODO: translate this string below -->
@@ -87,13 +84,10 @@
 	<string name="summary_update_method">Bitte wähle zuerst dein Gerät aus</string>
 	<!-- TODO: check the following translation -->
 	<string name="summary_important_notifications_disabled">Einige wichtige Benachrichtigungen sind deaktiviert:</string>
-	<string name="summary_privacy_policy">Online ansehen</string>
-	<string name="summary_rate_app">Hinterlasse eine 5 Sterne Bewertung</string>
 
 	<string name="label_theme">Theme</string>
 	<string name="label_language">Sprache</string>
 	<string name="label_privacy_policy">Datenschutz-Bestimmungen</string>
-	<string name="label_rate_app">Bewerte diese App</string>
 
 	<string name="theme_light">Hell</string>
 	<string name="theme_dark">Dunkel</string>
@@ -241,8 +235,6 @@ Falls es einen Download Fehler gibt, öffne die App und versuche das Update erne
 	<string name="contribute_successful_notification_text">Danke, dass Sie die OTA-URLs mit uns teilen!</string>
 
 	<!-- Error strings -->
-	<string name="error_app_outdated">"Oh nein!"</string>
-	<string name="error_app_outdated_message">"Diese Version der App ist veraltet. Es ist Zeit, sie zu aktualisieren! Tippe Sie unten auf \"Google Play\". Tippen Sie im Google Play Store auf \"Aktualisieren\"."</string>
 	<string name="error_app_requires_network_connection">"Keine Verbindung"</string>
 	<string name="error_maintenance">"Server Wartungsarbeiten"</string>
 

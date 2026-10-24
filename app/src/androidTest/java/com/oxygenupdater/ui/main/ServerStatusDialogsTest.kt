@@ -28,10 +28,7 @@ class ServerStatusDialogsTest : ComposeBaseTest() {
     @Test
     fun serverStatusDialogs() {
         setContent {
-            ServerStatusDialogs(
-                status = status,
-                openPlayStorePage = { trackCallback("openPlayStorePage") },
-            )
+            ServerStatusDialogs(status = status)
         }
 
         status = Status.NORMAL
@@ -49,30 +46,18 @@ class ServerStatusDialogsTest : ComposeBaseTest() {
             textResId = R.string.error_maintenance_message,
         )
 
+        // Upstream "app outdated" status doesn't apply to this app
         status = Status.OUTDATED
-        validateForRecoverableErrors(
-            titleResId = R.string.error_app_outdated,
-            textResId = R.string.error_app_outdated_message,
-            confirmTextResId = R.string.error_google_play_button_text,
-        )
+        root.assertDoesNotExist()
     }
 
     private fun validateForRecoverableErrors(
         @StringRes titleResId: Int,
         @StringRes textResId: Int,
-        @StringRes confirmTextResId: Int? = null,
     ) {
         root.onParent().assert(isDialog())
         rule[AlertDialog_TitleTestTag].assertHasTextExactly(titleResId)
         rule[AlertDialog_TextTestTag].assertHasTextExactly(textResId)
-        if (confirmTextResId == null) {
-            rule[IconTextButtonTestTag].assertDoesNotExist()
-        } else {
-            rule[IconTextButton_TextTestTag, true].assertHasTextExactly(confirmTextResId)
-            rule[IconTextButtonTestTag].run {
-                performClick()
-                ensureCallbackInvokedExactlyOnce("openPlayStorePage")
-            }
-        }
+        rule[IconTextButtonTestTag].assertDoesNotExist()
     }
 }

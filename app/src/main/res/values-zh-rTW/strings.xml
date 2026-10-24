@@ -25,9 +25,6 @@
 	<string name="server_status_warning">部分功能可能無法正常運作</string>
 
 	<!-- New app version message strings -->
-	<string name="new_app_version">此應用程式有可用更新 (%1$s)。點選此處即可打開 Play 商店更新應用程式</string>
-	<string name="new_app_version_inapp_downloaded">應用程式更新已下載</string>
-	<string name="new_app_version_inapp_failed">無法安裝應用程式更新。點選此處即可打開 Play 商店更新應用程式</string>
 
 	<!-- Downloader strings-->
 	<string name="grant_all_files_access">請授權應用程式「允許管理所有檔案」，該權限僅用於下載 OTA ZIPs 到內部儲存空間的最上層目錄</string>
@@ -89,13 +86,10 @@
 	<string name="summary_please_wait">請稍等…</string>
 	<string name="summary_update_method">請先選擇一個裝置</string>
 	<string name="summary_important_notifications_disabled">一些重要的通知被停用。:</string>
-	<string name="summary_privacy_policy">線上檢視</string>
-	<string name="summary_rate_app">留下 5 星評分</string>
 
 	<string name="label_theme">佈景主題</string>
 	<string name="label_language">語言</string>
 	<string name="label_privacy_policy">隱私條款</string>
-	<string name="label_rate_app">評分</string>
 
 	<string name="theme_light">淺色</string>
 	<string name="theme_dark">深色</string>
@@ -240,8 +234,6 @@
 	<string name="contribute_successful_notification_text">感謝您與我們分享 OTA 網址！</string>
 
 	<!-- Error strings-->
-	<string name="error_app_outdated">糟糕！</string>
-	<string name="error_app_outdated_message">更新器不是最新版本，請前往 Google Play 商店進行更新。</string>
 	<string name="error_app_requires_network_connection">無網際網路連線</string>
 	<string name="error_google_play_button_text">Google Play</string>
 	<string name="error_maintenance">伺服器維護中…</string>

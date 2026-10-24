@@ -30,9 +30,6 @@
 
 	<!-- New app version message strings -->
 	<!-- TODO: translate these 3 strings below -->
-	<string name="new_app_version">There\'s an app update available (%1$s). Tap here to open the Play Store and update the app.</string>
-	<string name="new_app_version_inapp_downloaded">The app update has been downloaded</string>
-	<string name="new_app_version_inapp_failed">The app update could not be installed. Tap here to open the Play Store and update the app.</string>
 
 	<!-- Downloader strings-->
 	<!-- TODO: translate these 5 strings below -->
@@ -96,12 +93,9 @@
 	<string name="summary_update_method">Lütfen öncelikle cihazınızı belirtin.</string>
 	<!-- TODO: check the following translation -->
 	<string name="summary_important_notifications_disabled">Bazı önemli bildirimler devre dışı bırakılır:</string>
-	<string name="summary_privacy_policy">Online görüntüleyiniz.</string>
-	<string name="summary_rate_app">5 yıldızlı yorum bırakınız.</string>
 	<string name="label_theme">Tema</string>
 	<string name="label_language">Dil</string>
 	<string name="label_privacy_policy">Gizlilik Politesi</string>
-	<string name="label_rate_app">Uygulamayı değerlendirin</string>
 
 	<string name="theme_light">Açık</string>
 	<string name="theme_dark">Koyu</string>
@@ -253,8 +247,6 @@ Eğer isterseniz bu faydalı olabilir:"</string>
 	<string name="contribute_successful_notification_text">OTA URL\'lerini bizimle paylaştığınız için teşekkürler!</string>
 
 	<!-- Error strings-->
-	<string name="error_app_outdated">Oh olamaz!</string>
-	<string name="error_app_outdated_message">Uygulamanızın sürümü eski. Güncelleme vakti gelmiş!</string>
 	<string name="error_app_requires_network_connection">Bağlantı bulunamadı</string>
 	<string name="error_google_play_button_text">Google Play</string>
 	<string name="error_maintenance">Sunucu bakımı</string>

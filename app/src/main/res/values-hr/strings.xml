@@ -29,9 +29,6 @@
 
 	<!-- New app version message strings -->
 	<!-- TODO: translate these 3 strings below -->
-	<string name="new_app_version">There\'s an app update available (%1$s). Tap here to open the Play Store and update the app.</string>
-	<string name="new_app_version_inapp_downloaded">The app update has been downloaded</string>
-	<string name="new_app_version_inapp_failed">The app update could not be installed. Tap here to open the Play Store and update the app.</string>
 
 	<!-- Downloader strings -->
 	<!-- TODO: translate these 5 strings below -->
@@ -82,14 +79,11 @@
 	<string name="summary_update_method">Select a device first</string>
 	<!-- TODO: check the following translation -->
 	<string name="summary_important_notifications_disabled">Neke važne obavijesti su onemogućene:</string>
-	<string name="summary_privacy_policy">Pogledajte na mreži</string>
-	<string name="summary_rate_app">Leave a 5 star review</string>
 
 	<!-- TODO: translate these lines -->
 	<string name="label_theme">Theme</string>
 	<string name="label_language">Jezik</string>
 	<string name="label_privacy_policy">Pravila o privatnosti</string>
-	<string name="label_rate_app">Rate this app</string>
 
 	<!-- TODO: translate these lines -->
 	<string name="theme_light">Svjetlo</string>
@@ -246,8 +240,6 @@ Ovo može biti korisno ako želite:"</string>
 	<string name="contribute_successful_notification_text">Hvala što ste s nama podijelili OTA URL-ove!</string>
 
 	<!-- Error strings -->
-	<string name="error_app_outdated">"O ne!"</string>
-	<string name="error_app_outdated_message">"Ova verzija aplikacije je zastarjela. Vrijeme je da je ažurirate! Pritisnite na \"Google Play\". U Google play-u pritisnite \"Ažuriraj\""</string>
 	<string name="error_app_requires_network_connection">"Nema internetske veze"</string>
 	<string name="error_maintenance">"Održavanje servera"</string>
 	<string name="error_maintenance_message">"Molimo pričekajte. Serveri će uskoro biti dostupni."</string>

@@ -30,9 +30,6 @@
 
 	<!-- New app version message strings -->
 	<!-- TODO: translate these 3 strings below -->
-	<string name="new_app_version">There\'s an app update available (%1$s). Tap here to open the Play Store and update the app.</string>
-	<string name="new_app_version_inapp_downloaded">The app update has been downloaded</string>
-	<string name="new_app_version_inapp_failed">The app update could not be installed. Tap here to open the Play Store and update the app.</string>
 
 	<!-- Downloader strings-->
 	<!-- TODO: translate these 5 strings below -->
@@ -97,13 +94,10 @@
 	<string name="summary_update_method">Wybierz najpierw urządzenie</string>
 	<!-- TODO: check the following translation -->
 	<string name="summary_important_notifications_disabled">Niektóre ważne powiadomienia są wyłączone:</string>
-	<string name="summary_privacy_policy">Zobacz online</string>
-	<string name="summary_rate_app">Zostaw recenzję na 5 gwiazdek</string>
 
 	<string name="label_theme">Motyw</string>
 	<string name="label_language">Język</string>
 	<string name="label_privacy_policy">Polityka prywatności</string>
-	<string name="label_rate_app">Oceń tę aplikację</string>
 
 	<string name="theme_light">Jasny</string>
 	<string name="theme_dark">Ciemny</string>
@@ -256,8 +250,6 @@ Może to być przydatne, jeśli chcesz:"</string>
 	<string name="contribute_successful_notification_text">Dziękujemy za udostępnienie nam adresów URL OTA!</string>
 
 	<!-- Error strings-->
-	<string name="error_app_outdated">O nie !</string>
-	<string name="error_app_outdated_message">Ta wersja aplikacji jest przestarzała. To czas na aktualizację ! Naciśnij na \"Sklep Play\" poniżej. W Sklepie Play, naciśnij na \"Aktualizuj\".</string>
 	<string name="error_app_requires_network_connection">Brak połączenia</string>
 	<string name="error_google_play_button_text">Sklep Play</string>
 	<string name="error_maintenance">Prace serwerowe</string>

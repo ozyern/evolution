@@ -25,9 +25,6 @@
 	<string name="server_status_warning">Деякі функції можуть працювати неправильно.</string>
 
 	<!-- New app version message strings -->
-	<string name="new_app_version">Доступне оновлення (%1$s). Натисніть, щоб відкрити Play Маркет і оновити застосунок.</string>
-	<string name="new_app_version_inapp_downloaded">Оновлення застосунку завантажено</string>
-	<string name="new_app_version_inapp_failed">Неможливо встановити оновлення застосунку. Натисніть, щоб відкрити Play Маркет і оновити застосунок.</string>
 
 	<!-- Downloader strings-->
 	<!-- TODO: translate this string below -->
@@ -91,13 +88,10 @@
 	<string name="summary_update_method">Спершу виберіть пристрій</string>
 	<!-- TODO: check the following translation -->
 	<string name="summary_important_notifications_disabled">Деякі важливі сповіщення вимкнено:</string>
-	<string name="summary_privacy_policy">Переглянути онлайн</string>
-	<string name="summary_rate_app">Зилишіть відгук з 5-ма зірочками</string>
 
 	<string name="label_theme">Тема</string>
 	<string name="label_language">Мова</string>
 	<string name="label_privacy_policy">Політика приватності</string>
-	<string name="label_rate_app">Оцінити цей застосунок</string>
 
 	<string name="theme_light">Світла</string>
 	<string name="theme_dark">Темна</string>
@@ -243,8 +237,6 @@
 	<string name="contribute_successful_notification_text">Дякуємо, що поділилися з нами URL-адресами OTA!</string>
 
 	<!-- Error strings-->
-	<string name="error_app_outdated">От халепа!</string>
-	<string name="error_app_outdated_message">Цей застосунок застарів. Час його оновити! Натисніть на \"Google Play\" нижче. В Google Play, виберіть \"Оновлення\".</string>
 	<string name="error_app_requires_network_connection">Немає з\'єднання</string>
 	<string name="error_google_play_button_text">Google Play</string>
 	<string name="error_maintenance">Сервер на обслуговуванні</string>

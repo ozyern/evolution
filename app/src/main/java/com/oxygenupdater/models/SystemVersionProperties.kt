@@ -152,6 +152,8 @@ object SystemVersionProperties {
      */
     val isChinaBuild by lazy(LazyThreadSafetyMode.PUBLICATION) {
         if (pipeline.startsWith("CN", ignoreCase = true)) return@lazy true
+        // Known China model number (e.g. PJZ110 = OnePlus 13 China)
+        if (ChinaDevices.current != null) return@lazy true
         // `ro.oplus.pipeline_key` (picked first) isn't always region-specific on China ROMs,
         // so check the dedicated region props too. Note: `pipeline` comes from the same list.
         try {

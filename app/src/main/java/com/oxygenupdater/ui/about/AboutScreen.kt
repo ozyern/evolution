@@ -18,7 +18,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.oxygenupdater.R
 import com.oxygenupdater.extensions.openLink
-import com.oxygenupdater.extensions.openPlayStorePage
 import com.oxygenupdater.icons.Discord
 import com.oxygenupdater.icons.Forum
 import com.oxygenupdater.icons.GitHub
@@ -116,7 +115,6 @@ private fun Buttons(
             GridItem(Logos.GitHub, R.string.about_github_button_text) { openLink(LinkType.GitHub.value) },
             GridItem(Symbols.Link, R.string.about_website_button_text) { openLink(LinkType.Website.value) },
             GridItem(Logos.Patreon, R.string.about_patreon_button_text) { openLink(LinkType.Patreon.value) },
-            GridItem(Symbols.Star, R.string.about_rate_button_text, ::openPlayStorePage),
         ),
     )
 }

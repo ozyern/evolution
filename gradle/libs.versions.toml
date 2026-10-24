@@ -80,8 +80,6 @@ lifecycle = "2.10.0"
 # https://square.github.io/okhttp/changelog/
 okhttp = "5.3.2"
 
-# https://developer.android.com/reference/com/google/android/play/core/release-notes-in_app_updates
-play-app-update = "2.1.0"
 # https://developers.google.com/android/guides/releases#:~:text=com.google.android.gms%3Aplay%2Dservices%2Dbase%3A
 play-services-base = "18.10.0"
 
@@ -169,7 +167,6 @@ coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp" }
 coil-network-cache = { module = "io.coil-kt.coil3:coil-network-cache-control" }
 
 
-google-play-app-update = { module = "com.google.android.play:app-update", version.ref = "play-app-update" }
 google-play-services-base = { module = "com.google.android.gms:play-services-base", version.ref = "play-services-base" }
 
 libsu-core = { module = "com.github.topjohnwu.libsu:core", version.ref = "libsu" }
@@ -261,7 +258,6 @@ coil = [
 ]
 
 google-play = [
-    "google-play-app-update",
     "google-play-services-base",
 ]
 

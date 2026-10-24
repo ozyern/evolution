@@ -26,9 +26,6 @@
 	<string name="server_status_warning">Неке фунције би могле имати потешкоћа са радом.</string>
 
 	<!-- New app version message strings -->
-	<string name="new_app_version">Доступно је ажурирање апликације (%1$s). Кликните овде да отворите Play продавницу и урадите ажурирање апликације.</string>
-	<string name="new_app_version_inapp_downloaded">Преузето је ажурирање апликације</string>
-	<string name="new_app_version_inapp_failed">Ажурирање се не може извршити. Кликните овде да отворите Play продавницу и урадите ажурирање апликације.</string>
 
 	<!-- Downloader strings-->
 	<string name="grant_all_files_access">Молим те омогући \"Приступ свим фајловима\" за ову апликацију, који се користи само за OTA ZIPs у највишем директоријуму интерне меморије</string>
@@ -90,13 +87,10 @@
 	<string name="summary_please_wait">Молимо сачекајте…</string>
 	<string name="summary_update_method">Прво селектујте уређај</string>
 	<string name="summary_important_notifications_disabled">Нека важна обавештења су онемогућена:</string>
-	<string name="summary_privacy_policy">Погледајте на интернету</string>
-	<string name="summary_rate_app">Оставите нам 5 звездица</string>
 
 	<string name="label_theme">Тема</string>
 	<string name="label_language">Језик</string>
 	<string name="label_privacy_policy">Политика приватности</string>
-	<string name="label_rate_app">Оцени ову апликацију</string>
 
 	<string name="theme_light">Светло</string>
 	<string name="theme_dark">Тамно</string>
@@ -241,8 +235,6 @@
 	<string name="contribute_successful_notification_text">Хвала што сте поделили ОТА УРЛ-ове са нама!</string>
 
 	<!-- Error strings-->
-	<string name="error_app_outdated">О не!</string>
-	<string name="error_app_outdated_message">Ова верзија апликације није ажурирана. Време је да је ажурирате! Притисните на \"Google Play\" испод. У Google Play, притисните на \"Ажурирај\".</string>
 	<string name="error_app_requires_network_connection">Нема конекције</string>
 	<string name="error_google_play_button_text">Google Play</string>
 	<string name="error_maintenance">Одржавање сервера</string>

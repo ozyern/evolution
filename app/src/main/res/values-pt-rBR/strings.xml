@@ -25,9 +25,6 @@
 	<string name="server_status_warning">Alguns recursos podem não funcionar corretamente.</string>
 
 	<!-- New app version message strings -->
-	<string name="new_app_version">Há uma atualização para o aplicativo (%1$s). Toque aqui para abrir a Play Store e atualizar o aplicativo.</string>
-	<string name="new_app_version_inapp_downloaded">Atualização do aplicativo baixada.</string>
-	<string name="new_app_version_inapp_failed">Não foi possível instalar a atualização do aplicativo. Toque aqui para abrir a Play Store e atualizar o aplicativo.</string>
 
 	<!-- Downloader strings-->
 	<string name="grant_all_files_access">Favor habilitar \"Acesso a todos os arquivos\" para o aplicativo, que é usado apenas para baixar os ZIPs OTA para o diretório mais alto do armazenamento interno</string>
@@ -90,13 +87,10 @@
 	<string name="summary_update_method">Selecione um dispositivo</string>
 	<!-- TODO: check the following translation -->
 	<string name="summary_important_notifications_disabled">Algumas notificações importantes são desativadas:</string>
-	<string name="summary_privacy_policy">Ver on-line</string>
-	<string name="summary_rate_app">Avalie-nos com 5 estrelas</string>
 
 	<string name="label_theme">Tema</string>
 	<string name="label_language">Idioma</string>
 	<string name="label_privacy_policy">Política de privacidade</string>
-	<string name="label_rate_app">Avalie este app</string>
 
 	<string name="theme_light">Claro</string>
 	<string name="theme_dark">Escuro</string>
@@ -241,8 +235,6 @@ Isso pode ser útil se você quiser:"</string>
 	<string name="contribute_successful_notification_text">Obrigado por compartilhar os URLs das OTAs conosco!</string>
 
 	<!-- Error strings-->
-	<string name="error_app_outdated">Ah não!</string>
-	<string name="error_app_outdated_message">Esta versão do aplicativo está desatualizada. É hora de atualizá-lo! Toque em \"Google Play\" abaixo. No Google Play, toque em \"Atualizar\".</string>
 	<string name="error_app_requires_network_connection">Sem conexão</string>
 	<string name="error_google_play_button_text">Google Play</string>
 	<string name="error_maintenance">Manutenção do servidor</string>

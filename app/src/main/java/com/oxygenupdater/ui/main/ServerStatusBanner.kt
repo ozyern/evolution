@@ -1,7 +1,6 @@
 package com.oxygenupdater.ui.main
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -25,22 +24,9 @@ import com.oxygenupdater.ui.theme.PreviewThemes
 import com.oxygenupdater.ui.theme.warn
 
 @Composable
-fun ServerStatusBanner(
-    serverStatus: ServerStatus,
-    openPlayStorePage: () -> Unit,
-) {
-    val latestAppVersion = serverStatus.latestAppVersion
-    if (latestAppVersion != null && serverStatus.shouldShowAppUpdateNotice()) {
-        IconText(
-            icon = Symbols.Info,
-            text = stringResource(R.string.new_app_version, latestAppVersion),
-            modifier = modifierMaxWidth
-                .clickable(onClick = openPlayStorePage)
-                .then(modifierDefaultPadding)
-        )
-        return HorizontalDivider()
-    }
-
+fun ServerStatusBanner(serverStatus: ServerStatus) {
+    // Note: the server's `latestAppVersion` refers to the upstream Oxygen Updater app on
+    // Google Play, not this app, so we never show "new app version available" notices.
     val status = serverStatus.status
     if (status?.isUserRecoverableError != true) return
 
@@ -71,7 +57,7 @@ fun ServerStatusBanner(
 @Composable
 fun PreviewAppOutdated() = PreviewAppTheme {
     Column {
-        ServerStatusBanner(ServerStatus(Status.OUTDATED, "8.8.8")) {}
+        ServerStatusBanner(ServerStatus(Status.OUTDATED, "8.8.8"))
     }
 }
 
@@ -79,7 +65,7 @@ fun PreviewAppOutdated() = PreviewAppTheme {
 @Composable
 fun PreviewServerWarning() = PreviewAppTheme {
     Column {
-        ServerStatusBanner(ServerStatus(Status.WARNING)) {}
+        ServerStatusBanner(ServerStatus(Status.WARNING))
     }
 }
 
@@ -87,7 +73,7 @@ fun PreviewServerWarning() = PreviewAppTheme {
 @Composable
 fun PreviewServerError() = PreviewAppTheme {
     Column {
-        ServerStatusBanner(ServerStatus(Status.ERROR)) {}
+        ServerStatusBanner(ServerStatus(Status.ERROR))
     }
 }
 
@@ -95,6 +81,6 @@ fun PreviewServerError() = PreviewAppTheme {
 @Composable
 fun PreviewServerUnreachable() = PreviewAppTheme {
     Column {
-        ServerStatusBanner(ServerStatus(Status.UNREACHABLE)) {}
+        ServerStatusBanner(ServerStatus(Status.UNREACHABLE))
     }
 }

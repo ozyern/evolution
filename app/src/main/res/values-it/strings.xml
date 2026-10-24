@@ -24,9 +24,6 @@
 	<string name="server_status_warning">"Alcune funzioni potrebbero non funzionare."</string>
 
 	<!-- New app version message strings -->
-	<string name="new_app_version">Aggiornamento disponibile: (%1$s). Premi qui per aggiornare.</string>
-	<string name="new_app_version_inapp_downloaded">L\'aggiornamento è stato scaricato.</string>
-	<string name="new_app_version_inapp_failed">Non è stato possibile scaricare l\'aggiornamento. Premi qui per aprire il Play Store ed aggiornare l\'app.</string>
 
 	<!-- Downloader strings -->
 	<string name="grant_all_files_access">Abilita \"Accesso a tutti i file\" per l\'app, sarà usato solo per scaricare gli aggiornamenti OTA nella cartella più esterna della memoria interna</string>
@@ -86,13 +83,10 @@
 	<string name="summary_please_wait">Attendi…</string>
 	<string name="summary_update_method">Seleziona un dispositivo</string>
 	<string name="summary_important_notifications_disabled">Alcune notifiche importanti sono disattivate:</string>
-	<string name="summary_privacy_policy">Visualizza online</string>
-	<string name="summary_rate_app">Rilascia una recensione da 5 stelle</string>
 
 	<string name="label_theme">Tema</string>
 	<string name="label_language">Lingua</string>
 	<string name="label_privacy_policy">Privacy policy</string>
-	<string name="label_rate_app">Valuta l\'app</string>
 
 	<string name="theme_light">Chiaro</string>
 	<string name="theme_dark">Scuro</string>
@@ -238,8 +232,6 @@ Se è stato riscontrato un errore, apri l'app e ritenta il download. Assicurati 
 	<string name="contribute_successful_notification_text">Grazie per aver condiviso con noi gli URL delle OTA!</string>
 
 	<!-- Error strings -->
-	<string name="error_app_outdated">"Oh no!"</string>
-	<string name="error_app_outdated_message">"Questa versione è obsoleta. Aggiorna!"</string>
 	<string name="error_app_requires_network_connection">"Nessuna connessione"</string>
 	<string name="error_maintenance">"Manutenzione"</string>
 	<string name="error_maintenance_message">"Attendi. Il server tornerà disponibile presto."</string>

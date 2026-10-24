@@ -26,9 +26,6 @@
 	<string name="server_status_warning">"Vissa funktioner kanske inte funkar som de ska."</string>
 
 	<!-- New app version message strings -->
-	<string name="new_app_version">Det finns en uppdatering för appen (%1$s). Tryck här för att öppna Play Store och uppdatera appen.</string>
-	<string name="new_app_version_inapp_downloaded">Appuppdateringen har laddats ner.</string>
-	<string name="new_app_version_inapp_failed">Appuppdateringen kunde inte installeras. Tryck här för att öppna Play Store och uppdatera appen.</string>
 
 	<!-- Downloader strings -->
 	<!-- TODO: translate this string below -->
@@ -89,13 +86,10 @@
 	<string name="summary_update_method">Välj en enhet först</string>
 	<!-- TODO: check the following translation -->
 	<string name="summary_important_notifications_disabled">Vissa viktiga meddelanden är inaktiverade:</string>
-	<string name="summary_privacy_policy">Visa online</string>
-	<string name="summary_rate_app">Ge ett femstjärnigt omdöme</string>
 
 	<string name="label_theme">Tema</string>
 	<string name="label_language">Språk</string>
 	<string name="label_privacy_policy">Integritetspolicy</string>
-	<string name="label_rate_app">Ge appen ett omdöme</string>
 
 	<string name="theme_light">Ljus</string>
 	<string name="theme_dark">Mörk</string>
@@ -243,8 +237,6 @@ Detta kan vara användbart om du vill:"</string>
 	<string name="contribute_successful_notification_text">Tack för att du delar OTA-URL:er med oss!</string>
 
 	<!-- Error strings -->
-	<string name="error_app_outdated">"Åh nej!"</string>
-	<string name="error_app_outdated_message">"Den här versionen av appen är utdaterad- Det är dags att uppdatera den! Tryck på \"Google Pay\" nedan. Klicka sedan på \"Uppdatera\" inuti appen."</string>
 	<string name="error_app_requires_network_connection">Ingen anslutning</string>
 	<string name="error_google_play_button_text">"Google Play"</string>
 	<string name="error_maintenance">"Serverunderhåll"</string>

@@ -26,9 +26,6 @@
 	<string name="server_status_warning">Noen funksjoner fungerer kanskje ikke ordentlig.</string>
 
 	<!-- New app version message strings -->
-	<string name="new_app_version">Det er en app oppdatering tilgjengelig (%1$s). Trykk her for å åpne Play Butikk og oppdater appen.</string>
-	<string name="new_app_version_inapp_downloaded">App Oppdateringen er lastet ned</string>
-	<string name="new_app_version_inapp_failed">App oppdateringen kunne ikke installeres. Trykk her for å åpne Play Butikk og oppdatere appen.</string>
 
 	<!-- Downloader strings-->
 	<!-- TODO: translate this string below -->
@@ -92,13 +89,10 @@
 	<string name="summary_update_method">Velg en enhet først</string>
 	<!-- TODO: check the following translation -->
 	<string name="summary_important_notifications_disabled">Noen viktige varsler er deaktivert:</string>
-	<string name="summary_privacy_policy">Se på nettet</string>
-	<string name="summary_rate_app">Legg igjen en 5-stjerners anmeldelse</string>
 
 	<string name="label_theme">Tema</string>
 	<string name="label_language">Språk</string>
 	<string name="label_privacy_policy">Personvern</string>
-	<string name="label_rate_app">Rate this app</string>
 
 	<string name="theme_light">Lys</string>
 	<string name="theme_dark">Mørk</string>
@@ -246,8 +240,6 @@ Dette kan være nyttig hvis du vil:"</string>
 	<string name="contribute_successful_notification_text">Takk for at du deler OTA-nettadresser med oss!</string>
 
 	<!-- Error strings-->
-	<string name="error_app_outdated">Å nei!</string>
-	<string name="error_app_outdated_message">Denne versjonen av appen er utdatert. Det er på tide å oppdatere det! Trykk på \"Google Play\" nedenfor. Trykk på \"Oppdater\" i Google Play.</string>
 	<string name="error_app_requires_network_connection">Ingen forbindelse</string>
 	<string name="error_google_play_button_text">Google Play</string>
 	<string name="error_maintenance">Server vedlikehold</string>

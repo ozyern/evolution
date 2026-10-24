@@ -86,7 +86,6 @@ import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import com.oxygenupdater.BuildConfig
 import com.oxygenupdater.OxygenUpdater
 import com.oxygenupdater.R
-import com.oxygenupdater.extensions.openPlayStorePage
 import com.oxygenupdater.extensions.showToast
 import com.oxygenupdater.icons.ImageFilled
 import com.oxygenupdater.icons.LogoNotification
@@ -116,7 +115,6 @@ import com.oxygenupdater.ui.faq.FaqScreen
 import com.oxygenupdater.ui.faq.FaqViewModel
 import com.oxygenupdater.ui.install.InstallGuideScreen
 import com.oxygenupdater.ui.install.InstallGuideViewModel
-import com.oxygenupdater.ui.main.AppUpdateInfo
 import com.oxygenupdater.ui.main.ArticleRoute
 import com.oxygenupdater.ui.main.ChildRoute
 import com.oxygenupdater.ui.main.DeepLinkAbout
@@ -130,7 +128,6 @@ import com.oxygenupdater.ui.main.DeepLinkUpdate
 import com.oxygenupdater.ui.main.DownloadedArg
 import com.oxygenupdater.ui.main.ExternalArg
 import com.oxygenupdater.ui.main.FaqRoute
-import com.oxygenupdater.ui.main.FlexibleAppUpdateProgress
 import com.oxygenupdater.ui.main.GuideRoute
 import com.oxygenupdater.ui.main.MainMenu
 import com.oxygenupdater.ui.main.MainLiquidDock
@@ -243,44 +240,8 @@ class MainActivity : AppCompatActivity() {
         val cachedEnabledDevices = remember(allDevices) { allDevices?.filter { it.enabled } }
         PassthroughEnabledDevicesToSettingsViewModel(cachedEnabledDevices)
 
-        val deviceName = remember(cachedEnabledDevices) {
-            cachedEnabledDevices?.find {
-                it.productNames.contains(SystemVersionProperties.deviceProductName)
-            }?.name
-        }
-
+        // No app bar: the welcome screen has its own large title, like iOS setup flows
         val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-
-        // Use normal app bar if height isn't enough (e.g. landscape phones)
-        if (windowSize.heightSizeClass == WindowHeightSizeClass.Compact) TopAppBar(
-            scrollBehavior = scrollBehavior,
-            subtitleResId = R.string.onboarding,
-            root = true,
-        ) else CollapsingAppBar(
-            scrollBehavior = scrollBehavior,
-            image = { modifier ->
-                val context = LocalContext.current
-                AsyncImage(
-                    model = deviceName?.let {
-                        val density = LocalDensity.current
-                        remember(it, maxWidth) {
-                            ImageRequest.Builder(context)
-                                .data(Device.constructImageUrl(it))
-                                .size(density.run { Size(maxWidth.roundToPx(), 256.dp.roundToPx()) })
-                                .build()
-                        }
-                    },
-                    contentDescription = stringResource(R.string.device_information_image_description),
-                    placeholder = rememberVectorPainter(Symbols.ImageFilled),
-                    error = rememberVectorPainter(Logos.LogoNotification),
-                    contentScale = ContentScale.Crop,
-                    colorFilter = if (deviceName == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
-                    modifier = modifier
-                )
-            },
-            title = stringResource(R.string.app_name),
-            subtitle = stringResource(R.string.onboarding),
-        )
 
         val deviceConfig by settingsViewModel.deviceConfigState.collectAsStateWithLifecycle()
         val methodConfig by settingsViewModel.methodConfigState.collectAsStateWithLifecycle()
@@ -361,21 +322,6 @@ class MainActivity : AppCompatActivity() {
 
         // Referential equality because we're reusing static Pairs
         var snackbarText by rememberState<IntIntPair?>(null, referentialEqualityPolicy())
-
-        val appUpdateInfo by viewModel.appUpdateInfo.collectAsStateWithLifecycle()
-        appUpdateInfo?.let { it ->
-            AppUpdateInfo(
-                status = it.installStatus(),
-                availability = it::updateAvailability,
-                snackbarMessageId = { snackbarText?.first },
-                updateSnackbarText = { snackbarText = it },
-                resetAppUpdateIgnoreCount = viewModel::resetAppUpdateIgnoreCount,
-                incrementAppUpdateIgnoreCount = viewModel::incrementAppUpdateIgnoreCount,
-                unregisterAppUpdateListener = viewModel::unregisterAppUpdateListener,
-                requestUpdate = viewModel::requestUpdate,
-                requestImmediateUpdate = viewModel::requestImmediateAppUpdate,
-            )
-        }
 
         // Display the "No connection" banner if required
         val isNetworkAvailable by OxygenUpdater.isNetworkAvailable.collectAsStateWithLifecycle()
@@ -466,20 +412,9 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                val appUpdateStatus by viewModel.appUpdateStatus.collectAsStateWithLifecycle()
-                appUpdateStatus?.let { it ->
-                    FlexibleAppUpdateProgress(
-                        status = it.installStatus(),
-                        bytesDownloaded = it::bytesDownloaded,
-                        totalBytesToDownload = it::totalBytesToDownload,
-                        updateSnackbarText = { snackbarText = it },
-                        unregisterAppUpdateListener = viewModel::unregisterAppUpdateListener,
-                    )
-                }
-
                 val serverStatus by viewModel.serverStatus.collectAsStateWithLifecycle()
-                ServerStatusDialogs(serverStatus.status, ::openPlayStorePage)
-                ServerStatusBanner(serverStatus, ::openPlayStorePage)
+                ServerStatusDialogs(serverStatus.status)
+                ServerStatusBanner(serverStatus)
 
                 // Content is recorded into this backdrop so that the floating dock can refract it
                 val backdrop = rememberLayerBackdrop()
@@ -583,11 +518,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Gets placed over TopAppBar
-        MainSnackbar(
-            snackbarText = snackbarText,
-            openPlayStorePage = ::openPlayStorePage,
-            completeAppUpdate = viewModel::completeAppUpdate,
-        )
+        MainSnackbar(snackbarText = snackbarText)
     }
 
     /**
@@ -891,13 +822,8 @@ class MainActivity : AppCompatActivity() {
         getDeepLinkFromIntent(intent)?.let { backStack.addIfNot(it) }
     }
 
-    override fun onResume() = super.onResume().also {
-        viewModel.checkForStalledAppUpdate()
-    }
-
     override fun onDestroy() = super.onDestroy().also {
         viewModel.maybePruneWork()
-        viewModel.unregisterAppUpdateListener()
     }
 
     /**

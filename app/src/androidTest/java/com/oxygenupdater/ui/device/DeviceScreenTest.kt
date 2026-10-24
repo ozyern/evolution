@@ -3,12 +3,14 @@ package com.oxygenupdater.ui.device
 import android.os.Build
 import androidx.annotation.StringRes
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.collection.emptyScatterMap
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.isSelectable
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onParent
 import androidx.compose.ui.test.performClick
 import com.oxygenupdater.ComposeBaseTest
@@ -46,6 +48,7 @@ class DeviceScreenTest : ComposeBaseTest() {
                 deviceName = DefaultDeviceName,
                 deviceOsSpec = spec,
                 deviceMismatchStatus = mismatchStatus,
+                cpuFrequencies = emptyScatterMap(),
             )
         }
 
@@ -64,9 +67,10 @@ class DeviceScreenTest : ComposeBaseTest() {
             onParent().assertHasNoClickAction()
         }
         rule[AlertDialogTestTag].assertDoesNotExist()
-        rule[DeviceScreen_SupportStatusTestTag].run {
-            assertHasTextExactly(R.string.device_information_supported_oxygen_os)
-        }
+        rule[DeviceScreen_SupportStatusTestTag].assertHasTextExactly(
+            R.string.update_information_header, R.string.device_support_supported,
+        )
+        rule.onNodeWithText(activity.getString(R.string.device_information_supported_oxygen_os)).assertExists()
 
         // Then for carrier-exclusive OxygenOS devices
         spec = DeviceOsSpec.CarrierExclusiveOxygenOs
@@ -102,6 +106,9 @@ class DeviceScreenTest : ComposeBaseTest() {
             parent.assertHasClickAction(); parent.performClick() // show dialog
         }
         rule[AlertDialogTestTag].assertExists() // dialog should exist
-        rule[DeviceScreen_SupportStatusTestTag].assertHasTextExactly(supportStatusResId)
+        rule[DeviceScreen_SupportStatusTestTag].assertHasTextExactly(
+            R.string.update_information_header, R.string.device_support_not_supported,
+        )
+        rule.onNodeWithText(activity.getString(supportStatusResId)).assertExists()
     }
 }

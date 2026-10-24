@@ -25,9 +25,6 @@
 	<string name="server_status_warning">いくつかの機能が正常に動作しません。</string>
 
 	<!-- New app version message strings -->
-	<string name="new_app_version">アプリのアップデートが利用可能です (%1$s)。ここをタップして Play ストアを開きアプリをアップデートします。</string>
-	<string name="new_app_version_inapp_downloaded">アプリのアップデートがダウンロードされました</string>
-	<string name="new_app_version_inapp_failed">アプリのアップデートをインストールできません。ここをタップして Play ストアを開きアプリをアップデートします。</string>
 
 	<!-- Downloader strings-->
 	<!-- TODO: translate this string below -->
@@ -91,13 +88,10 @@
 	<string name="summary_update_method">まずデバイスを選択して下さい</string>
 	<!-- TODO: check the following translation -->
 	<string name="summary_important_notifications_disabled">一部の重要な通知が無効になっています。:</string>
-	<string name="summary_privacy_policy">オンラインで表示</string>
-	<string name="summary_rate_app">レビューに 5 つ星を残す</string>
 
 	<string name="label_theme">テーマ</string>
 	<string name="label_language">言語</string>
 	<string name="label_privacy_policy">プライバシーポリシー</string>
-	<string name="label_rate_app">アプリの評価</string>
 
 	<string name="theme_light">ライト</string>
 	<string name="theme_dark">ダーク</string>
@@ -243,8 +237,6 @@
 	<string name="contribute_successful_notification_text">OTAのURLを教えていただきありがとうございます！</string>
 
 	<!-- Error strings-->
-	<string name="error_app_outdated">Oh no!</string>
-	<string name="error_app_outdated_message">このバージョンのアプリは古くなっています。 更新する時が来ました！ 下の\"Google Play\" をタップし、 Google Play 内で、\"更新\"をタップします。</string>
 	<string name="error_app_requires_network_connection">接続なし</string>
 	<string name="error_google_play_button_text">Google Play</string>
 	<string name="error_maintenance">サーバメンテナンス</string>

@@ -25,9 +25,6 @@
 	<string name="server_status_warning">כמה מהתכונות עלולות לא לתפקד באופן יציב וכראוי</string>
 
 	<!-- New app version message strings -->
-	<string name="new_app_version">קיים עדכון חדש עבור האפליקציה (%1$s) לחץ כאן בשביל לפתוח את חנות הPlay Store ולעדכן את האפליקציה.</string>
-	<string name="new_app_version_inapp_downloaded">האפליקציה עודכנה בהצלחה</string>
-	<string name="new_app_version_inapp_failed">העדכון לא ניתן להתקנה. לחץ כאן על מנת לפתוח את ה־Play Store ולנסות שנית.</string>
 
 	<!-- Downloader strings-->
 	<string name="grant_all_files_access">אנא הפעל \"גישה לכל הקבצים\" עבור האפליקצייה, כדי לאפשר לה להוריד את העדכון בפורמט דחוס בתיקייה העליונה ביותר של המכשיר</string>
@@ -90,13 +87,10 @@
 	<string name="summary_update_method">אנא בחר ראשית מכשיר</string>
 	<!-- TODO: check the following translation -->
 	<string name="summary_important_notifications_disabled">כמה התראות חשובות מושבתות:</string>
-	<string name="summary_privacy_policy">צפה בדפדפן</string>
-	<string name="summary_rate_app">השאר דירוג 5 כוכבים</string>
 
 	<string name="label_theme">עיצוב</string>
 	<string name="label_language">שפה</string>
 	<string name="label_privacy_policy">מדיניות הפרטיות</string>
-	<string name="label_rate_app">דרג את האפליקציה</string>
 
 	<string name="theme_light">בהיר</string>
 	<string name="theme_dark">כהה</string>
@@ -241,8 +235,6 @@
 	<string name="contribute_successful_notification_text">תודה על שיתוף כתובות ה-URL של OTA איתנו!</string>
 
 	<!-- Error strings-->
-	<string name="error_app_outdated">אוי לא!</string>
-	<string name="error_app_outdated_message">גרסה זו של האפליקציה מיושנת. הגיע הזמן לעדכן! הקש על \"Google Play\" מתחת. ובתוך Google Play, הקש על \"עדכן\".</string>
 	<string name="error_app_requires_network_connection">אין חיבור</string>
 	<string name="error_google_play_button_text">Google Play</string>
 	<string name="error_maintenance">השרת תחת תחזוקה</string>

@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -14,11 +13,7 @@ import androidx.compose.ui.res.stringResource
 import com.oxygenupdater.R
 
 @Composable
-fun MainSnackbar(
-    snackbarText: IntIntPair?,
-    openPlayStorePage: () -> Unit,
-    completeAppUpdate: () -> Unit,
-) {
+fun MainSnackbar(snackbarText: IntIntPair?) {
     val snackbarHostState = remember { SnackbarHostState() }
     SnackbarHost(hostState = snackbarHostState, modifier = Modifier.statusBarsPadding())
 
@@ -27,30 +22,13 @@ fun MainSnackbar(
         return
     }
 
-    val actionResId = snackbarText.second
     val message = stringResource(snackbarText.first)
-    val action = stringResource(actionResId)
+    val action = stringResource(snackbarText.second)
     LaunchedEffect(snackbarText) {
-        val result = snackbarHostState.showSnackbar(
-            message, action, false, SnackbarDuration.Indefinite
-        )
-
-        if (result != SnackbarResult.ActionPerformed) return@LaunchedEffect
-        when (actionResId) {
-            AppUpdateFailedSnackbarData.second -> openPlayStorePage()
-            AppUpdateDownloadedSnackbarData.second -> completeAppUpdate()
-        }
+        snackbarHostState.showSnackbar(message, action, false, SnackbarDuration.Indefinite)
     }
 }
 
 val NoConnectionSnackbarData = IntIntPair(
     R.string.error_app_requires_network_connection, android.R.string.ok
-)
-
-val AppUpdateDownloadedSnackbarData = IntIntPair(
-    R.string.new_app_version_inapp_downloaded, R.string.error_reload
-)
-
-val AppUpdateFailedSnackbarData = IntIntPair(
-    R.string.new_app_version_inapp_failed, R.string.error_google_play_button_text
 )

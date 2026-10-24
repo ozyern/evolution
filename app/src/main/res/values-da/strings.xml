@@ -25,9 +25,6 @@
 	<string name="server_status_warning">Nogle programopdateringer vil muligvis ikke virke korrekte.</string>
 
 	<!-- New app version message strings -->
-	<string name="new_app_version">App-opdatering er tilgængelig (%1$s). Tryk her for at åbne Google Play og update.</string>
-	<string name="new_app_version_inapp_downloaded">Opdateringen er blevet hentet</string>
-	<string name="new_app_version_inapp_failed">Opdateringen af app kunne ikke gennemføres. Tryk her for at åbne Google Play og update.</string>
 
 	<!-- Downloader strings-->
 	<!-- TODO: translate this string below -->
@@ -91,13 +88,10 @@
 	<string name="summary_update_method">vælg en enhed først</string>
 	<!-- TODO: check the following translation -->
 	<string name="summary_important_notifications_disabled">Nogle vigtige meddelelser er deaktiveret:</string>
-	<string name="summary_privacy_policy">Se online</string>
-	<string name="summary_rate_app">Giv os en 5-stjernet anmeldelse</string>
 
 	<string name="label_theme">Tema</string>
 	<string name="label_language">Sprog</string>
 	<string name="label_privacy_policy">Privatlivspolitik</string>
-	<string name="label_rate_app">Bedøm denne app</string>
 
 	<string name="theme_light">Lys</string>
 	<string name="theme_dark">Mørk</string>
@@ -248,8 +242,6 @@ Det kan være nyttigt, hvis du vil:"</string>
 	<string name="contribute_successful_notification_text">Tak, fordi du deler OTA-URL\'er med os!</string>
 
 	<!-- Error strings-->
-	<string name="error_app_outdated">Åh nej!</string>
-	<string name="error_app_outdated_message">Appens version er forældet. Det er nu tid til at opdatere den. Tryk på \"Google Play\" herunder. Via Google Play, tryk på \"Opdatér\".</string>
 	<string name="error_app_requires_network_connection">Ingen netværksforbindelse</string>
 	<string name="error_google_play_button_text">Google Play</string>
 	<string name="error_maintenance">Server vedligeholdelse</string>

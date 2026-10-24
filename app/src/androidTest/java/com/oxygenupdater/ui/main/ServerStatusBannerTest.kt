@@ -23,10 +23,7 @@ class ServerStatusBannerTest : ComposeBaseTest() {
     @Test
     fun serverStatusBanner() {
         setContent {
-            ServerStatusBanner(
-                serverStatus = serverStatus,
-                openPlayStorePage = { trackCallback("openPlayStorePage") },
-            )
+            ServerStatusBanner(serverStatus = serverStatus)
         }
 
         serverStatus = ServerStatus(Status.NORMAL)
@@ -43,20 +40,15 @@ class ServerStatusBannerTest : ComposeBaseTest() {
         serverStatus = ServerStatus(Status.UNREACHABLE)
         validateForRecoverableErrors(R.string.server_status_unreachable)
 
+        // Upstream app version notices never apply to this app
         serverStatus = ServerStatus(Status.OUTDATED, latestAppVersion = "88.88.88")
-        validateForOutdated()
+        root.assertDoesNotExist()
         serverStatus = ServerStatus(latestAppVersion = "88.88.88")
-        validateForOutdated()
+        root.assertDoesNotExist()
     }
 
     private fun validateForRecoverableErrors(@StringRes resId: Int) {
         root.onChildAt(1).assertHasTextExactly(resId)
         ensureNoCallbacksWereInvoked()
-    }
-
-    private fun validateForOutdated() = root.run {
-        assertHasTextExactly(activity.getString(R.string.new_app_version, serverStatus.latestAppVersion!!))
-        assertAndPerformClick()
-        ensureCallbackInvokedExactlyOnce("openPlayStorePage")
     }
 }

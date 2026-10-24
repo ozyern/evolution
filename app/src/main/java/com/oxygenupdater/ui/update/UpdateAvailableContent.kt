@@ -18,8 +18,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.graphics.res.animatedVectorResource
 import androidx.compose.animation.graphics.res.rememberAnimatedVectorPainter
 import androidx.compose.animation.graphics.vector.AnimatedImageVector
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,23 +25,23 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -61,8 +59,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
@@ -71,16 +71,21 @@ import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.oxygenupdater.R
+import com.oxygenupdater.extensions.formatFileSize
 import com.oxygenupdater.extensions.showToast
 import com.oxygenupdater.icons.CheckCircle
 import com.oxygenupdater.icons.Download
 import com.oxygenupdater.icons.Symbols
+import com.oxygenupdater.icons.SystemUpdateAlt
 import com.oxygenupdater.internal.NotSet
 import com.oxygenupdater.internal.NotSetF
 import com.oxygenupdater.internal.settings.KeyDevice
 import com.oxygenupdater.internal.settings.KeyUpdateMethod
 import com.oxygenupdater.models.UpdateData
 import com.oxygenupdater.ui.common.ConditionalNavBarPadding
+import com.oxygenupdater.ui.common.GroupedColumn
+import com.oxygenupdater.ui.common.GroupedRow
+import com.oxygenupdater.ui.common.GroupedSection
 import com.oxygenupdater.ui.common.RichText
 import com.oxygenupdater.ui.common.RichTextType
 import com.oxygenupdater.ui.common.animatedClickable
@@ -121,131 +126,79 @@ fun UpdateAvailable(
     logDownloadError: () -> Unit,
     hideDownloadCompleteNotification: () -> Unit,
     showDownloadFailedNotification: () -> Unit,
-) = if (windowWidthSize == WindowWidthSizeClass.Expanded) Row(
-    modifierMaxWidth.testTag(UpdateAvailableContentTestTag)
+) = GroupedColumn(
+    Modifier
+        .fillMaxHeight()
+        .verticalScroll(rememberScrollState())
+        .testTag(UpdateAvailableContentTestTag)
 ) {
+    // Keep content at a readable width on tablets/foldables
     Column(
         Modifier
-            .weight(1f)
-            .fillMaxHeight()
-            .verticalScroll(rememberScrollState())
-            .then(modifierDefaultPaddingVertical) // must be after `verticalScroll`
+            .align(Alignment.CenterHorizontally)
+            .widthIn(max = 640.dp)
     ) {
-        VersionAndChangelog(
-            refreshing = refreshing,
-            updateData = updateData,
-            getPrefStr = getPrefStr,
-        )
-
-        ConditionalNavBarPadding(navType)
-    }
-
-    VerticalDivider()
-
-    Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier
-            .weight(1f)
-            .fillMaxHeight()
-            .verticalScroll(rememberScrollState())
-            .padding(bottom = 16.dp) // must be after `verticalScroll`
-    ) {
-        DownloadButtonContainer(
-            navType = navType,
-            refreshing = refreshing,
-            downloadSize = updateData.downloadSize,
-            failureType = failureType,
-            httpFailureCodeAndMessage = httpFailureCodeAndMessage,
-            workProgress = workProgress,
-            downloadStatus = downloadStatus,
-            forceDownloadErrorDialog = forceDownloadErrorDialog,
-            downloadAction = downloadAction,
-            openInstallGuide = openInstallGuide,
-            logDownloadError = logDownloadError,
-            hideDownloadCompleteNotification = hideDownloadCompleteNotification,
-            showDownloadFailedNotification = showDownloadFailedNotification,
-        )
-
-        ExtraInfo(
-            refreshing = refreshing,
-            updateData = updateData,
-            downloadStatus = downloadStatus,
-            failureType = failureType,
-            getPrefStr = getPrefStr,
-        )
-
-        ConditionalNavBarPadding(navType)
-    }
-} else Column(Modifier.testTag(UpdateAvailableContentTestTag)) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier
-            .weight(1f)
-            .verticalScroll(rememberScrollState())
-            .then(modifierDefaultPaddingVertical) // must be after `verticalScroll`
-    ) {
-        VersionAndChangelog(
-            refreshing = refreshing,
-            updateData = updateData,
-            getPrefStr = getPrefStr,
-        )
-
-        Spacer(Modifier.weight(1f))
-        HorizontalDivider()
-
-        ExtraInfo(
-            refreshing = refreshing,
-            updateData = updateData,
-            downloadStatus = downloadStatus,
-            failureType = failureType,
-            getPrefStr = getPrefStr,
-        )
-    }
-
-    DownloadButtonContainer(
-        navType = navType,
-        refreshing = refreshing,
-        downloadSize = updateData.downloadSize,
-        failureType = failureType,
-        httpFailureCodeAndMessage = httpFailureCodeAndMessage,
-        workProgress = workProgress,
-        downloadStatus = downloadStatus,
-        forceDownloadErrorDialog = forceDownloadErrorDialog,
-        downloadAction = downloadAction,
-        openInstallGuide = openInstallGuide,
-        logDownloadError = logDownloadError,
-        hideDownloadCompleteNotification = hideDownloadCompleteNotification,
-        showDownloadFailedNotification = showDownloadFailedNotification,
-    )
-
-    ConditionalNavBarPadding(navType)
-}
-
-@Composable
-private fun VersionAndChangelog(
-    refreshing: Boolean,
-    updateData: UpdateData,
-    getPrefStr: (key: String, default: String) -> String,
-) {
-    SelectionContainer(modifierDefaultPaddingHorizontal) {
-        val titleLarge = MaterialTheme.typography.titleLarge
-        Text(
-            text = UpdateDataVersionFormatter.getFormattedVersionNumber(updateData, "").takeIf {
+        val context = LocalContext.current
+        UpdateHero(
+            icon = Symbols.SystemUpdateAlt,
+            tint = MaterialTheme.colorScheme.primary,
+            title = UpdateDataVersionFormatter.getFormattedVersionNumber(updateData, "").takeIf {
                 it.isNotBlank() && it != "-" && it != "null"
             } ?: stringResource(
                 R.string.update_information_unknown_update_name,
                 getPrefStr(KeyDevice, DefaultDeviceName)
             ),
-            style = titleLarge,
-            modifier = Modifier.withPlaceholder(refreshing, titleLarge)
+            subtitle = stringResource(R.string.update_available) + " • " + context.formatFileSize(updateData.downloadSize),
+            refreshing = refreshing,
         )
-    }
 
-    updateData.Changelog(
-        refreshing = refreshing,
-        extraTextPadding = true,
-        modifier = Modifier.padding(start = 16.dp, top = 4.dp, end = 16.dp)
-    )
+        if (updateData.systemIsUpToDate) GroupedSection {
+            // User is already up-to-date, so remind them why they're seeing this update: they enabled advanced mode
+            GroupedRow(
+                title = stringResource(
+                    R.string.update_information_header_advanced_mode_helper,
+                    getPrefStr(KeyUpdateMethod, "<UNKNOWN>"),
+                ),
+                titleColor = MaterialTheme.colorScheme.error,
+            )
+        }
+
+        GroupedSection {
+            DownloadButtonContainer(
+                refreshing = refreshing,
+                downloadSize = updateData.downloadSize,
+                failureType = failureType,
+                httpFailureCodeAndMessage = httpFailureCodeAndMessage,
+                workProgress = workProgress,
+                downloadStatus = downloadStatus,
+                forceDownloadErrorDialog = forceDownloadErrorDialog,
+                downloadAction = downloadAction,
+                openInstallGuide = openInstallGuide,
+                logDownloadError = logDownloadError,
+                hideDownloadCompleteNotification = hideDownloadCompleteNotification,
+                showDownloadFailedNotification = showDownloadFailedNotification,
+            )
+        }
+
+        GroupedSection(header = stringResource(R.string.update_release_notes)) {
+            updateData.Changelog(
+                refreshing = refreshing,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+
+        GroupedSection(header = stringResource(R.string.update_details)) {
+            ExtraInfo(
+                refreshing = refreshing,
+                updateData = updateData,
+                downloadStatus = downloadStatus,
+                failureType = failureType,
+            )
+        }
+
+        Spacer(Modifier.height(24.dp))
+        ConditionalNavBarPadding(navType)
+    }
 }
 
 @Composable
@@ -254,42 +207,22 @@ private fun ExtraInfo(
     updateData: UpdateData,
     downloadStatus: DownloadStatus,
     failureType: Int,
-    getPrefStr: (key: String, default: String) -> String,
 ) {
-    val colorScheme = MaterialTheme.colorScheme
-    val bodySmall = MaterialTheme.typography.bodySmall
-    if (updateData.systemIsUpToDate) {
-        // User is already up-to-date, so remind them why they're seeing this update: they enabled advanced mode
-        val updateMethod = getPrefStr(KeyUpdateMethod, "<UNKNOWN>")
-        Text(
-            text = stringResource(R.string.update_information_header_advanced_mode_helper, updateMethod),
-            color = colorScheme.error,
-            style = bodySmall,
-            modifier = modifierDefaultPaddingHorizontal
+    // Filename & MD5
+    SelectionContainer {
+        GroupedRow(
+            title = stringResource(R.string.update_information_file_name, "").trimEnd(' ', ':'),
+            subtitle = updateData.filename ?: Build.UNKNOWN,
+            modifier = Modifier.withPlaceholder(refreshing, MaterialTheme.typography.bodySmall)
         )
-
-        HorizontalDivider()
     }
 
-    // Filename & MD5
-    SelectionContainer(modifierDefaultPaddingHorizontal) {
-        val withPlaceholder = Modifier.withPlaceholder(refreshing, bodySmall)
-        Column {
-            val onSurfaceVariant = colorScheme.onSurfaceVariant
-            Text(
-                text = stringResource(R.string.update_information_file_name, updateData.filename ?: Build.UNKNOWN),
-                color = onSurfaceVariant,
-                style = bodySmall,
-                modifier = withPlaceholder
-            )
-
-            Text(
-                text = stringResource(R.string.update_information_md5, updateData.md5sum ?: Build.UNKNOWN),
-                color = onSurfaceVariant,
-                style = bodySmall,
-                modifier = withPlaceholder
-            )
-        }
+    SelectionContainer {
+        GroupedRow(
+            title = stringResource(R.string.update_information_md5, "").trimEnd(' ', ':'),
+            subtitle = updateData.md5sum ?: Build.UNKNOWN,
+            modifier = Modifier.withPlaceholder(refreshing, MaterialTheme.typography.bodySmall)
+        )
     }
 
     if (downloadStatus == VerificationFailed || (downloadStatus == DownloadFailed && failureType.let {
@@ -321,7 +254,7 @@ private fun DownloadLink(url: String) {
         text = text,
         contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         type = RichTextType.Custom,
-        modifier = modifierDefaultPaddingHorizontal
+        modifier = Modifier.padding(16.dp)
     ) { text, contentColor, urlColor, onUrlClick ->
         AnnotatedString.Builder(length).apply {
             // Global
@@ -341,7 +274,6 @@ private fun DownloadLink(url: String) {
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 private fun DownloadButtonContainer(
-    navType: NavType,
     refreshing: Boolean,
     downloadSize: Long,
     failureType: Int,
@@ -426,7 +358,6 @@ private fun DownloadButtonContainer(
     }
 
     DownloadButton(
-        navType = navType,
         refreshing = refreshing,
         downloadStatus = downloadStatus,
         downloadAction = downloadAction,
@@ -453,7 +384,6 @@ private fun DownloadButtonContainer(
 
 @Composable
 private fun DownloadButton(
-    navType: NavType,
     refreshing: Boolean,
     downloadStatus: DownloadStatus,
     downloadAction: (DownloadAction) -> Unit,
@@ -465,7 +395,6 @@ private fun DownloadButton(
     Box(
         modifierMaxWidth
             .alpha(if (refreshing) 0.38f else 1f)
-            .background(colorScheme.surfaceContainer)
             .animatedClickable(!refreshing && onDownloadClick != null, onDownloadClick)
             .testTag(UpdateAvailableContent_DownloadButtonTestTag)
     ) {
@@ -495,7 +424,7 @@ private fun DownloadButton(
             Column(Modifier.weight(1f) then modifierDefaultPaddingVertical) {
                 val bodyMedium = MaterialTheme.typography.bodyMedium
                 // Title
-                Text(stringResource(titleResId), style = bodyMedium)
+                Text(stringResource(titleResId), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
                 // Size + progress%
                 Text(sizeOrProgressText, color = colorScheme.onSurfaceVariant, style = bodyMedium)
                 if (details != null) Text(details, style = bodyMedium)
@@ -534,13 +463,6 @@ private fun DownloadButton(
             }
         }
 
-        if (navType == NavType.BottomBar) HorizontalDivider(
-            // Bottom bar uses `surfaceContainer`, and dividers use `outlineVariant`.
-            // However, in AppTheme.kt, we overrode `outlineVariant = surfaceContainer`.
-            // `surfaceVariant` as this divider's color separates the download button from the bottom bar.
-            color = colorScheme.surfaceVariant,
-            modifier = Modifier.align(Alignment.BottomStart)
-        )
     }
 }
 

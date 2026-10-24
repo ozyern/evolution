@@ -3,100 +3,69 @@ package com.oxygenupdater.ui.onboarding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.ui.test.SemanticsNodeInteractionCollection
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import com.oxygenupdater.R
 import com.oxygenupdater.UsesSharedPreferencesTest
-import com.oxygenupdater.assertAndPerformClick
 import com.oxygenupdater.assertHasScrollAction
 import com.oxygenupdater.get
-import com.oxygenupdater.ui.common.IconTextButtonTestTag
 import com.oxygenupdater.ui.dialogs.BottomSheetTestTag
 import com.oxygenupdater.ui.dialogs.BottomSheet_ItemRowTestTag
 import com.oxygenupdater.ui.settings.DeviceSettingsListConfig
 import com.oxygenupdater.ui.settings.MethodSettingsListConfig
-import com.oxygenupdater.validateColumnLayout
 import org.junit.Test
 
 @OptIn(ExperimentalMaterial3Api::class)
 class OnboardingScreenTest : UsesSharedPreferencesTest() {
 
     @Test
-    fun onboardingScreen_expanded() {
-        setContent(WindowWidthSizeClass.Expanded)
-
-        common(rule[OnboardingScreen_MainColumnTestTag].run {
-            assertHasScrollAction()
-            validateColumnLayout(3)
-        })
-
-        rule[OnboardingScreen_SecondaryColumnTestTag].assertHasScrollAction().validateColumnLayout(2).run {
-            get(0).assertHasTextExactly(R.string.onboarding_app_uses)
-            get(1).assertHasTextExactly(R.string.onboarding_caption)
-        }
-
-        rule[OnboardingScreen_DisclaimerTestTag].assertHasTextExactly(R.string.onboarding_disclaimer)
-    }
+    fun onboardingScreen_expanded() = validate(WindowWidthSizeClass.Expanded)
 
     @Test
-    fun onboardingScreen_compact() {
-        setContent(WindowWidthSizeClass.Compact)
+    fun onboardingScreen_compact() = validate(WindowWidthSizeClass.Compact)
 
-        val children = rule[OnboardingScreen_MainColumnTestTag].run {
-            assertHasScrollAction()
-            validateColumnLayout(5)
-        }
+    private fun validate(windowWidthSize: WindowWidthSizeClass) {
+        setContent(windowWidthSize)
 
-        common(children)
-
-        children[3].assertHasTextExactly(R.string.onboarding_app_uses)
-        children[4].assertHasTextExactly(R.string.onboarding_caption)
-        rule[OnboardingScreen_DisclaimerTestTag].assertHasTextExactly(R.string.onboarding_disclaimer)
-    }
-
-    private fun common(children: SemanticsNodeInteractionCollection) {
-        // Start app button
-        rule[IconTextButtonTestTag].run {
-            assertHasTextExactly(R.string.onboarding_finished_button)
-            assertAndPerformClick()
-            ensureCallbackInvokedExactlyOnce("onStartAppClick: true")
-            /**
-             * TODO(test/contributor): checkbox can be tested only on rooted devices
-             *  above API 29, because checkbox & buttons are guarded behind
-             *  `ContributorUtils.isAtLeastQAndPossiblyRooted`.
-             *  "PossiblyRooted" is determined by Shell.isAppGrantedRoot(),
-             *  which is false for emulators and managed devices.
-             */
-        }
+        rule[OnboardingScreen_MainColumnTestTag].assertHasScrollAction()
+        rule.onNodeWithText(
+            activity.getString(R.string.onboarding_welcome_title, activity.getString(R.string.app_name))
+        ).assertIsDisplayed()
 
         val sheet = rule[BottomSheetTestTag]
 
         // DeviceChooser
-        children[0].run {
-            assertHasTextExactly(R.string.settings_device, androidx.compose.ui.R.string.not_selected)
-
-            assertAndPerformClick()
-            sheet.assertIsDisplayed()
-            rule.onAllNodesWithTag(BottomSheet_ItemRowTestTag)[0].assertAndPerformClick()
-            ensureCallbackInvokedExactlyOnce("onDeviceSelect: ${DeviceSettingsListConfig.list[0].id}")
-            sheet.assertIsNotDisplayed()
+        rule.onNodeWithText(activity.getString(R.string.settings_device)).run {
+            performScrollTo()
+            performClick()
         }
+        sheet.assertIsDisplayed()
+        rule.onAllNodesWithTag(BottomSheet_ItemRowTestTag)[0].performClick()
+        ensureCallbackInvokedExactlyOnce("onDeviceSelect: ${DeviceSettingsListConfig.list[0].id}")
+        sheet.assertIsNotDisplayed()
 
         // MethodChooser
-        children[1].run {
-            assertHasTextExactly(
-                R.string.settings_update_method,
-                androidx.compose.ui.R.string.not_selected,
-            )
-
-            assertAndPerformClick()
-            sheet.assertIsDisplayed()
-            rule.onAllNodesWithTag(BottomSheet_ItemRowTestTag)[0].assertAndPerformClick()
-            ensureCallbackInvokedExactlyOnce("onMethodSelect: ${MethodSettingsListConfig.list[0].id}")
-            sheet.assertIsNotDisplayed()
+        rule.onNodeWithText(activity.getString(R.string.settings_update_method)).run {
+            performScrollTo()
+            performClick()
         }
+        sheet.assertIsDisplayed()
+        rule.onAllNodesWithTag(BottomSheet_ItemRowTestTag)[0].performClick()
+        ensureCallbackInvokedExactlyOnce("onMethodSelect: ${MethodSettingsListConfig.list[0].id}")
+        sheet.assertIsNotDisplayed()
+
+        rule[OnboardingScreen_DisclaimerTestTag].run {
+            performScrollTo()
+            assertHasTextExactly(R.string.onboarding_disclaimer)
+        }
+
+        // Continue button
+        rule.onNodeWithText(activity.getString(R.string.onboarding_continue)).performClick()
+        ensureCallbackInvokedExactlyOnce("onStartAppClick: true")
     }
 
     private fun setContent(windowWidthSize: WindowWidthSizeClass) = setContent {

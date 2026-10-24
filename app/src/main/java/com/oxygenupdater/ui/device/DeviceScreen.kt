@@ -11,20 +11,19 @@ import androidx.annotation.VisibleForTesting
 import androidx.collection.ScatterMap
 import androidx.collection.emptyScatterMap
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -43,9 +42,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.getSystemService
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -67,16 +68,14 @@ import com.oxygenupdater.icons.Speed
 import com.oxygenupdater.icons.Steppers
 import com.oxygenupdater.icons.Symbols
 import com.oxygenupdater.icons.TripOrigin
+import com.oxygenupdater.models.ChinaDevices
 import com.oxygenupdater.models.Device
 import com.oxygenupdater.models.DeviceOsSpec
 import com.oxygenupdater.models.SystemVersionProperties
 import com.oxygenupdater.ui.common.ConditionalNavBarPadding
-import com.oxygenupdater.ui.common.animatedClickable
-import com.oxygenupdater.ui.common.modifierDefaultPadding
-import com.oxygenupdater.ui.common.modifierDefaultPaddingStart
-import com.oxygenupdater.ui.common.modifierDefaultPaddingStartTopEnd
-import com.oxygenupdater.ui.common.modifierDefaultPaddingTop
-import com.oxygenupdater.ui.common.modifierMaxWidth
+import com.oxygenupdater.ui.common.GroupedColumn
+import com.oxygenupdater.ui.common.GroupedRow
+import com.oxygenupdater.ui.common.GroupedSection
 import com.oxygenupdater.ui.common.rememberState
 import com.oxygenupdater.ui.common.tintedPainter
 import com.oxygenupdater.ui.currentLocale
@@ -94,10 +93,14 @@ import kotlin.math.roundToLong
  * Used when the server doesn't (yet) list this device, e.g. Chinese variants. Prefers the
  * OPPO/OnePlus market name (e.g. "OnePlus 13"), and marks mainland China ROMs as such.
  */
-val DefaultDeviceName = SystemVersionProperties.deviceMarketName.ifEmpty {
+val DefaultDeviceName = (ChinaDevices.current ?: SystemVersionProperties.deviceMarketName.ifEmpty {
     "${Build.MANUFACTURER} ${Build.DEVICE}"
-}.let { if (SystemVersionProperties.isChinaBuild) "$it (CN)" else it }
+}).let { if (SystemVersionProperties.isChinaBuild) "$it (China)" else it }
 
+/**
+ * Styled after Apple's "Device Info" pages: a centred device image with its name & model,
+ * followed by grouped cards of label/value rows.
+ */
 @Composable
 fun DeviceScreen(
     navType: NavType,
@@ -106,150 +109,108 @@ fun DeviceScreen(
     deviceOsSpec: DeviceOsSpec?,
     deviceMismatchStatus: Triple<Boolean, String, String>?,
     cpuFrequencies: ScatterMap<Float, Int>,
-) = if (windowWidthSize == WindowWidthSizeClass.Expanded) Row(modifierMaxWidth) {
-    DeviceHeaderExpanded(
-        navType = navType,
-        deviceName = deviceName,
-        deviceOsSpec = deviceOsSpec,
-    )
-    // TODO(compose/screens): movableContentOf, see https://github.com/android/user-interface-samples/blob/main/CanonicalLayouts/list-detail-compose/app/src/main/java/com/example/listdetailcompose/ui/ListDetail.kt
-
-    Column(
-        Modifier
-            .weight(1f)
-            .verticalScroll(rememberScrollState())
-            .testTag(DeviceScreen_ScrollableColumnTestTag)
-    ) {
-        DeviceMismatchStatus(status = deviceMismatchStatus)
-
-        DeviceSoftwareInfo()
-        HorizontalDivider(modifierDefaultPaddingTop)
-        DeviceHardwareInfo(cpuFrequencies)
-
-        ConditionalNavBarPadding(navType)
-    }
-} else Column(
+) = GroupedColumn(
     Modifier
+        .fillMaxHeight()
         .verticalScroll(rememberScrollState())
         .testTag(DeviceScreen_ScrollableColumnTestTag)
 ) {
-    DeviceHeaderCompact(
-        deviceName = deviceName,
-        deviceOsSpec = deviceOsSpec,
-        deviceMismatchStatus = deviceMismatchStatus,
-    )
-
-    DeviceSoftwareInfo()
-    HorizontalDivider(modifierDefaultPaddingTop)
-    DeviceHardwareInfo(cpuFrequencies)
-
-    ConditionalNavBarPadding(navType)
-}
-
-@Composable
-private fun DeviceHeaderCompact(
-    deviceName: String,
-    deviceOsSpec: DeviceOsSpec?,
-    deviceMismatchStatus: Triple<Boolean, String, String>?,
-) {
-    Row(modifierDefaultPaddingStartTopEnd) {
+    // Keep cards at a readable width on tablets/foldables
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .align(Alignment.CenterHorizontally)
+            .widthIn(max = 640.dp)
+    ) {
+        Spacer(Modifier.height(24.dp))
         DeviceImage(
             deviceName = deviceName,
             deviceOsSpec = deviceOsSpec,
-            size = 128.dp,
+            size = if (windowWidthSize == WindowWidthSizeClass.Expanded) 192.dp else 160.dp,
         )
 
-        Column(modifierDefaultPaddingStart.height(128.dp) /* same size as image */) {
-            DeviceNameWithSpec(
-                deviceName = deviceName,
-                deviceOsSpec = deviceOsSpec,
+        Text(
+            text = deviceName,
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .padding(start = 20.dp, end = 20.dp, top = 16.dp)
+                .testTag(DeviceScreen_NameTestTag)
+        )
+
+        SelectionContainer {
+            Text(
+                text = Build.MODEL,
+                fontSize = 17.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(start = 20.dp, end = 20.dp, top = 2.dp, bottom = 8.dp)
+                    .testTag(DeviceScreen_ModelTestTag)
             )
         }
+
+        DeviceSupportSection(deviceOsSpec = deviceOsSpec, deviceMismatchStatus = deviceMismatchStatus)
+
+        GroupedSection(header = stringResource(R.string.device_information_software_header)) {
+            DeviceSoftwareInfo()
+        }
+
+        GroupedSection(header = stringResource(R.string.device_information_hardware_header)) {
+            DeviceHardwareInfo(cpuFrequencies)
+        }
+
+        Spacer(Modifier.height(24.dp))
+        ConditionalNavBarPadding(navType)
+    }
+}
+
+/** Like "Find My Mac: On" — whether this app can deliver updates to this device */
+@Composable
+private fun DeviceSupportSection(
+    deviceOsSpec: DeviceOsSpec?,
+    deviceMismatchStatus: Triple<Boolean, String, String>?,
+) {
+    val supported = deviceOsSpec == DeviceOsSpec.SupportedDeviceAndOs
+    val statusText = stringResource(remember(deviceOsSpec) {
+        when (deviceOsSpec) {
+            DeviceOsSpec.SupportedDeviceAndOs -> R.string.device_information_supported_oxygen_os
+            DeviceOsSpec.CarrierExclusiveOxygenOs -> R.string.device_information_carrier_exclusive_oxygen_os
+            DeviceOsSpec.UnsupportedDevice -> R.string.device_information_unsupported_oxygen_os
+            else -> R.string.device_information_unsupported_os
+        }
+    })
+    val mismatch = deviceMismatchStatus?.takeIf { it.first }?.let {
+        stringResource(R.string.incorrect_device_warning_message, it.second, it.third)
     }
 
-    HorizontalDivider()
-    DeviceMismatchStatus(status = deviceMismatchStatus)
-}
+    var showUnsupportedDialog by rememberState(false)
+    if (!supported) deviceOsSpec?.let {
+        UnsupportedDeviceOsSpecDialog(showUnsupportedDialog, { showUnsupportedDialog = false }, it)
+    }
 
-@Composable
-private fun DeviceHeaderExpanded(
-    navType: NavType,
-    deviceName: String,
-    deviceOsSpec: DeviceOsSpec?,
-) = Column(Modifier.width(IntrinsicSize.Min) then modifierDefaultPaddingStartTopEnd) {
-    DeviceImage(
-        deviceName = deviceName,
-        deviceOsSpec = deviceOsSpec,
-        size = 192.dp,
-    )
-
-    Spacer(modifierDefaultPaddingTop)
-
-    DeviceNameWithSpec(
-        deviceName = deviceName,
-        deviceOsSpec = deviceOsSpec,
-    )
-
-    ConditionalNavBarPadding(navType)
-}
-
-@Composable
-private fun ColumnScope.DeviceNameWithSpec(
-    deviceName: String,
-    deviceOsSpec: DeviceOsSpec?,
-) {
-    Text(
-        text = deviceName,
-        style = MaterialTheme.typography.titleLarge,
-        modifier = Modifier.testTag(DeviceScreen_NameTestTag)
-    )
-
-    SelectionContainer(Modifier.weight(1f)) {
-        Text(
-            text = Build.MODEL,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.testTag(DeviceScreen_ModelTestTag)
+    // China variants are recognised locally, but the update server has no China firmware
+    val footer = if (!supported && ChinaDevices.current != null) {
+        stringResource(R.string.device_china_not_on_server)
+    } else statusText
+    GroupedSection(footer = footer) {
+        GroupedRow(
+            title = stringResource(R.string.update_information_header),
+            value = stringResource(if (supported) R.string.device_support_supported else R.string.device_support_not_supported),
+            chevron = !supported,
+            onClick = if (supported) null else ({ showUnsupportedDialog = true }),
+            modifier = Modifier.testTag(DeviceScreen_SupportStatusTestTag)
         )
     }
 
-    Text(
-        text = stringResource(remember(deviceOsSpec) {
-            when (deviceOsSpec) {
-                DeviceOsSpec.SupportedDeviceAndOs -> R.string.device_information_supported_oxygen_os
-                DeviceOsSpec.CarrierExclusiveOxygenOs -> R.string.device_information_carrier_exclusive_oxygen_os
-                DeviceOsSpec.UnsupportedDevice -> R.string.device_information_unsupported_oxygen_os
-                DeviceOsSpec.UnsupportedDeviceAndOs -> R.string.device_information_unsupported_os
-                else -> R.string.device_information_unsupported_os
-            }
-        }),
-        color = if (deviceOsSpec == DeviceOsSpec.SupportedDeviceAndOs) {
-            MaterialTheme.colorScheme.onSurfaceVariant
-        } else MaterialTheme.colorScheme.error,
-        overflow = TextOverflow.Ellipsis,
-        style = MaterialTheme.typography.bodySmall,
-        modifier = Modifier
-            .padding(vertical = 8.dp)
-            .testTag(DeviceScreen_SupportStatusTestTag)
-    )
-}
-
-@Composable
-fun DeviceMismatchStatus(status: Triple<Boolean, String, String>?) {
-    if (status?.first != true) return
-
-    Text(
-        text = stringResource(
-            R.string.incorrect_device_warning_message,
-            status.second,
-            status.third,
-        ),
+    if (mismatch != null) Text(
+        text = mismatch,
         color = MaterialTheme.colorScheme.error,
-        style = MaterialTheme.typography.bodySmall,
-        modifier = modifierDefaultPadding.testTag(DeviceScreen_MismatchTextTestTag)
+        fontSize = 13.sp,
+        modifier = Modifier
+            .padding(start = 32.dp, end = 32.dp, top = 8.dp)
+            .testTag(DeviceScreen_MismatchTextTestTag)
     )
-
-    HorizontalDivider()
 }
 
 @Composable
@@ -260,7 +221,7 @@ private fun DeviceImage(deviceName: String, deviceOsSpec: DeviceOsSpec?, size: D
         UnsupportedDeviceOsSpecDialog(showUnsupportedDialog, { showUnsupportedDialog = false }, it)
     }
 
-    Box(Modifier.animatedClickable(notSupported) { showUnsupportedDialog = true }) {
+    Box(Modifier.clickable(enabled = notSupported) { showUnsupportedDialog = true }) {
         val requiredSizeModifier = Modifier.requiredSize(size)
 
         val context = LocalContext.current
@@ -306,10 +267,9 @@ private fun DeviceImage(deviceName: String, deviceOsSpec: DeviceOsSpec?, size: D
     }
 }
 
-@Suppress("UnusedReceiverParameter")
+/** Software rows, meant to be placed inside a [GroupedSection] */
 @Composable
-fun ColumnScope.DeviceSoftwareInfo(showHeader: Boolean = true) {
-    if (showHeader) Header(R.string.device_information_software_header)
+fun DeviceSoftwareInfo() {
 
     Item(
         icon = Symbols.Android,
@@ -370,20 +330,9 @@ fun ColumnScope.DeviceSoftwareInfo(showHeader: Boolean = true) {
     }
 }
 
+/** Hardware rows, meant to be placed inside a [GroupedSection] */
 @Composable
-@NonRestartableComposable
-private fun Header(@StringRes textResId: Int) = Text(
-    text = stringResource(textResId),
-    color = MaterialTheme.colorScheme.primary,
-    style = MaterialTheme.typography.bodySmall,
-    modifier = modifierDefaultPaddingStartTopEnd
-)
-
-@Suppress("UnusedReceiverParameter")
-@Composable
-private fun ColumnScope.DeviceHardwareInfo(cpuFrequencies: ScatterMap<Float, Int>) {
-    Header(R.string.device_information_hardware_header)
-
+private fun DeviceHardwareInfo(cpuFrequencies: ScatterMap<Float, Int>) {
     val context = LocalContext.current
     val bytes = remember(context) {
         try {
@@ -483,32 +432,22 @@ private fun ColumnScope.DeviceHardwareInfo(cpuFrequencies: ScatterMap<Float, Int
             text = Build.SERIAL,
         )
     }
-
-    Spacer(modifierDefaultPaddingTop)
 }
 
+/** Label on the leading edge, value on the trailing edge; long/multi-line values go below */
 @Composable
 @NonRestartableComposable
 private fun Item(
-    icon: ImageVector,
+    @Suppress("UNUSED_PARAMETER") icon: ImageVector,
     @StringRes titleResId: Int,
     text: String,
-) = Row(
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = modifierDefaultPaddingStartTopEnd
 ) {
-    Icon(icon, stringResource(R.string.icon), tint = MaterialTheme.colorScheme.primary)
-
-    Column(modifierDefaultPaddingStart) {
-        Text(stringResource(titleResId), style = MaterialTheme.typography.titleMedium)
-        SelectionContainer {
-            Text(
-                text = text,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-        }
-    }
+    val asValue = text.length <= 24 && '\n' !in text
+    GroupedRow(
+        title = stringResource(titleResId),
+        value = if (asValue) text else null,
+        subtitle = if (asValue) null else text,
+    )
 }
 
 private fun getRamBytes(context: Context) = try {

@@ -25,9 +25,6 @@
 	<string name="server_status_warning">Unele funcții s-ar putea să nu funcționeze.</string>
 
 	<!-- New app version message strings -->
-	<string name="new_app_version">Actualizare nouă disponibilă pentru aplicație (%1$s). Apăsați aici pentru a accesa Magazinul Google Play și pentru a actualiza aplicația.</string>
-	<string name="new_app_version_inapp_downloaded">Actualizarea a fost descărcată</string>
-	<string name="new_app_version_inapp_failed">Actualizarea aplicației nu a putut fi instalată. Apăsați aici pentru a actualiza aplicația din Google Play.</string>
 
 	<!-- Downloader strings-->
 	<string name="grant_all_files_access">Permiteți \"Accesul la toate fișierele\" pentru descărcarea actualizărilor OTA în format .zip. Acestea vor fi descărcate în cel mai de sus director al memoriei interne.</string>
@@ -90,13 +87,10 @@
 	<string name="summary_update_method">Mai întâi selectați un dispozitiv</string>
 	<!-- TODO: check the following translation -->
 	<string name="summary_important_notifications_disabled">Unele notificări importante sunt dezactivate:</string>
-	<string name="summary_privacy_policy">Vizualizați online</string>
-	<string name="summary_rate_app">Acordați-ne 5 stele</string>
 
 	<string name="label_theme">Temă</string>
 	<string name="label_language">Limbă</string>
 	<string name="label_privacy_policy">Politica de confidențialitate</string>
-	<string name="label_rate_app">Evaluați aplicația</string>
 
 	<string name="theme_light">Deschisă</string>
 	<string name="theme_dark">Întunecată</string>
@@ -241,8 +235,6 @@ Acest lucru poate fi util dacă doriți să:"</string>
 	<string name="contribute_successful_notification_text">Vă mulțumim pentru că ați împărtășit URL-urile OTA cu noi!</string>
 
 	<!-- Error strings-->
-	<string name="error_app_outdated">O nu!</string>
-	<string name="error_app_outdated_message">Se pare că nu rulați ultima versiune a aplicației. E timpul să o actualizați! Apăsați pe butonul \"Google Play\" de mai jos. În Google Play, apăsați \"Actualizare\".</string>
 	<string name="error_app_requires_network_connection">Lipsă conexiune</string>
 	<string name="error_google_play_button_text">Google Play</string>
 	<string name="error_maintenance">Mentenanță server</string>

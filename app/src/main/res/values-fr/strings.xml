@@ -24,9 +24,6 @@
 	<string name="server_status_warning">"Certaines fonctionnalités ne fonctionnent pas correctement."</string>
 
 	<!-- New app version message strings -->
-	<string name="new_app_version">Une mise à jour de l\'application (%1$s) est disponible.\nAppuyez ici pour ouvrir le Play Store et mettre à jour l\'application.</string>
-	<string name="new_app_version_inapp_downloaded">La mise à jour de l\'application a été téléchargée</string>
-	<string name="new_app_version_inapp_failed">La mise à jour de l\'application n\'a pas pu être installée. Appuyez ici pour ouvrir le Play Store et mettre à jour l\'application.</string>
 
 	<!-- Downloader strings -->
 	<!-- TODO: translate this string below -->
@@ -92,13 +89,10 @@
 	<string name="summary_update_method">Veuillez sélectionner un appareil</string>
 	<!-- TODO: check the following translation -->
 	<string name="summary_important_notifications_disabled">Certaines notifications importantes sont désactivées:</string>
-	<string name="summary_privacy_policy">Voir en ligne</string>
-	<string name="summary_rate_app">Donner 5 étoiles</string>
 
 	<string name="label_theme">Thème</string>
 	<string name="label_language">Langue</string>
 	<string name="label_privacy_policy">Politique de confidentialité</string>
-	<string name="label_rate_app">Évaluez cette application</string>
 
 	<string name="theme_light">Lumineux</string>
 	<string name="theme_dark">Sombre</string>
@@ -249,8 +243,6 @@ Cela inclut les notifications de mises à jour systèmes et celles de nouveaux a
 	<string name="contribute_successful_notification_text">Merci de partager les URL des OTA avec nous !</string>
 
 	<!-- Error strings -->
-	<string name="error_app_outdated">"Oh non !"</string>
-	<string name="error_app_outdated_message">"Cette version de l'application est obsolète. Il est temps de la mettre à jour ! Cliquez sur le bouton « Play Store » en dessous, puis sélectionnez « Mettre à jour »."</string>
 	<string name="error_app_requires_network_connection">"Pas de connexion"</string>
 	<string name="error_maintenance">"Maintenance du serveur"</string>
 	<string name="error_maintenance_message">"Veuillez patienter. Le serveur sera disponible bientôt."</string>

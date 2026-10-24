@@ -7,7 +7,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.SemanticsNodeInteractionCollection
 import androidx.compose.ui.test.assertContentDescriptionEquals
-import androidx.compose.ui.test.hasRole
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
@@ -38,10 +39,9 @@ class MainNavigationTest : ComposeBaseTest() {
             )
         }
 
-        rule[MainNavigation_RailTestTag].assertDoesNotExist()
         // The dock is icon-only; labels are exposed as content descriptions
         rule[MainNavigation_BarTestTag].assertExists()
-        rule.onAllNodes(hasRole(Role.Tab)).validateItems { route -> assertContentDescriptionEquals(activity.getString(route.labelResId)) }
+        rule.onAllNodes(IsTab).validateItems { route -> assertContentDescriptionEquals(activity.getString(route.labelResId)) }
     }
 
     @Test
@@ -56,7 +56,7 @@ class MainNavigationTest : ComposeBaseTest() {
         }
 
         rule[MainNavigation_BarTestTag].assertExists()
-        rule.onAllNodes(hasRole(Role.Tab)).validateItems { route -> assertContentDescriptionEquals(activity.getString(route.labelResId)) }
+        rule.onAllNodes(IsTab).validateItems { route -> assertContentDescriptionEquals(activity.getString(route.labelResId)) }
     }
 
     private fun SemanticsNodeInteractionCollection.validateItems(
@@ -72,5 +72,9 @@ class MainNavigationTest : ComposeBaseTest() {
         assert(route == currentRoute) {
             "Current route did not change. Expected: $route, actual: $currentRoute."
         }
+    }
+
+    private companion object {
+        val IsTab = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)
     }
 }

@@ -25,9 +25,6 @@
 	<string name="server_status_warning">Egyes funkciók nem feltétlenül működnek megfelelően.</string>
 
 	<!-- New app version message strings -->
-	<string name="new_app_version">Elérhető egy alkalmazásfrissítés (%1$s). Koppints ide a Play Áruház megnyitásához és az alkalmazás frissítéséhez.</string>
-	<string name="new_app_version_inapp_downloaded">Az alkalmazásfrissítés letöltésre került</string>
-	<string name="new_app_version_inapp_failed">Az alkalmazásfrissítést nem lehetett telepíteni. Koppintson ide a Play Áruház megnyitásához és az alkalmazás frissítéséhez.</string>
 
 	<!-- Downloader strings-->
 	<!-- TODO: translate this string below -->
@@ -92,13 +89,10 @@
 	<string name="summary_update_method">Először válassz ki egy eszközt</string>
 	<!-- TODO: check the following translation -->
 	<string name="summary_important_notifications_disabled">Néhány fontos értesítés le van tiltva:</string>
-	<string name="summary_privacy_policy">Megtekintés interneten</string>
-	<string name="summary_rate_app">Hagyj 5 csillagos értékelést</string>
 
 	<string name="label_theme">Téma</string>
 	<string name="label_language">Nyelv</string>
 	<string name="label_privacy_policy">Adatvédelmi irányelvek</string>
-	<string name="label_rate_app">Értékeld ezt az alkalmazást</string>
 
 	<string name="theme_light">Világos</string>
 	<string name="theme_dark">Sötét</string>
@@ -243,8 +237,6 @@ Ez hasznos lehet, ha szeretné:"</string>
 	<string name="contribute_successful_notification_text">Köszönjük, hogy megosztotta velünk az OTA URL-eket!</string>
 
 	<!-- Error strings-->
-	<string name="error_app_outdated">Jajj ne!</string>
-	<string name="error_app_outdated_message">Az alkalmazás e verziója elavult. Ideje frissíteni! Érintsd meg az alábbi \"Google Play\" lehetőséget. A Google Playen belül érintsd meg a \"Frissítés\" elemet.</string>
 	<string name="error_app_requires_network_connection">Nincs kapcsolat</string>
 	<string name="error_google_play_button_text">Google Play</string>
 	<string name="error_maintenance">Szerver karbantartás</string>

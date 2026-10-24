@@ -24,9 +24,6 @@
 	<string name="server_status_warning">"Hекоторые функции могут не работать."</string>
 
 	<!-- New app version message strings -->
-	<string name="new_app_version">Доступно обновление приложения (%1$s). Нажмите здесь, чтобы открыть Play Store и обновить приложение.</string>
-	<string name="new_app_version_inapp_downloaded">Обновление приложения загружено</string>
-	<string name="new_app_version_inapp_failed">Не удалось установить обновление приложения. Нажмите здесь, чтобы открыть Play Store и обновить приложение.</string>
 
 	<!-- Downloader strings -->
 	<!-- TODO: translate this string below -->
@@ -83,12 +80,9 @@
 	<string name="summary_update_method">Сначала выберите устройство</string>
 	<!-- TODO: check the following translation -->
 	<string name="summary_important_notifications_disabled">Некоторые важные уведомления отключены:</string>
-	<string name="summary_privacy_policy">Просмотреть онлайн</string>
-	<string name="summary_rate_app">Поставьте нам 5 звёзд</string>
 	<string name="label_theme">Тема</string>
 	<string name="label_language">Язык</string>
 	<string name="label_privacy_policy">Политика конфиденциальности</string>
-	<string name="label_rate_app">Оцените это приложение</string>
 	<string name="theme_light">Светлая</string>
 	<string name="theme_dark">Темная</string>
 	<string name="theme_system">Системная</string>
@@ -232,8 +226,6 @@
 	<string name="contribute_successful_notification_text">Спасибо, что поделились с нами URL-адресами OTA!</string>
 
 	<!-- Error strings -->
-	<string name="error_app_outdated">"О нет!"</string>
-	<string name="error_app_outdated_message">"Версия приложения устарела. Пришло время обновить его! Нажмите «Google Play» ниже. В Google Play нажмите «Обновить»."</string>
 	<string name="error_app_requires_network_connection">"Нет сетевого подключени"</string>
 	<string name="error_google_play_button_text">Play Mаркет</string>
 	<string name="error_maintenance">"Обслуживание сервера"</string>

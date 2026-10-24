@@ -1,49 +1,60 @@
 package com.oxygenupdater.ui.onboarding
 
 import android.annotation.SuppressLint
+import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.kyant.backdrop.backdrops.rememberCanvasBackdrop
+import com.kyant.shapes.Capsule
 import com.oxygenupdater.R
-import com.oxygenupdater.icons.DoneAll
-import com.oxygenupdater.icons.Info
+import com.oxygenupdater.icons.Crowdsource
+import com.oxygenupdater.icons.LockOpen
+import com.oxygenupdater.icons.Newsmode
+import com.oxygenupdater.icons.Notes
 import com.oxygenupdater.icons.Symbols
+import com.oxygenupdater.icons.SystemUpdateAlt
 import com.oxygenupdater.models.Device
 import com.oxygenupdater.models.UpdateMethod
 import com.oxygenupdater.ui.SettingsListConfig
-import com.oxygenupdater.ui.common.CheckboxText
-import com.oxygenupdater.ui.common.IconTextButton
-import com.oxygenupdater.ui.common.ListItemTextIndent
-import com.oxygenupdater.ui.common.modifierDefaultPadding
-import com.oxygenupdater.ui.common.modifierDefaultPaddingStartTopEnd
-import com.oxygenupdater.ui.common.modifierMaxSize
-import com.oxygenupdater.ui.common.modifierMaxWidth
+import com.oxygenupdater.ui.common.GroupedColumn
+import com.oxygenupdater.ui.common.GroupedRow
+import com.oxygenupdater.ui.common.GroupedSection
+import com.oxygenupdater.ui.common.groupedCardColor
+import com.oxygenupdater.ui.common.liquid.LiquidToggle
 import com.oxygenupdater.ui.common.rememberState
 import com.oxygenupdater.ui.dialogs.ContributorSheet
 import com.oxygenupdater.ui.dialogs.ModalBottomSheet
@@ -58,171 +69,144 @@ import com.oxygenupdater.ui.theme.PreviewThemes
 import com.oxygenupdater.ui.theme.PreviewWindowSize
 import com.oxygenupdater.utils.ContributorUtils
 
+/**
+ * Welcome screen, following Apple's onboarding guidelines: a large title, a short list of key
+ * features (icon + headline + one line), then only the setup that's actually required, and a
+ * single prominent button to continue.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OnboardingScreen(
-    windowWidthSize: WindowWidthSizeClass,
+    @Suppress("UNUSED_PARAMETER") windowWidthSize: WindowWidthSizeClass,
     scrollBehavior: TopAppBarScrollBehavior,
     deviceConfig: SettingsListConfig<Device>,
     onDeviceSelect: (Device) -> Unit,
     methodConfig: SettingsListConfig<UpdateMethod>,
     onMethodSelect: (UpdateMethod) -> Unit,
     getPrefStr: (key: String, default: String) -> String,
-    getPrefBool: (key: String, default: Boolean) -> Boolean,
-    persistBool: (key: String, value: Boolean) -> Unit,
+    @Suppress("UNUSED_PARAMETER") getPrefBool: (key: String, default: Boolean) -> Boolean,
+    @Suppress("UNUSED_PARAMETER") persistBool: (key: String, value: Boolean) -> Unit,
     onStartAppClick: (contribute: Boolean) -> Unit,
-) = if (windowWidthSize == WindowWidthSizeClass.Expanded) Row(
-    Modifier.nestedScroll(scrollBehavior.nestedScrollConnection) then modifierMaxWidth
-) {
-    val typography = MaterialTheme.typography
-    Column(Modifier.weight(1f)) {
+) = GroupedColumn(Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)) {
+    var contribute by rememberState(true)
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .weight(1f)
+            .align(Alignment.CenterHorizontally)
+            .widthIn(max = 560.dp)
+            .verticalScroll(rememberScrollState())
+            .statusBarsPadding()
+            .testTag(OnboardingScreen_MainColumnTestTag)
+    ) {
+        Text(
+            text = stringResource(R.string.onboarding_welcome_title, stringResource(R.string.app_name)),
+            fontSize = 34.sp,
+            lineHeight = 41.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(start = 32.dp, end = 32.dp, top = 48.dp, bottom = 32.dp)
+        )
+
         Column(
-            Modifier
-                .weight(1f)
-                .fillMaxHeight()
-                .verticalScroll(rememberScrollState())
-                .testTag(OnboardingScreen_MainColumnTestTag)
+            verticalArrangement = Arrangement.spacedBy(24.dp),
+            modifier = Modifier.padding(horizontal = 32.dp)
+        ) {
+            Feature(Symbols.SystemUpdateAlt, Color(0xFF007AFF), R.string.onboarding_feature_updates_title, R.string.onboarding_feature_updates_text)
+            Feature(Symbols.LockOpen, Color(0xFFFF9500), R.string.onboarding_feature_root_title, R.string.onboarding_feature_root_text)
+            Feature(Symbols.Notes, Color(0xFF34C759), R.string.onboarding_feature_notes_title, R.string.onboarding_feature_notes_text)
+            Feature(Symbols.Newsmode, Color(0xFFFF3B30), R.string.onboarding_feature_news_title, R.string.onboarding_feature_news_text)
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        GroupedSection(
+            header = stringResource(R.string.onboarding_setup_header),
+            footer = stringResource(R.string.onboarding_caption),
         ) {
             DeviceChooser(config = deviceConfig, getPrefStr = getPrefStr, onSelect = onDeviceSelect)
             MethodChooser(config = methodConfig, getPrefStr = getPrefStr, onSelect = onMethodSelect)
-
         }
 
-        // Note: if moving this to the right side of the screen, leave space for 2/3-button nav bar in landscape mode (same as Switch)
-        StartApp(onStartAppClick)
-        Spacer(Modifier.navigationBarsPadding())
-    }
-
-    VerticalDivider()
-
-    Column(Modifier.weight(1f)) {
-        Column(
-            Modifier
-                .weight(1f)
-                .fillMaxHeight()
-                .verticalScroll(rememberScrollState())
-                .testTag(OnboardingScreen_SecondaryColumnTestTag)
-        ) {
-            val bodyMedium = typography.bodyMedium
-            Text(
-                text = AnnotatedString(
-                    stringResource(R.string.onboarding_app_uses),
-                    bodyMedium.toSpanStyle(),
-                    bodyMedium.toParagraphStyle().copy(textIndent = ListItemTextIndent)
-                ),
-                style = bodyMedium,
-                modifier = modifierDefaultPaddingStartTopEnd
-            )
-
-            Text(
-                text = stringResource(R.string.onboarding_caption),
-                style = bodyMedium,
-                modifier = modifierDefaultPadding
-            )
+        if (ContributorUtils.isAtLeastQAndPossiblyRooted) {
+            var showSheet by rememberState(false)
+            val cardColor = groupedCardColor
+            val backdrop = rememberCanvasBackdrop { drawRect(cardColor) }
+            GroupedSection {
+                GroupedRow(
+                    title = stringResource(R.string.contribute_agree),
+                    icon = Symbols.Crowdsource,
+                    iconTint = Color(0xFFFF2D55),
+                    onClick = { contribute = !contribute },
+                ) {
+                    LiquidToggle(checked = contribute, onCheckedChange = { contribute = it }, backdrop = backdrop)
+                }
+                GroupedRow(
+                    title = stringResource(R.string.contribute_more_info),
+                    titleColor = MaterialTheme.colorScheme.primary,
+                    onClick = { showSheet = true },
+                    modifier = Modifier.testTag(OnboardingScreen_ContributorInfoButtonTestTag)
+                )
+            }
+            if (showSheet) ModalBottomSheet({ showSheet = false }) { ContributorSheet(it) }
         }
 
-        HorizontalDivider()
         Text(
             text = stringResource(R.string.onboarding_disclaimer),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = typography.bodySmall,
+            fontSize = 12.sp,
+            lineHeight = 16.sp,
+            textAlign = TextAlign.Center,
             modifier = Modifier
-                .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)
+                .padding(start = 32.dp, end = 32.dp, top = 24.dp, bottom = 16.dp)
                 .testTag(OnboardingScreen_DisclaimerTestTag)
         )
-        Spacer(Modifier.navigationBarsPadding())
-    }
-} else Column(
-    Modifier
-        .nestedScroll(scrollBehavior.nestedScrollConnection)
-        .then(modifierMaxSize)
-) {
-    val typography = MaterialTheme.typography
-
-    Column(
-        Modifier
-            .weight(1f)
-            .verticalScroll(rememberScrollState())
-            .testTag(OnboardingScreen_MainColumnTestTag)
-    ) {
-        DeviceChooser(config = deviceConfig, getPrefStr = getPrefStr, onSelect = onDeviceSelect)
-        MethodChooser(config = methodConfig, getPrefStr = getPrefStr, onSelect = onMethodSelect)
-
-
-        val bodyMedium = typography.bodyMedium
-        Text(
-            text = AnnotatedString(
-                stringResource(R.string.onboarding_app_uses),
-                bodyMedium.toSpanStyle(),
-                bodyMedium.toParagraphStyle().copy(textIndent = ListItemTextIndent)
-            ),
-            style = bodyMedium,
-            modifier = modifierDefaultPaddingStartTopEnd
-        )
-
-        Text(
-            text = stringResource(R.string.onboarding_caption),
-            style = bodyMedium,
-            modifier = modifierDefaultPadding
-        )
     }
 
-    HorizontalDivider()
-    Text(
-        text = stringResource(R.string.onboarding_disclaimer),
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        style = typography.bodySmall,
+    // Primary action pinned to the bottom, like iOS setup flows
+    Button(
+        onClick = { onStartAppClick(contribute) },
+        shape = Capsule(),
         modifier = Modifier
-            .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)
-            .testTag(OnboardingScreen_DisclaimerTestTag)
-    )
-
-    StartApp(onClick = onStartAppClick)
-    Spacer(Modifier.navigationBarsPadding())
+            .align(Alignment.CenterHorizontally)
+            .widthIn(max = 560.dp)
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 12.dp)
+            .navigationBarsPadding()
+            .height(52.dp)
+    ) {
+        Text(stringResource(R.string.onboarding_continue), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+    }
 }
 
 @Composable
-private fun StartApp(onClick: (contribute: Boolean) -> Unit) = Row(
+private fun Feature(
+    icon: ImageVector,
+    tint: Color,
+    @StringRes titleResId: Int,
+    @StringRes textResId: Int,
+) = Row(
+    horizontalArrangement = Arrangement.spacedBy(16.dp),
     verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier.padding(end = 16.dp)
+    modifier = Modifier.fillMaxWidth()
 ) {
-    var contribute by rememberState(true)
-    if (ContributorUtils.isAtLeastQAndPossiblyRooted) {
-        CheckboxText(
-            checked = contribute,
-            onCheckedChange = { contribute = it },
-            textResId = R.string.contribute_agree,
-            textModifier = Modifier.padding(end = 16.dp),
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 4.dp)
+    Icon(icon, null, tint = tint, modifier = Modifier.size(36.dp))
+    Column(Modifier.weight(1f)) {
+        Text(stringResource(titleResId), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+        Text(
+            text = stringResource(textResId),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontSize = 15.sp,
+            lineHeight = 20.sp,
         )
-
-        var showSheet by rememberState(false)
-        IconButton(
-            onClick = { showSheet = true },
-            modifier = Modifier.testTag(OnboardingScreen_ContributorInfoButtonTestTag),
-        ) {
-            Icon(Symbols.Info, stringResource(R.string.contribute_more_info))
-        }
-
-        if (showSheet) ModalBottomSheet({ showSheet = false }) { ContributorSheet(it) }
-    } else Spacer(Modifier.weight(1f)) // always right-align start button
-
-    IconTextButton(
-        onClick = { onClick(contribute) },
-        icon = Symbols.DoneAll,
-        textResId = R.string.onboarding_finished_button,
-    )
+    }
 }
 
 private const val TAG = "OnboardingScreen"
 
 @VisibleForTesting
 const val OnboardingScreen_MainColumnTestTag = TAG + "_MainColumn"
-
-@VisibleForTesting
-const val OnboardingScreen_SecondaryColumnTestTag = TAG + "_SecondaryColumn"
 
 @VisibleForTesting
 const val OnboardingScreen_ContributorInfoButtonTestTag = TAG + "_ContributorInfoButton"

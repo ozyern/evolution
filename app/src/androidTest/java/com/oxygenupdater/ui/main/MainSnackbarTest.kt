@@ -18,22 +18,12 @@ class MainSnackbarTest : ComposeBaseTest() {
     @Test
     fun mainSnackbar() {
         setContent {
-            MainSnackbar(
-                snackbarText = snackbarText,
-                openPlayStorePage = { trackCallback("openPlayStorePage") },
-                completeAppUpdate = { trackCallback("completeAppUpdate") },
-            )
+            MainSnackbar(snackbarText = snackbarText)
         }
 
         // Then for other non-null values
         snackbarText = NoConnectionSnackbarData
         validateNodes(null)
-
-        snackbarText = AppUpdateFailedSnackbarData
-        validateNodes("openPlayStorePage")
-
-        snackbarText = AppUpdateDownloadedSnackbarData
-        validateNodes("completeAppUpdate")
     }
 
     /**
