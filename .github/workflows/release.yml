@@ -1,21 +1,18 @@
-name: Release
+name: Build signed APK
 on:
-  # Manual trigger from the Actions tab
-  workflow_dispatch:
-  # Or push a version tag, e.g. `git tag v0.0.1 && git push origin v0.0.1`
+  # Every push to master
   push:
-    tags:
-      - 'v*'
-
-permissions:
-  contents: write # required to create the GitHub release
+    branches:
+      - master
+  # Or manually from the Actions tab
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -38,7 +35,7 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           if [ -z "$KEYSTORE_BASE64" ]; then
-            echo "::error::Missing KEYSTORE_BASE64 secret; can't sign the release"
+            echo "::error::Missing KEYSTORE_BASE64 secret; can't sign the APK"
             exit 1
           fi
           echo "$KEYSTORE_BASE64" | base64 --decode > app/keyStore.jks
@@ -52,30 +49,18 @@ jobs:
       - name: Build signed release APK
         run: ./gradlew assembleRelease
 
-      - name: Read version
+      - name: Rename APK
         id: version
         run: |
           name=$(sed -nE 's/^\s*versionName = "([^"]+)"/\1/p' app/build.gradle.kts)
           echo "NAME=$name" >> "$GITHUB_OUTPUT"
           cp app/build/outputs/apk/release/app-release.apk "Evolution-$name.apk"
 
-      - name: Upload APK artifact
+      - name: Upload signed APK
         uses: actions/upload-artifact@v6
         with:
           name: Evolution-${{ steps.version.outputs.NAME }}
           path: Evolution-${{ steps.version.outputs.NAME }}.apk
-
-      - name: Create GitHub release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          NAME: ${{ steps.version.outputs.NAME }}
-        run: |
-          tag="v$NAME"
-          if gh release view "$tag" > /dev/null 2>&1; then
-            gh release upload "$tag" "Evolution-$NAME.apk" --clobber
-          else
-            gh release create "$tag" "Evolution-$NAME.apk" --title "Evolution $NAME" --generate-notes --target "$GITHUB_SHA"
-          fi
 
       - name: Clean up signing files
         if: always()
