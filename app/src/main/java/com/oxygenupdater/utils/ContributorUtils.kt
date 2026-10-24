@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.content.SharedPreferences
 import android.os.Build
-import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
@@ -19,12 +18,9 @@ import androidx.work.PeriodicWorkRequest.Companion.MIN_PERIODIC_INTERVAL_MILLIS
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.oxygenupdater.extensions.get
 import com.oxygenupdater.extensions.set
 import com.oxygenupdater.internal.settings.KeyContribute
-import com.oxygenupdater.internal.settings.KeyDevice
-import com.oxygenupdater.internal.settings.KeyUpdateMethod
 import com.oxygenupdater.services.RootFileService
 import com.oxygenupdater.workers.ReadOtaDbWorker
 import com.oxygenupdater.workers.WorkUniqueReadOtaDb
@@ -37,7 +33,6 @@ import javax.inject.Singleton
 @Singleton
 class ContributorUtils @Inject constructor(
     private val sharedPreferences: SharedPreferences,
-    private val firebaseAnalytics: FirebaseAnalytics,
 ) {
 
     fun flushSettings(context: Context, isContributing: Boolean) {
@@ -48,16 +43,7 @@ class ContributorUtils @Inject constructor(
 
         sharedPreferences[KeyContribute] = isContributing
 
-        val analyticsEventData = Bundle(2).apply {
-            putString("CONTRIBUTOR_DEVICE", sharedPreferences[KeyDevice, "<<UNKNOWN>>"])
-            putString("CONTRIBUTOR_UPDATEMETHOD", sharedPreferences[KeyUpdateMethod, "<<UNKNOWN>>"])
-        }
-
-        if (isContributing) start(context).also {
-            firebaseAnalytics.logEvent("CONTRIBUTOR_SIGNUP", analyticsEventData)
-        } else stop(context).also {
-            firebaseAnalytics.logEvent("CONTRIBUTOR_SIGNOFF", analyticsEventData)
-        }
+        if (isContributing) start(context) else stop(context)
     }
 
     fun startOrStop(context: Context) = hasRootAccess {

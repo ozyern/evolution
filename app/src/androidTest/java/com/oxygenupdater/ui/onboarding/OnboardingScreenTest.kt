@@ -12,7 +12,6 @@ import com.oxygenupdater.UsesSharedPreferencesTest
 import com.oxygenupdater.assertAndPerformClick
 import com.oxygenupdater.assertHasScrollAction
 import com.oxygenupdater.get
-import com.oxygenupdater.internal.settings.KeyShareAnalyticsAndLogs
 import com.oxygenupdater.ui.common.IconTextButtonTestTag
 import com.oxygenupdater.ui.dialogs.BottomSheetTestTag
 import com.oxygenupdater.ui.dialogs.BottomSheet_ItemRowTestTag
@@ -97,21 +96,6 @@ class OnboardingScreenTest : UsesSharedPreferencesTest() {
             rule.onAllNodesWithTag(BottomSheet_ItemRowTestTag)[0].assertAndPerformClick()
             ensureCallbackInvokedExactlyOnce("onMethodSelect: ${MethodSettingsListConfig.list[0].id}")
             sheet.assertIsNotDisplayed()
-        }
-
-        // Analytics
-        children[2].run {
-            assertHasTextExactly(
-                R.string.settings_upload_logs,
-                R.string.summary_on, // default is on
-            )
-
-            assertAndPerformClick() // should be toggled off now
-            assertHasTextExactly(
-                R.string.settings_upload_logs,
-                R.string.summary_off,
-            )
-            ensureCallbackInvokedExactlyOnce("persistBool: $KeyShareAnalyticsAndLogs=false")
         }
     }
 

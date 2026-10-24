@@ -29,7 +29,6 @@ const val KeyDownloadBytesDone = "download_bytes_done"
 /**
  * Value cannot be changed - is from older version where it was called 'upload_logs'
  */
-const val KeyShareAnalyticsAndLogs = "upload_logs"
 
 /**
  * Note: contribution was a feature in app v2.7.0 - v5.8.3. v5.9.0 removed it, as it wasn't useful anymore.
@@ -42,23 +41,6 @@ const val KeyContribute = "contribute"
 const val KeyContributionCount = "contribution_count"
 
 const val KeyFlexibleAppUpdateIgnoreCount = "flexibleAppUpdateIgnoreCount"
-
-// Notifications properties
-const val KeyFirebaseToken = "firebase_token"
-
-/**
- * Value must not be changed for legacy reasons
- *
- * @see [com.oxygenupdater.utils.FcmUtils.currentFullTopic]
- */
-const val KeyNotificationFullTopic = "notification_topic"
-
-/**
- * Since v6.2.0
- *
- * @see [com.oxygenupdater.utils.FcmUtils.currentDeviceTopic]
- */
-const val KeyNotificationDeviceTopic = "notification_topic_device"
 
 const val KeyNotificationDelayInSeconds = "notification_delay_in_seconds"
 

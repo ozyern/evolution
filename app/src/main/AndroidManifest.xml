@@ -146,15 +146,6 @@
 				android:resource="${shortcutXml}" />
 		</activity>
 
-		<!-- Push notifications services and receiver, Package updated receiver -->
-		<service
-			android:name=".services.FirebaseMessagingService"
-			android:exported="false">
-			<intent-filter>
-				<action android:name="com.google.firebase.MESSAGING_EVENT" />
-			</intent-filter>
-		</service>
-
 		<!-- https://developer.android.com/guide/topics/resources/app-languages#android12-impl -->
 		<service
 			android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
@@ -202,20 +193,5 @@
 			android:name="android.webkit.WebView.MetricsOptOut"
 			android:value="true" />
 
-		<!--
-			Set custom default icon. This is used when no icon is set for incoming notification messages.
-			See README(https://goo.gl/l4GJaQ) for more
-        -->
-		<meta-data
-			android:name="com.google.firebase.messaging.default_notification_icon"
-			android:resource="@drawable/logo_notification" />
-
-		<!--
-			Set color used with incoming notification messages. This is used when no color is set for the incoming
-			notification message. See README(https://goo.gl/6BKBk7) for more.
-		-->
-		<meta-data
-			android:name="com.google.firebase.messaging.default_notification_color"
-			android:resource="@color/colorPrimary" />
 	</application>
 </manifest>

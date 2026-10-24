@@ -80,7 +80,7 @@ import androidx.navigation3.ui.NavDisplay
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.size.Size
-import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.oxygenupdater.utils.CrashLogger
 import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import com.oxygenupdater.BuildConfig
@@ -165,7 +165,6 @@ import com.oxygenupdater.utils.LocalNotifications
 import com.oxygenupdater.utils.Utils.checkPlayServices
 import com.oxygenupdater.utils.hasRootAccess
 import com.oxygenupdater.utils.logDebug
-import com.oxygenupdater.utils.logWarning
 import com.oxygenupdater.viewmodels.MainViewModel
 import com.oxygenupdater.workers.WorkDataDownloadBytesDone
 import com.oxygenupdater.workers.WorkDataDownloadEta
@@ -203,7 +202,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var contributorUtils: ContributorUtils
 
     @Inject
-    lateinit var crashlytics: FirebaseCrashlytics
+    lateinit var crashlytics: CrashLogger
 
     private var downloadErrorMessage: String? = null
 
@@ -296,11 +295,8 @@ class MainActivity : AppCompatActivity() {
             getPrefBool = viewModel::getPref,
             persistBool = viewModel::persist,
             onStartAppClick = { contribute ->
-                settingsViewModel.resubscribeToFcmTopic()
-
                 if (viewModel.isDeviceAndMethodSet) {
                     viewModel.persist(KeySetupDone, true)
-                    (application as? OxygenUpdater)?.setupCrashReporting()
 
                     // If user enables OTA contribution, check if device is rooted and ask for root permission
                     if (ContributorUtils.isAtLeastQAndPossiblyRooted && contribute) {
@@ -618,7 +614,6 @@ class MainActivity : AppCompatActivity() {
     ) = surfacedEntry<MainRoute.Update> {
         DisposableEffect(Unit) {
             // Run this every time this screen is visited
-            settingsViewModel.updateCrashlyticsUserId()
             updateViewModel.refreshIfNeeded()
 
             // Prune finished work when leaving this composable, e.g. when
@@ -637,7 +632,6 @@ class MainActivity : AppCompatActivity() {
             windowWidthSize = windowWidthSize,
             state = state,
             onRefresh = {
-                settingsViewModel.updateCrashlyticsUserId()
                 viewModel.fetchServerStatus()
                 updateViewModel.refresh()
             },
@@ -766,7 +760,6 @@ class MainActivity : AppCompatActivity() {
             methodConfig = methodConfig,
             onMethodSelect = {
                 settingsViewModel.saveSelectedMethod(it)
-                settingsViewModel.resubscribeToFcmTopic()
 
                 if (!checkPlayServices(this@MainActivity, true)) {
                     showToast(R.string.notification_no_notification_support)
@@ -820,7 +813,6 @@ class MainActivity : AppCompatActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        if (viewModel.isDeviceAndMethodSet) settingsViewModel.resubscribeToFcmTopic()
         if (!checkPlayServices(this, false)) {
             showToast(R.string.notification_no_notification_support)
         }

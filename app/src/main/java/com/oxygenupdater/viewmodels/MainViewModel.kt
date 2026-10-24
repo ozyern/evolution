@@ -35,7 +35,7 @@ import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
 import com.google.android.play.core.install.model.UpdateAvailability.UPDATE_AVAILABLE
-import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.oxygenupdater.utils.CrashLogger
 import com.oxygenupdater.BuildConfig
 import com.oxygenupdater.activities.MainActivity
 import com.oxygenupdater.extensions.get
@@ -68,7 +68,6 @@ import com.oxygenupdater.ui.update.DownloadStatus
 import com.oxygenupdater.ui.update.WorkInfoWithStatus
 import com.oxygenupdater.utils.Utils
 import com.oxygenupdater.utils.logDebug
-import com.oxygenupdater.utils.logWarning
 import com.oxygenupdater.workers.DirectoryRoot
 import com.oxygenupdater.workers.DownloadWorker
 import com.oxygenupdater.workers.WorkDataDownloadFailureExtraFilename
@@ -101,7 +100,7 @@ class MainViewModel @Inject constructor(
     private val appUpdateManager: AppUpdateManager,
     private val serverRepository: ServerRepository,
     private val workManager: WorkManager,
-    private val crashlytics: FirebaseCrashlytics,
+    private val crashlytics: CrashLogger,
 ) : ViewModel() {
 
     private val allDevicesFlow = MutableStateFlow<List<Device>?>(null)

@@ -69,11 +69,9 @@ import com.oxygenupdater.icons.Palette
 import com.oxygenupdater.icons.Policy
 import com.oxygenupdater.icons.Star
 import com.oxygenupdater.icons.Symbols
-import com.oxygenupdater.icons.TrackChanges
 import com.oxygenupdater.icons.TripOrigin
 import com.oxygenupdater.internal.settings.KeyAdvancedMode
 import com.oxygenupdater.internal.settings.KeyDevice
-import com.oxygenupdater.internal.settings.KeyShareAnalyticsAndLogs
 import com.oxygenupdater.internal.settings.KeyUpdateMethod
 import com.oxygenupdater.models.Device
 import com.oxygenupdater.models.UpdateMethod
@@ -164,7 +162,6 @@ fun SettingsScreen(
     // region Advanced
     Header(R.string.preference_header_advanced)
     AdvancedMode(getPrefBool = getPrefBool, onChange = onAdvancedModeChange)
-    SettingsAnalytics(getPrefBool = getPrefBool, persistBool = persistBool)
     ClearCache()
     // endregion
 
@@ -424,23 +421,6 @@ private fun AdvancedMode(
             hide()
         }
     }
-}
-
-@Composable
-fun SettingsAnalytics(
-    getPrefBool: (key: String, default: Boolean) -> Boolean,
-    persistBool: (key: String, value: Boolean) -> Unit,
-) {
-    var shareLogs by rememberState(getPrefBool(KeyShareAnalyticsAndLogs, true))
-    SettingsSwitchItem(
-        checked = shareLogs,
-        onCheckedChange = {
-            shareLogs = it
-            persistBool(KeyShareAnalyticsAndLogs, it)
-        },
-        icon = Symbols.TrackChanges,
-        titleResId = R.string.settings_upload_logs,
-    )
 }
 
 @Composable

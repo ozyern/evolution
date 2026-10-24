@@ -130,7 +130,6 @@ Isso pode ser útil se você quiser:"</string>
 	<string name="settings_advanced_mode_caption">"O modo avançado pode ser necessário somente nas situações acima. Você não deve ativá-lo a menos que saiba o que está fazendo."</string>
 
 	<string name="settings_update_method">Método de atualização</string>
-	<string name="settings_upload_logs">Compartilhar dados e registros de uso</string>
 	<string name="settings_clear_cache">Limpar cache</string>
 
 	<!-- FAQ strings -->
@@ -198,8 +197,8 @@ Isso pode ser útil se você quiser:"</string>
 	<string name="download_and_installation_notifications_group_name">Download &amp; Instalação</string>
 	<string name="push_notifications_group_name">Notificações via push</string>
 	<string name="miscellaneous_notifications_group_name">Diversos</string>
-	<string name="download_and_installation_notifications_group_description">Exibe todas as notificações não importantes do aplicativo OS Updater. Contém os indicadores de status mostrados durante o download.</string>
-	<string name="push_notifications_group_description">Exibe todas as notificações importantes do aplicativo OS Updater. Isso inclui notificações de atualização do sistema e notificações de notícias de última hora.</string>
+	<string name="download_and_installation_notifications_group_description">Exibe todas as notificações não importantes do aplicativo Evolution. Contém os indicadores de status mostrados durante o download.</string>
+	<string name="push_notifications_group_description">Exibe todas as notificações importantes do aplicativo Evolution. Isso inclui notificações de atualização do sistema e notificações de notícias de última hora.</string>
 	<string name="download_status_notification_channel_name">Status do download</string>
 	<string name="verification_status_notification_channel_name">Status de verificação</string>
 	<string name="installation_status_notification_channel_name">Status de instalação</string>
@@ -232,8 +231,8 @@ Isso pode ser útil se você quiser:"</string>
 
 	<!-- Contribute strings -->
 	<string name="contribute">Torne-se um contribuidor</string>
-	<string name="contribute_title">Ajude a melhorar o OS Updater</string>
-	<string name="contribute_explanation">Para fornecer a você as atualizações mais recentes, precisamos capturar URLs OTA ZIP.\n\nComo posso ajudar?\n\nO OS Updater pode enviar automaticamente novos URLs de OTA para nossos administradores. Isso usará uma pequena quantidade de dados e poderá consumir um pouco de sua bateria. Você precisará conceder permissão de root ao aplicativo, pois ele lê um arquivo de banco de dados que só pode ser acessado via root. Você será notificado quando um URL for enviado com êxito.</string>
+	<string name="contribute_title">Ajude a melhorar o Evolution</string>
+	<string name="contribute_explanation">Para fornecer a você as atualizações mais recentes, precisamos capturar URLs OTA ZIP.\n\nComo posso ajudar?\n\nO Evolution pode enviar automaticamente novos URLs de OTA para nossos administradores. Isso usará uma pequena quantidade de dados e poderá consumir um pouco de sua bateria. Você precisará conceder permissão de root ao aplicativo, pois ele lê um arquivo de banco de dados que só pode ser acessado via root. Você será notificado quando um URL for enviado com êxito.</string>
 	<string name="contribute_agree">Contribuir com URLs OTA (requer acesso root)</string>
 	<string name="contribute_save">Salvar configurações</string>
 	<string name="contribute_more_info">Mais informações</string>

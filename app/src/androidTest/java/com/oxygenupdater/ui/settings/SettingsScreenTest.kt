@@ -22,7 +22,6 @@ import com.oxygenupdater.assertAndPerformClick
 import com.oxygenupdater.assertHasScrollAction
 import com.oxygenupdater.extensions.formatFileSize
 import com.oxygenupdater.get
-import com.oxygenupdater.internal.settings.KeyShareAnalyticsAndLogs
 import com.oxygenupdater.ui.Theme
 import com.oxygenupdater.ui.common.IconTextButtonTestTag
 import com.oxygenupdater.ui.currentLocale
@@ -78,7 +77,7 @@ class SettingsScreenTest : UsesSharedPreferencesTest() {
         children = rule[SettingsScreenTestTag].run {
             assertHasScrollAction()
             onChildren()
-        }.also { it.assertCountEquals(if (hasSupportSection) 17 else 16) }
+        }.also { it.assertCountEquals(if (hasSupportSection) 16 else 15) }
 
         if (hasSupportSection) supportSection()
         deviceSection()
@@ -192,46 +191,34 @@ class SettingsScreenTest : UsesSharedPreferencesTest() {
             switch.assertIsOn()
         }
 
-        // Analytics switch
-        child(11).run {
-            assertHasTextExactly(R.string.settings_upload_logs, R.string.summary_on)
-            val switch = onChild().assertIsOn()
-
-            assertAndPerformClick()
-            sheet.assertIsNotDisplayed()
-            ensureCallbackInvokedExactlyOnce("persistBool: $KeyShareAnalyticsAndLogs=false")
-            assertHasTextExactly(R.string.settings_upload_logs, R.string.summary_off)
-            switch.assertIsOff()
-        }
-
         // Clear cache (flaky test, depends on cache size)
         // This is disabled if disk cache size is 0, which should be the case for tests.
         // Compose M3 wraps disabled elements in a `RectangleShape`.
-        child(12).assertHasNoClickAction().onChildren().run {
+        child(11).assertHasNoClickAction().onChildren().run {
             this[1].assertHasTextExactly(R.string.settings_clear_cache)
             this[2].assertHasTextExactly(activity.formatFileSize(0))
         }
     }
 
     private fun aboutSection() {
-        child(13).assertHasTextExactly(R.string.preference_header_about)
+        child(12).assertHasTextExactly(R.string.preference_header_about)
 
         // Privacy policy
-        child(14).run {
+        child(13).run {
             assertHasTextExactly(R.string.label_privacy_policy, R.string.summary_privacy_policy)
             assertHasClickAction()
             // Don't performClick because that'll leave the app, which will fail subsequent tests
         }
 
         // Rate app
-        child(15).run {
+        child(14).run {
             assertHasTextExactly(R.string.label_rate_app, R.string.summary_rate_app)
             assertHasClickAction()
             // Don't performClick because that'll leave the app, which will fail subsequent tests
         }
 
         // App version
-        child(16).run {
+        child(15).run {
             assertHasTextExactly(R.string.app_name, "v${BuildConfig.VERSION_NAME}")
             assertAndPerformClick()
             ensureCallbackInvokedExactlyOnce("openAboutScreen")

@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.oxygenupdater.extensions.get
 import com.oxygenupdater.extensions.remove
 import com.oxygenupdater.extensions.set
@@ -27,23 +26,22 @@ import com.oxygenupdater.models.UpdateMethod
 import com.oxygenupdater.repositories.ServerRepository
 import com.oxygenupdater.ui.SettingsListConfig
 import com.oxygenupdater.ui.Theme
-import com.oxygenupdater.utils.FcmUtils
+import com.oxygenupdater.utils.CrashLogger
 import com.oxygenupdater.utils.logDebug
 import com.topjohnwu.superuser.Shell
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val sharedPreferences: SharedPreferences,
     private val serverRepository: ServerRepository,
-    private val fcmUtils: FcmUtils,
-    private val crashlytics: FirebaseCrashlytics,
+    private val crashlytics: CrashLogger,
 ) : ViewModel() {
 
     private var recommendedDeviceId = NotSetL
@@ -184,7 +182,7 @@ class SettingsViewModel @Inject constructor(
 
     /**
      * Saves method ID & name in [SharedPreferences].
-     * Additionally, updates [FirebaseCrashlytics] user identifier.
+     * Additionally, updates [CrashLogger] user identifier.
      */
     fun saveSelectedMethod(
         method: UpdateMethod,
@@ -202,18 +200,6 @@ class SettingsViewModel @Inject constructor(
                 selectedId = id,
             )
         }
-
-        updateCrashlyticsUserId()
-    }
-
-    fun updateCrashlyticsUserId() {
-        val device = sharedPreferences[KeyDevice, "<UNKNOWN>"]
-        val method = sharedPreferences[KeyUpdateMethod, "<UNKNOWN>"]
-        crashlytics.setUserId("Device: $device, Update Method: $method")
-    }
-
-    fun resubscribeToFcmTopic() = viewModelScope.launch(Dispatchers.IO) {
-        fcmUtils.resubscribe()
     }
 
     private fun <T : SelectableModel> MutableStateFlow<SettingsListConfig<T>>.emitIfChanged(

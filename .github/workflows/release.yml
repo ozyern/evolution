@@ -57,13 +57,13 @@ jobs:
         run: |
           name=$(sed -nE 's/^\s*versionName = "([^"]+)"/\1/p' app/build.gradle.kts)
           echo "NAME=$name" >> "$GITHUB_OUTPUT"
-          cp app/build/outputs/apk/release/app-release.apk "OS-Updater-$name.apk"
+          cp app/build/outputs/apk/release/app-release.apk "Evolution-$name.apk"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v6
         with:
-          name: OS-Updater-${{ steps.version.outputs.NAME }}
-          path: OS-Updater-${{ steps.version.outputs.NAME }}.apk
+          name: Evolution-${{ steps.version.outputs.NAME }}
+          path: Evolution-${{ steps.version.outputs.NAME }}.apk
 
       - name: Create GitHub release
         env:
@@ -72,9 +72,9 @@ jobs:
         run: |
           tag="v$NAME"
           if gh release view "$tag" > /dev/null 2>&1; then
-            gh release upload "$tag" "OS-Updater-$NAME.apk" --clobber
+            gh release upload "$tag" "Evolution-$NAME.apk" --clobber
           else
-            gh release create "$tag" "OS-Updater-$NAME.apk" --title "OS Updater $NAME" --generate-notes --target "$GITHUB_SHA"
+            gh release create "$tag" "Evolution-$NAME.apk" --title "Evolution $NAME" --generate-notes --target "$GITHUB_SHA"
           fi
 
       - name: Clean up signing files

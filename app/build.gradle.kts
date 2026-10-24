@@ -1,12 +1,9 @@
 import com.android.build.api.dsl.ApplicationBuildType
-import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 import java.net.URI
 import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.firebase.crashlytics)
-    alias(libs.plugins.gms.services)
     alias(libs.plugins.devtools.ksp)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.compose)
@@ -52,12 +49,6 @@ fun ApplicationBuildType.setupBuildConfig(
     val release = buildName == "release"
 
     if (release) assert(!localOverride) { "`release = true` is incompatible with localOverride" }
-    // Disable Crashlytics symbol/mapping uploads: this fork doesn't have access to the
-    // Firebase project in google-services.json, so uploads would fail release builds.
-    configure<CrashlyticsExtension> {
-        nativeSymbolUploadEnabled = false
-        mappingFileUploadEnabled = false
-    }
 
     val minify = release || !localOverride
     isMinifyEnabled = minify
@@ -67,11 +58,11 @@ fun ApplicationBuildType.setupBuildConfig(
 
     // To distinguish in app drawer and allow multiple builds to exist in parallel on the same device
     if (release) {
-        resValue("string", "app_name", "OS Updater")
+        resValue("string", "app_name", "Evolution")
     } else {
         versionNameSuffix = "-$buildName"
         applicationIdSuffix = ".$buildName"
-        resValue("string", "app_name", "OS Updater ($buildName)")
+        resValue("string", "app_name", "Evolution ($buildName)")
     }
 
     val domain: String
@@ -135,7 +126,7 @@ android {
     testBuildType = "instrumentation"
 
     defaultConfig {
-        applicationId = "com.arjanvlek.oxygenupdater"
+        applicationId = "com.ozyern.evolution"
 
         minSdk = 23
         targetSdk = 37
@@ -317,8 +308,6 @@ dependencies {
     implementation(platform(libs.coil.bom))
     implementation(libs.bundles.coil)
 
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.bundles.firebase)
     implementation(libs.bundles.google.play)
 
     implementation(libs.bundles.libsu)

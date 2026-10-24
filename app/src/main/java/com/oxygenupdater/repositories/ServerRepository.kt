@@ -2,7 +2,7 @@ package com.oxygenupdater.repositories
 
 import android.content.SharedPreferences
 import androidx.collection.ArrayMap
-import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.oxygenupdater.utils.CrashLogger
 import com.oxygenupdater.BuildConfig
 import com.oxygenupdater.OxygenUpdater
 import com.oxygenupdater.apis.ServerApi
@@ -24,10 +24,8 @@ import com.oxygenupdater.models.ServerStatus
 import com.oxygenupdater.models.SubmitOtaDbBody
 import com.oxygenupdater.models.SystemVersionProperties
 import com.oxygenupdater.models.UpdateData
-import com.oxygenupdater.utils.logError
 import com.oxygenupdater.utils.logInfo
 import com.oxygenupdater.utils.logVerbose
-import com.oxygenupdater.utils.logWarning
 import kotlinx.coroutines.CancellationException
 import retrofit2.Response
 import javax.inject.Inject
@@ -39,7 +37,7 @@ class ServerRepository @Inject constructor(
     private val serverApi: ServerApi,
     private val updateDataDao: UpdateDataDao,
     private val articleDao: ArticleDao,
-    private val crashlytics: FirebaseCrashlytics,
+    private val crashlytics: CrashLogger,
 ) {
 
     suspend fun fetchFaq() = performServerRequest { serverApi.fetchFaq() }

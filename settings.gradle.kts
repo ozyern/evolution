@@ -29,4 +29,4 @@ dependencyResolutionManagement {
 }
 
 include(":app")
-rootProject.name = "OS Updater"
+rootProject.name = "Evolution"

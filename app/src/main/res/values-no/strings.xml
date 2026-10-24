@@ -132,7 +132,6 @@ Dette kan være nyttig hvis du vil:"</string>
 	<string name="settings_advanced_mode_caption">"Avansert modus er kanskje bare nødvendig i de ovennevnte situasjonene. Du bør ikke aktivere den med mindre du vet hva du gjør."</string>
 
 	<string name="settings_update_method">Oppdateringsmetode</string>
-	<string name="settings_upload_logs">Del bruksdata og logger</string>
 	<string name="settings_clear_cache">Tøm cache</string>
 
 	<!-- FAQ strings -->
@@ -202,8 +201,8 @@ Dette kan være nyttig hvis du vil:"</string>
 	<string name="download_and_installation_notifications_group_name">Download &amp; Installation</string>
 	<string name="push_notifications_group_name">Push-varsler</string>
 	<string name="miscellaneous_notifications_group_name">Miscellaneous</string>
-	<string name="download_and_installation_notifications_group_description">Viser alle ikke-viktige varsler om OS Updater-appen. Inneholder statusindikatorene som vises under nedlasting.</string>
-	<string name="push_notifications_group_description">Viser alle viktige varsler om OS Updater-appen. Disse inkluderer systemoppdateringsvarsler og meldinger om nyheter.</string>
+	<string name="download_and_installation_notifications_group_description">Viser alle ikke-viktige varsler om Evolution-appen. Inneholder statusindikatorene som vises under nedlasting.</string>
+	<string name="push_notifications_group_description">Viser alle viktige varsler om Evolution-appen. Disse inkluderer systemoppdateringsvarsler og meldinger om nyheter.</string>
 	<string name="download_status_notification_channel_name">Download status</string>
 	<string name="verification_status_notification_channel_name">Verification status</string>
 	<string name="installation_status_notification_channel_name">Installation status</string>
@@ -237,8 +236,8 @@ Dette kan være nyttig hvis du vil:"</string>
 
 	<!-- Contribute strings -->
 	<string name="contribute">Bli en bidragsyter</string>
-	<string name="contribute_title">Hjelp med å forbedre OS Updater</string>
-	<string name="contribute_explanation">For å kunne gi deg de nyeste oppdateringene må vi registrere OTA ZIP-URL-adresser.\n\nHvordan kan jeg hjelpe til?\n\nOS Updater kan automatisk sende nye OTA-URL-er til administratorene våre. Dette vil bruke en liten mengde data og kan bruke litt av batteriet ditt. Du må gi root-tillatelse til appen, fordi den leser en databasefil som bare er tilgjengelig via root. Du vil bli varslet når en URL er sendt inn.</string>
+	<string name="contribute_title">Hjelp med å forbedre Evolution</string>
+	<string name="contribute_explanation">For å kunne gi deg de nyeste oppdateringene må vi registrere OTA ZIP-URL-adresser.\n\nHvordan kan jeg hjelpe til?\n\nEvolution kan automatisk sende nye OTA-URL-er til administratorene våre. Dette vil bruke en liten mengde data og kan bruke litt av batteriet ditt. Du må gi root-tillatelse til appen, fordi den leser en databasefil som bare er tilgjengelig via root. Du vil bli varslet når en URL er sendt inn.</string>
 	<string name="contribute_agree">Bidra med OTA-URL-er (krever root)</string>
 	<string name="contribute_save">Lagre innstillinger</string>
 	<string name="contribute_more_info">Mer informasjon …</string>

@@ -5,15 +5,12 @@ import android.content.SharedPreferences
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.os.Build
-import android.os.Bundle
 import androidx.annotation.RequiresApi
 import androidx.collection.ArraySet
 import androidx.collection.MutableScatterMap
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.oxygenupdater.dao.SubmittedUpdateFileDao
 import com.oxygenupdater.extensions.get
 import com.oxygenupdater.extensions.set
@@ -22,19 +19,18 @@ import com.oxygenupdater.models.SubmittedUpdateFile
 import com.oxygenupdater.repositories.ServerRepository
 import com.oxygenupdater.services.RootFileService
 import com.oxygenupdater.services.RootFileService.Companion.FILENAME
+import com.oxygenupdater.utils.CrashLogger
 import com.oxygenupdater.utils.LocalNotifications
 import com.oxygenupdater.utils.Utils
 import com.oxygenupdater.utils.logDebug
 import com.oxygenupdater.utils.logInfo
-import com.oxygenupdater.utils.logWarning
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.withContext
 import java.io.File
 import java.time.LocalDateTime
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * Reads `ota.db` copied by [RootFileService].
@@ -58,8 +54,7 @@ class ReadOtaDbWorker @AssistedInject constructor(
     private val sharedPreferences: SharedPreferences,
     private val submittedUpdateFilesDao: SubmittedUpdateFileDao,
     private val serverRepository: ServerRepository,
-    private val analytics: FirebaseAnalytics,
-    private val crashlytics: FirebaseCrashlytics,
+    private val crashlytics: CrashLogger,
 ) : CoroutineWorker(context, parameters) {
 
     /** Used to ensure only unique URL rows are considered in [toMap] */
@@ -198,7 +193,7 @@ class ReadOtaDbWorker @AssistedInject constructor(
     }
 
     /**
-     * Saves rows mapped as [SubmittedUpdateFile] in local DB and log URLs to analytics
+     * Saves rows mapped as [SubmittedUpdateFile] in local DB
      *
      * @param action (optional) act on each URL
      *
@@ -217,13 +212,6 @@ class ReadOtaDbWorker @AssistedInject constructor(
             val url = (it["active_url"] ?: it["url"]) as String
 
             action(url)
-            // Analytics events shouldn't block the current thread
-            @Suppress("DeferredResultUnused") async {
-                analytics.logEvent(
-                    if (success) "CONTRIBUTION_SUCCESSFUL" else "CONTRIBUTION_NOT_NEEDED",
-                    Bundle(1).apply { putString("CONTRIBUTION_URL", url) }
-                )
-            }
 
             // Before the Oppo merger, URLs followed a simple format, and only the name was required to complete
             // URLs. App v2.7.0 - v5.8.3 had this old filename contribution feature, which was removed in v5.9.0.

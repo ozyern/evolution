@@ -51,7 +51,6 @@ import com.oxygenupdater.ui.settings.DeviceChooser
 import com.oxygenupdater.ui.settings.DeviceSettingsListConfig
 import com.oxygenupdater.ui.settings.MethodChooser
 import com.oxygenupdater.ui.settings.MethodSettingsListConfig
-import com.oxygenupdater.ui.settings.SettingsAnalytics
 import com.oxygenupdater.ui.theme.PreviewAppTheme
 import com.oxygenupdater.ui.theme.PreviewGetPrefBool
 import com.oxygenupdater.ui.theme.PreviewGetPrefStr
@@ -87,7 +86,6 @@ fun OnboardingScreen(
             DeviceChooser(config = deviceConfig, getPrefStr = getPrefStr, onSelect = onDeviceSelect)
             MethodChooser(config = methodConfig, getPrefStr = getPrefStr, onSelect = onMethodSelect)
 
-            SettingsAnalytics(getPrefBool = getPrefBool, persistBool = persistBool)
         }
 
         // Note: if moving this to the right side of the screen, leave space for 2/3-button nav bar in landscape mode (same as Switch)
@@ -150,7 +148,6 @@ fun OnboardingScreen(
         DeviceChooser(config = deviceConfig, getPrefStr = getPrefStr, onSelect = onDeviceSelect)
         MethodChooser(config = methodConfig, getPrefStr = getPrefStr, onSelect = onMethodSelect)
 
-        SettingsAnalytics(getPrefBool = getPrefBool, persistBool = persistBool)
 
         val bodyMedium = typography.bodyMedium
         Text(

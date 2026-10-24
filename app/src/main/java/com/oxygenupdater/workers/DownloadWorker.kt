@@ -22,7 +22,7 @@ import androidx.work.ForegroundInfo
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
-import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.oxygenupdater.utils.CrashLogger
 import com.oxygenupdater.R
 import com.oxygenupdater.apis.DownloadApi
 import com.oxygenupdater.extensions.formatFileSize
@@ -48,10 +48,8 @@ import com.oxygenupdater.utils.NotificationIds
 import com.oxygenupdater.utils.UpdateDataVersionFormatter
 import com.oxygenupdater.utils.isNetworkError
 import com.oxygenupdater.utils.logDebug
-import com.oxygenupdater.utils.logError
 import com.oxygenupdater.utils.logInfo
 import com.oxygenupdater.utils.logVerbose
-import com.oxygenupdater.utils.logWarning
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CancellationException
@@ -89,7 +87,7 @@ class DownloadWorker @AssistedInject constructor(
     private val downloadApi: DownloadApi,
     private val serverRepository: ServerRepository,
     private val workManager: WorkManager,
-    private val crashlytics: FirebaseCrashlytics,
+    private val crashlytics: CrashLogger,
 ) : CoroutineWorker(context, parameters) {
 
     private var isFirstPublish = true
