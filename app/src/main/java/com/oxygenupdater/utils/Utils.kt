@@ -44,13 +44,13 @@ object Utils {
                 activity, resultCode, PlayServicesResolutionRequest
             )?.show()
 
-            logVerbose(TAG, "Google Play Services are *NOT* available! Ads and notifications are not supported!")
+            logVerbose(TAG, "Google Play Services are *NOT* available! Notifications are not supported!")
             false
         } else {
             val result = resultCode == ConnectionResult.SUCCESS
 
             if (result) logVerbose(TAG, "Google Play Services are available.")
-            else logVerbose(TAG, "Google Play Services are *NOT* available! Ads and notifications are not supported!")
+            else logVerbose(TAG, "Google Play Services are *NOT* available! Notifications are not supported!")
 
             result
         }

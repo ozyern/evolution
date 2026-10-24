@@ -94,7 +94,6 @@
 	<string name="summary_privacy_policy">オンラインで表示</string>
 	<string name="summary_rate_app">レビューに 5 つ星を残す</string>
 
-	<string name="label_buy_ad_free">広告の除去</string>
 	<string name="label_theme">テーマ</string>
 	<string name="label_language">言語</string>
 	<string name="label_privacy_policy">プライバシーポリシー</string>
@@ -112,10 +111,6 @@
 	<string name="theme_additional_note">すべてのテーマはMaterial 3およびYouに対応しています。注意： \'自動\' テーマを選択し、バッテリセーバーが有効な場合、ダークテーマはバッテリーを節約するために時刻に関係なく自動的に使用されます。</string>
 
 	<string name="settings">設定</string>
-	<string name="settings_buy_button_buy">購入 (%1$s)</string>
-	<string name="settings_buy_button_bought">購入済</string>
-	<string name="settings_buy_button_not_possible">無効</string>
-	<string name="settings_buy_ad_free_label">広告消去のためアップグレード</string>
 
 	<string name="settings_contribute_label">アプリの改善にご協力ください</string>
 
@@ -137,8 +132,6 @@
 
 	<string name="settings_update_method">アップデート方法</string>
 	<string name="settings_upload_logs">利用データとログを共有</string>
-	<string name="settings_ad_privacy">GDPR広告の同意</string>
-	<string name="settings_ad_privacy_subtitle">"EEA/UKのユーザー"</string>
 	<string name="settings_clear_cache">キャッシュをクリアする</string>
 
 	<!-- FAQ strings -->
@@ -191,7 +184,6 @@
 	<!-- About screen strings -->
 	<string name="about">情報</string>
 	<string name="about_description">このアプリは直接 OPPO/OnePlus のサーバーから正式なアップデートをダウンロードし、インストールを許可する前にダウンロードされた ZIP の整合性を確認することができます。そうすることで、このアプリはロールアウトをスキップし、アップデートを即座にインストールすることができます。OS の不具合に遭遇した場合、OnePlus に直接報告してください: <a href="https://forums.oneplus.com/feedback">https://forums.oneplus.com/feedback</a>。私たちの <a href="https://discord.gg/5TXdhKJ">Discord サーバー</a>に参加し、最新のアップデートについて話してみませんか。また、提案やフィードバックは <a href="mailto:support@oxygenupdater.com">support@oxygenupdater.com</a> にお気軽にどうぞ。</string>
-	<string name="about_support">私たちを支援したい場合は、広告の除去を購入もしくは <a href="https://patreon.com/oxygenupdater">Patreon のページ</a>を確認してください。</string>
 	<string name="about_background_story_header">経緯</string>
 	<string name="about_background_story">本アプリは Arjan Vlek が彼の他のアプリ <a href="https://cyanogenupdatetracker.com/">Cyanogen Update Tracker</a>(Cyanogen OS ユーザ向けに同様の機能を提供する) のフォローアップとして開発したものです。\n\n4年後、2019年7月にArjan は双方のプロジェクトから辞任することを決定し、アプリの所有権をさまざまな国からの開発者チームに移しました。彼らは、OnePlusの更新を迅速に取得するための優れたサービスとサポートをコミュニティに提供する責任を負っています。\n\n発表の詳細については、<a href="https://oxygenupdater.com/article/81/">こちら</a>をご覧ください。\n\n2019年8月14日 ダークモードや完全な再設計などの新機能を備えた新しい所有権の下での最初のリリース。\n\nチームの詳細については、<a href="https://oxygenupdater.com/team/">ウェブサイト</a>.</string>
 	<string name="about_third_party_app_notice">注意、これは OPPO/OnePlus 公式のアプリケーションではありません。\nOnePlus、OnePlus ロゴ、および OxygenOS/ColorOS は OPPO/OnePlus の登録商標です。\nAndroid、Google、Google Play、および Google Play ロゴは Google Inc. の登録商標です。\nこのアプリは OPPO/OnePlus およびその親会社 Oppo のデータを使用して更新情報を表示します。</string>
@@ -279,8 +271,6 @@
 	<string name="do_not_show_again_checkbox">二度と見せない</string>
 
 	<!-- Purchasing strings -->
-	<string name="purchase_error_pending_payment">購入は \"支払い保留中\" になっています。支払いが完了すると特典が付与されます。</string>
-	<string name="purchase_error_after_payment">内部エラーが発生したため、広告なしバージョンの購入に失敗しました。 数分後にもう一度お試しください。 既に支払いを済ませている場合は、Google Play サポートにお問い合わせください。</string>
 
 	<!-- Other strings-->
 	<string name="icon">アイコン</string>

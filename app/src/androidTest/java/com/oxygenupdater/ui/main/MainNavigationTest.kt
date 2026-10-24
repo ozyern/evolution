@@ -3,24 +3,18 @@ package com.oxygenupdater.ui.main
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.SemanticsNodeInteractionCollection
+import androidx.compose.ui.test.assertContentDescriptionEquals
+import androidx.compose.ui.test.hasRole
 import androidx.compose.ui.test.assertHasClickAction
-import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
-import androidx.compose.ui.test.onAllNodesWithTag
-import androidx.compose.ui.test.onChild
-import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEach
 import com.oxygenupdater.ComposeBaseTest
-import com.oxygenupdater.LineHeightForTextStyle
-import com.oxygenupdater.assertAndPerformClick
-import com.oxygenupdater.assertHasScrollAction
-import com.oxygenupdater.assertHasSemanticsKey
 import com.oxygenupdater.get
+import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import org.junit.Before
 import org.junit.Test
 
@@ -37,56 +31,40 @@ class MainNavigationTest : ComposeBaseTest() {
     @Test
     fun mainNavigation_bar() {
         setContent {
-            MainNavigationBar(
+            MainLiquidDock(
                 currentRoute = currentRoute,
+                backdrop = rememberLayerBackdrop(),
                 navigateTo = { currentRoute = it },
             )
         }
 
         rule[MainNavigation_RailTestTag].assertDoesNotExist()
-        rule[MainNavigation_BarTestTag].run {
-            val child = onChild()
-            child.assertHasSemanticsKey(SemanticsProperties.SelectableGroup)
-            child.onChildren().validateItems()
-        }
-
-        validateLabelMaxLines()
+        // The dock is icon-only; labels are exposed as content descriptions
+        rule[MainNavigation_BarTestTag].assertExists()
+        rule.onAllNodes(hasRole(Role.Tab)).validateItems { route -> assertContentDescriptionEquals(activity.getString(route.labelResId)) }
     }
 
     @Test
-    fun mainNavigation_rail() {
+    fun mainNavigation_verticalDock() {
         setContent {
-            MainNavigationRail(
+            MainLiquidDock(
                 currentRoute = currentRoute,
-                root = false,
-                onNavIconClick = { trackCallback("onNavIconClick") },
+                backdrop = rememberLayerBackdrop(),
                 navigateTo = { currentRoute = it },
+                vertical = true,
             )
         }
 
-        rule[MainNavigation_BarTestTag].assertDoesNotExist()
-        rule[MainNavigation_RailTestTag].run {
-            onChild().assertHasSemanticsKey(SemanticsProperties.SelectableGroup)
-        }
-
-        rule[MainNavigation_Rail_IconButtonTestTag].run {
-            assertHeightIsEqualTo(64.dp)
-            assertAndPerformClick()
-            ensureCallbackInvokedExactlyOnce("onNavIconClick")
-        }
-
-        rule[MainNavigation_Rail_LazyColumnTestTag].run {
-            assertHasScrollAction()
-            onChildren().validateItems()
-        }
-
-        validateLabelMaxLines()
+        rule[MainNavigation_BarTestTag].assertExists()
+        rule.onAllNodes(hasRole(Role.Tab)).validateItems { route -> assertContentDescriptionEquals(activity.getString(route.labelResId)) }
     }
 
-    private fun SemanticsNodeInteractionCollection.validateItems() = repeat(itemCount) { index ->
+    private fun SemanticsNodeInteractionCollection.validateItems(
+        assertLabel: SemanticsNodeInteraction.(MainRoute) -> Unit,
+    ) = repeat(itemCount) { index ->
         val route = MainRoutes[index]
         val child = get(index)
-        child.assertHasTextExactly(route.labelResId)
+        child.assertLabel(route)
 
         if (route == currentRoute) child.assertIsSelected() else child.assertIsNotSelected()
 
@@ -94,11 +72,5 @@ class MainNavigationTest : ComposeBaseTest() {
         assert(route == currentRoute) {
             "Current route did not change. Expected: $route, actual: $currentRoute."
         }
-    }
-
-    private fun validateLabelMaxLines() = rule.onAllNodesWithTag(
-        MainNavigation_LabelTestTag, true
-    ).fetchSemanticsNodes().fastForEach {
-        it.assertMaxLines(LineHeightForTextStyle.labelMedium)
     }
 }

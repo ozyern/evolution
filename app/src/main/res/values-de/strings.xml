@@ -90,7 +90,6 @@
 	<string name="summary_privacy_policy">Online ansehen</string>
 	<string name="summary_rate_app">Hinterlasse eine 5 Sterne Bewertung</string>
 
-	<string name="label_buy_ad_free">Werbung entfernen</string>
 	<string name="label_theme">Theme</string>
 	<string name="label_language">Sprache</string>
 	<string name="label_privacy_policy">Datenschutz-Bestimmungen</string>
@@ -108,10 +107,6 @@
 	<string name="theme_additional_note">Alle Designs unterstützen Material 3/You. Hinweis: Wenn das \"Auto\" Theme und der Energiesparmodus aktiviert ist, wird das Dunkle Theme automatisch unabhängig von der Tageszeit verwendet um Akku zu sparen.</string>
 
 	<string name="settings">"Einstellungen"</string>
-	<string name="settings_buy_button_buy">"Kaufen (%1$s)"</string>
-	<string name="settings_buy_button_bought">"Gekauft"</string>
-	<string name="settings_buy_button_not_possible">"Nicht verfügbar"</string>
-	<string name="settings_buy_ad_free_label">"Zur werbefreien Version Upgraden"</string>
 
 	<string name="settings_contribute_label">Hilf uns die App zu verbessern</string>
 
@@ -130,8 +125,6 @@ Dies kann nützlich sein, wenn Sie Folgendes möchten:"</string>
 	<string name="settings_update_method">"Aktualisierungsmethode"</string>
 
 	<string name="settings_upload_logs">Teile Nutzungsdaten und Protokolle</string>
-	<string name="settings_ad_privacy">GDPR-Zustimmung zur Werbung</string>
-	<string name="settings_ad_privacy_subtitle">"Für Nutzer in EEA/UK"</string>
 	<string name="settings_clear_cache">Cache löschen</string>
 
 	<!-- FAQ strings -->
@@ -190,7 +183,6 @@ Falls es einen Download Fehler gibt, öffne die App und versuche das Update erne
 	<!-- About screen strings -->
 	<string name="about">"Über"</string>
 	<string name="about_description">Diese App lädt Updates direkt von den OPPO/OnePlus Servern herunter und überprüft die heruntergeladene ZIP Datei ob sie zu deinem Gerät, passt bevor du sie installierst. Dies verringert die Wartezeit auf deine Updates und du bekommst die neusten Updates so schnell wie möglich. Wenn du Bugs bemerkst, melde diese direkt an OPPO/OnePlus weiter: <a href="https://forums.oneplus.com/feedback">https://forums.oneplus.com/feedback</a>. Du willst vielleicht unserem <a href="https://discord.gg/5TXdhKJ">Discord server</a> beitreten, sodass du mit anderen Leuten über die neusten Updates reden kannst. Oder schreib uns einfach eine Email an <a href="mailto:support@oxygenupdater.com">support@oxygenupdater.com</a> mit deinen Vorschlägen oder Bewertungen.</string>
-	<string name="about_support">Wenn du uns unterstützen möchtest kannst du entweder die werbefrei Version kaufen (Verfügbar über die App Einstellungen) oder besuchen Sie unsere <a href="https://patreon.com/oxygenupdater">Patreon Seite</a>.</string>
 	<string name="about_background_story_header">Geschichte</string>
 	<string name="about_background_story">Diese App wurde ursprünglich von Arjan Vlek als Nachfolger einer anderen seiner Apps, namens <a href="https://cyanogenupdatetracker.com/">Cyanogen Update Tracker</a> (sie bietet ähnliche Funktionen für Cyanogen OS-Nutzer), entwickelt.\n\nNach 4 Jahren, im Juli 2019, hat sich Arjan entschieden von seinen Projekten zurück zu treten und sie einem Team von Entwicklern von verschiedenen Herkunften zu überlassen. Diese haben die Verantwortung auf sich genommen der Community einen perfekten Service zu bieten &amp; OPPO/OnePlus Geräte schneller mit Updates zu versorgen.\nDu kannst mehr über die Ankündigung herausfinden und zwar <a href="https://oxygenupdater.com/article/81/">hier</a>.\n\n14 August 2019 war der erste release unter neuer Leitung, welcher mit neuen Features wie dem Darkmode und einem kompletten Redesign erschienen ist.\n\nFür mehr Infos besuche <a href="https://oxygenupdater.com/team/">die Webseite</a>.</string>
 	<string name="about_third_party_app_notice">Bitte beachte, diese App ist nicht offiziell von OPPO/OnePlus.\nDer OPPO/OnePlus Name, das OPPO/OnePlus Logo und OxygenOS/ColorOS sind Eigentum von OPPO/OnePlus.\nAndroid, Google, Google Play und das Google Play Logo gehören mit Trademarks Google Inc.\nDiese App benutzt Daten von OPPO/OnePlus und seiner Vaterfirma Oppo um Update Informationen anzuzeigen.</string>
@@ -280,8 +272,6 @@ Andere Geräte, inklusive OPPO/OnePlus Geräten mit Custom ROMs, werden nicht un
 	<string name="do_not_show_again_checkbox">"Nicht mehr anzeigen"</string>
 
 	<!-- Purchasing strings -->
-	<string name="purchase_error_pending_payment">Ihr Kauf befindet sich im Status "Zahlung ausstehend". Sobald die Zahlung abgeschlossen ist, erhalten Sie alle Leistungen, auf die Sie Anspruch haben.</string>
-	<string name="purchase_error_after_payment">"Der Kauf der Werbe-freien Version ist durch einen internen Fehler fehlgeschlagen. Bitte versuche es in ein paar Minuten nochmal. Wenn du bereits bezahlt hast, kontaktiere bitte den Google Play Support für Hilfe."</string>
 	Halte die App auf dem neuesten Stand um sicherzustellen, dass du alle neuen Features und Bugfixes bekommst
 	<!-- Other strings -->
 	<string name="icon">"Icon"</string>

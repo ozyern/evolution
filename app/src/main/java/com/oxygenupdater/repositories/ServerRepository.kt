@@ -2,14 +2,12 @@ package com.oxygenupdater.repositories
 
 import android.content.SharedPreferences
 import androidx.collection.ArrayMap
-import com.android.billingclient.api.Purchase
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.oxygenupdater.BuildConfig
 import com.oxygenupdater.OxygenUpdater
 import com.oxygenupdater.apis.ServerApi
 import com.oxygenupdater.dao.ArticleDao
 import com.oxygenupdater.dao.UpdateDataDao
-import com.oxygenupdater.enums.PurchaseType
 import com.oxygenupdater.extensions.get
 import com.oxygenupdater.extensions.set
 import com.oxygenupdater.internal.NotSetL
@@ -26,7 +24,6 @@ import com.oxygenupdater.models.ServerStatus
 import com.oxygenupdater.models.SubmitOtaDbBody
 import com.oxygenupdater.models.SystemVersionProperties
 import com.oxygenupdater.models.UpdateData
-import com.oxygenupdater.models.VerifyPurchaseBody
 import com.oxygenupdater.utils.logError
 import com.oxygenupdater.utils.logInfo
 import com.oxygenupdater.utils.logVerbose
@@ -203,20 +200,6 @@ class ServerRepository @Inject constructor(
                 appVersion = BuildConfig.VERSION_NAME,
                 deviceName = sharedPreferences[KeyDevice, "<UNKNOWN>"],
                 actualDeviceName = SystemVersionProperties.deviceProductName,
-            )
-        )
-    }
-
-    suspend fun verifyPurchase(
-        purchase: Purchase,
-        amount: String?,
-        purchaseType: PurchaseType,
-    ) = performServerRequest {
-        serverApi.verifyPurchase(
-            VerifyPurchaseBody.from(
-                purchase = purchase,
-                purchaseType = purchaseType,
-                amount = amount,
             )
         )
     }

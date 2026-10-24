@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -116,6 +118,7 @@ import com.oxygenupdater.ui.common.scrollbar.Scrollbar
 import com.oxygenupdater.ui.common.scrollbar.rememberDraggableScroller
 import com.oxygenupdater.ui.common.scrollbar.scrollbarState
 import com.oxygenupdater.ui.common.withPlaceholder
+import com.oxygenupdater.ui.main.LiquidDockReservedHeight
 import com.oxygenupdater.ui.main.MainRoute
 import com.oxygenupdater.ui.main.NavType
 import com.oxygenupdater.ui.theme.PreviewAppTheme
@@ -217,8 +220,11 @@ fun NewsListScreen(
                 }
 
                 Box {
+                    // Let items scroll under the floating glass dock, but keep the last one reachable
+                    val navBarBottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
                     LazyColumn(
                         state = listState,
+                        contentPadding = PaddingValues(bottom = navBarBottom + LiquidDockReservedHeight),
                         modifier = modifierMaxSize.testTag(NewsListScreen_LazyColumnTestTag)
                     ) {
                         items(items = list, key = { it.id ?: Random.nextLong() }) {

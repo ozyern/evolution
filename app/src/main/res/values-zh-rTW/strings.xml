@@ -92,7 +92,6 @@
 	<string name="summary_privacy_policy">線上檢視</string>
 	<string name="summary_rate_app">留下 5 星評分</string>
 
-	<string name="label_buy_ad_free">移除廣告</string>
 	<string name="label_theme">佈景主題</string>
 	<string name="label_language">語言</string>
 	<string name="label_privacy_policy">隱私條款</string>
@@ -110,10 +109,6 @@
 	<string name="theme_additional_note">所有主題均支援 Material 3/You。注意：如果您在使用「自動」切換佈景主題的時候同時啟用了省電模式，那麼將會無視目前時間，強制調至深色模式以達到節省電量的目的</string>
 
 	<string name="settings">設定</string>
-	<string name="settings_buy_button_buy">購買 (%1$s)</string>
-	<string name="settings_buy_button_bought">已購買</string>
-	<string name="settings_buy_button_not_possible">暫不提供</string>
-	<string name="settings_buy_ad_free_label">移除廣告服務</string>
 	<string name="settings_contribute_label">協助改進更新器</string>
 
 	<string name="settings_device">裝置</string>
@@ -133,8 +128,6 @@
 	<string name="settings_advanced_mode_caption">"僅在上述情況下才可能需要高級模式。 除非您知道自己在做什麼，否則不應啟用它。"</string>
 	<string name="settings_update_method">更新方式</string>
 	<string name="settings_upload_logs">分享使用日誌</string>
-	<string name="settings_ad_privacy">GDPR 廣告同意書</string>
-	<string name="settings_ad_privacy_subtitle">"對於歐洲經濟區/英國用戶"</string>
 	<string name="settings_clear_cache">清除快取</string>
 
 	<!-- FAQ strings -->
@@ -187,7 +180,6 @@
 	<!-- About screen strings -->
 	<string name="about">關於</string>
 	<string name="about_description">本應用程式的更新檔案直接從 OPPO/OnePlus 伺服器取得，並且在您安裝前確保它可供使用。這樣，您就可以不用再忍受 OPPO/OnePlus 的分階段推送，盡快安裝官方的系統更新了。如果您遇到了系統 Bug，請直接向 OPPO/OnePlus 反映意見： <a href="https://forums.oneplus.com/feedback">https://forums.oneplus.com/feedback</a>。 您也可以加入我們的<a href="https://discord.gg/5TXdhKJ">Discord 伺服器</a>，來和各位加友交流您對系統的意見。也可以透過電子郵件：<a href="mailto:support@oxygenupdater.com">support@oxygenupdater.com</a>與我們聯絡。</string>
-	<string name="about_support">如果您願意支持我們，可以去購買移除廣告服務（在設定裡），也可以看看我們的 <a href="https://patreon.com/oxygenupdater">Patreon 網頁</a>。</string>
 	<string name="about_background_story_header">幕後故事</string>
 	<string name="about_background_story">本應用程式原本由 Arjan Vlek 開發，作為他的另一款應用程式 <a href="https://cyanogenupdatetracker.com/">Cyanogen Update Tracker</a> 的續作。(它可以為 Cyanogen OS 使用者提供與本應用程式類似的功能)\n\n2019 年 6 月，距離發布四年之後，Arjan 決定停止支援這兩款應用程式，並將它們的所有權轉讓给其它團隊。而這個團隊，則擔負起了為整個 OPPO/OnePlus 社群提供優秀的支援服務的責任，協助無數使用者更快地取得 OPPO/OnePlus 系統更新。\n您可以在 <a href="https://oxygenupdater.com/article/81/">這裡</a> 了解更多資訊。\n\n2019 年 8 月 14 日，新團隊發布了他所負責以來的第一個版本。該版本為使用者們帶來了深色模式的支援、令人耳目一新的界面設計，以及其它的新功能。\n\n如果您想更深入了解這個團隊，您可以去看看他們的<a href="https://oxygenupdater.com/team/">網站</a>。</string>
 	<string name="about_third_party_app_notice">請注意，這並不是 OPPO/OnePlus 官方推出的應用程式！\nOnePlus 的名稱、Logo、以及 OxygenOS/ColorOS 都由 OPPO/OnePlus 所有！\nAndroid、Google、Google Play 以及 Play 商店的 Logo 均為 Google LLC. 所擁有的商標。\n本應用程式使用來自 OPPO/OnePlus 及其母公司 OPPO 的資料，為使用者提供更新訊息。</string>
@@ -276,8 +268,6 @@
 	<string name="do_not_show_again_checkbox">不再顯示</string>
 
 	<!-- Purchasing strings -->
-	<string name="purchase_error_pending_payment">您的購買正處於「正在等待付款」狀態。一旦付款完成，您將獲得所有付款後的權益。</string>
-	<string name="purchase_error_after_payment">由於內部錯誤，購買移除廣告服務失敗，請稍候重試。 如果您已付款，請與 Google Play 支援小組聯絡以取得協助。</string>
 
 	<!-- Other strings-->
 	<string name="icon">圖示</string>

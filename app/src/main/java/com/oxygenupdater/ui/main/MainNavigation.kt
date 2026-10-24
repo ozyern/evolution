@@ -1,6 +1,5 @@
 package com.oxygenupdater.ui.main
 
-import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -15,132 +14,11 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.unveilIn
-import androidx.compose.foundation.basicMarquee
-import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationRail
-import androidx.compose.material3.NavigationRailItem
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.key
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.scene.Scene
 import androidx.navigationevent.NavigationEvent
-import com.oxygenupdater.R
-import com.oxygenupdater.icons.ArrowBack
-import com.oxygenupdater.icons.LogoNotification
-import com.oxygenupdater.icons.Logos
-import com.oxygenupdater.icons.Symbols
 import com.oxygenupdater.ui.theme.light
-
-@Composable
-fun MainNavigationBar(
-    currentRoute: Route?,
-    navigateTo: (route: MainRoute) -> Unit,
-) = NavigationBar(Modifier.testTag(MainNavigation_BarTestTag)) {
-    MainRoutes.forEach { screen ->
-        val labelResId = screen.labelResId
-        key(labelResId) { // because this is in a `forEach`
-            val label = stringResource(labelResId)
-            val selected = currentRoute === screen
-            NavigationBarItem(
-                selected = selected,
-                onClick = dropUnlessResumed { navigateTo(screen) },
-                icon = {
-                    val badge = screen.badge
-                    if (badge == null) Icon(screen.icon, label) else BadgedBox({
-                        Badge {
-                            Text(badge.take(3), Modifier.semantics {
-                                contentDescription = "$badge unread articles"
-                            })
-                        }
-                    }) { Icon(screen.icon, label) }
-                },
-                label = { NavigationLabel(label = label) },
-                alwaysShowLabel = false,
-            )
-        }
-    }
-}
-
-@Composable
-fun MainNavigationRail(
-    currentRoute: Route?,
-    root: Boolean,
-    onNavIconClick: () -> Unit,
-    navigateTo: (route: MainRoute) -> Unit,
-) = NavigationRail(
-    header = {
-        val colorScheme = MaterialTheme.colorScheme
-        val color = if (root) colorScheme.primary else colorScheme.onSurface
-        CompositionLocalProvider(LocalContentColor provides color) {
-            // 64.dp => TopAppBar max height
-            IconButton(
-                onClick = onNavIconClick,
-                modifier = Modifier
-                    .requiredHeight(64.dp)
-                    .testTag(MainNavigation_Rail_IconButtonTestTag)
-            ) {
-                Icon(
-                    if (root) Logos.LogoNotification else Symbols.ArrowBack,
-                    if (root) stringResource(R.string.about) else null,
-                )
-            }
-        }
-    },
-    modifier = Modifier.testTag(MainNavigation_RailTestTag)
-) {
-    // Allow vertical scroll in case height isn't enough for all 5 icons
-    LazyColumn(Modifier.testTag(MainNavigation_Rail_LazyColumnTestTag)) {
-        items(MainRoutes) { screen ->
-            val labelResId = screen.labelResId
-            val label = stringResource(labelResId)
-            val selected = currentRoute === screen
-            NavigationRailItem(
-                selected = selected,
-                onClick = dropUnlessResumed { navigateTo(screen) },
-                icon = {
-                    val badge = screen.badge
-                    if (badge == null) Icon(screen.icon, label) else BadgedBox({
-                        Badge {
-                            Text(badge.take(3), Modifier.semantics {
-                                contentDescription = "$badge unread articles"
-                            })
-                        }
-                    }) { Icon(screen.icon, label) }
-                },
-                label = { NavigationLabel(label = label) },
-            )
-        }
-    }
-}
-
-@Composable
-private inline fun NavigationLabel(label: String) = Text(
-    text = label,
-    maxLines = 1,
-    modifier = Modifier
-        .basicMarquee()
-        .testTag(MainNavigation_LabelTestTag)
-)
 
 typealias TransitionSpecReceiver<T> = AnimatedContentTransitionScope<Scene<T>>
 typealias TransitionSpecFn = TransitionSpecReceiver<Route>.() -> ContentTransform
@@ -262,20 +140,3 @@ fun scrimmedContainerSlidePredictivePopTransitionSpec(colorScheme: ColorScheme):
     )
 }
 
-
-private const val TAG = "MainNavigation"
-
-@VisibleForTesting
-const val MainNavigation_BarTestTag = TAG + "_Bar"
-
-@VisibleForTesting
-const val MainNavigation_RailTestTag = TAG + "_Rail"
-
-@VisibleForTesting
-const val MainNavigation_LabelTestTag = TAG + "_Label"
-
-@VisibleForTesting
-const val MainNavigation_Rail_LazyColumnTestTag = TAG + "_Rail_LazyColumn"
-
-@VisibleForTesting
-const val MainNavigation_Rail_IconButtonTestTag = TAG + "_Rail_IconButton"

@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,10 +28,12 @@ val LocalTheme = staticCompositionLocalOf { Theme.System }
 
 /**
  * @param theme is forwarded to the static composition [LocalTheme]
+ * @param pureBlack if `true`, dark theme uses pure black backgrounds (saves power on AMOLED screens)
  */
 @Composable
 fun AppTheme(
     theme: Theme,
+    pureBlack: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
@@ -49,7 +52,16 @@ fun AppTheme(
     CompositionLocalProvider(LocalTheme providesDefault theme) {
         MaterialTheme(
             colorScheme = colorScheme.run {
-                copy(
+                if (dark && pureBlack) copy(
+                    background = Color.Black,
+                    surface = Color.Black,
+                    surfaceDim = Color.Black,
+                    surfaceContainerLowest = Color.Black,
+                    surfaceContainerLow = Color.Black,
+                    surfaceContainer = Color.Black,
+                    // Dividers must stay visible against pure black
+                    outlineVariant = surfaceContainerHigh,
+                ) else copy(
                     // Used by dividers; modified to reduce contrast
                     outlineVariant = surfaceContainer,
                 )

@@ -90,7 +90,13 @@ import java.text.NumberFormat
 import java.util.MissingResourceException
 import kotlin.math.roundToLong
 
-val DefaultDeviceName = "${Build.MANUFACTURER} ${Build.DEVICE}"
+/**
+ * Used when the server doesn't (yet) list this device, e.g. Chinese variants. Prefers the
+ * OPPO/OnePlus market name (e.g. "OnePlus 13"), and marks mainland China ROMs as such.
+ */
+val DefaultDeviceName = SystemVersionProperties.deviceMarketName.ifEmpty {
+    "${Build.MANUFACTURER} ${Build.DEVICE}"
+}.let { if (SystemVersionProperties.isChinaBuild) "$it (CN)" else it }
 
 @Composable
 fun DeviceScreen(

@@ -13,14 +13,11 @@ import com.oxygenupdater.models.ServerStatus
 import com.oxygenupdater.models.SubmitOtaDbBody
 import com.oxygenupdater.models.UpdateData
 import com.oxygenupdater.models.UpdateMethod
-import com.oxygenupdater.models.VerifyPurchaseBody
 import com.oxygenupdater.ui.currentLanguage
 import com.oxygenupdater.ui.currentLocale
-import com.oxygenupdater.utils.HeaderReadTimeout
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -129,8 +126,4 @@ interface ServerApi {
      */
     @POST("log-download-error")
     suspend fun logDownloadError(@Body body: DownloadErrorBody): Response<ServerPostResult>
-
-    @POST("verify-purchase")
-    @Headers("$HeaderReadTimeout:99")
-    suspend fun verifyPurchase(@Body body: VerifyPurchaseBody): Response<ServerPostResult>
 }

@@ -145,6 +145,22 @@ object SystemVersionProperties {
 
     val isEuBuild: Boolean
 
+    /**
+     * `true` for mainland China ROMs (ColorOS China), including Chinese variants of OnePlus phones
+     * (e.g. OnePlus 13/15 CN), which run ColorOS instead of OxygenOS. Their model numbers differ
+     * from global ones (e.g. PJZ110 vs CPH2653), so they're matched as separate devices.
+     */
+    val isChinaBuild by lazy(LazyThreadSafetyMode.PUBLICATION) {
+        if (pipeline.startsWith("CN", ignoreCase = true)) return@lazy true
+        // `ro.oplus.pipeline_key` (picked first) isn't always region-specific on China ROMs,
+        // so check the dedicated region props too. Note: `pipeline` comes from the same list.
+        try {
+            OplusPipelineLookupKeys.any { systemProperty(it).startsWith("CN", ignoreCase = true) }
+        } catch (_: UnsupportedOperationException) {
+            false
+        }
+    }
+
     // Hardware info shown in DeviceScreen. Not used anywhere else, but because the values are
     // constructed from system/getprop fields, we're keeping it in this class to avoid code
     // duplication. Direct access of system properties may throw an exception, so a getprop

@@ -52,8 +52,9 @@ fun ApplicationBuildType.setupBuildConfig(
     val release = buildName == "release"
 
     if (release) assert(!localOverride) { "`release = true` is incompatible with localOverride" }
-    // Disable Crashlytics upload for non-release builds
-    else configure<CrashlyticsExtension> {
+    // Disable Crashlytics symbol/mapping uploads: this fork doesn't have access to the
+    // Firebase project in google-services.json, so uploads would fail release builds.
+    configure<CrashlyticsExtension> {
         nativeSymbolUploadEnabled = false
         mappingFileUploadEnabled = false
     }
@@ -139,15 +140,8 @@ android {
         minSdk = 23
         targetSdk = 37
 
-        versionCode = 135
-        versionName = "7.1.0"
-
-        addManifestPlaceholders(mapOf("advertisingAppId" to "ca-app-pub-1816831161514116~4275332954"))
-        buildConfigField("String", "AD_BANNER_MAIN_ID", "\"ca-app-pub-1816831161514116/9792024147\"")
-        buildConfigField("String", "AD_INTERSTITIAL_NEWS_ID", "\"ca-app-pub-1816831161514116/2367225965\"")
-
-        val base64PublicKey = loadProperties("billing", "base64PublicKey" to "")["base64PublicKey"] as String
-        buildConfigField("String", "BASE64_PUBLIC_KEY", "\"$base64PublicKey\"")
+        versionCode = 1
+        versionName = "0.0.1"
 
         val languages = fileTree("src/main/res") {
             include("values-*/strings.xml")

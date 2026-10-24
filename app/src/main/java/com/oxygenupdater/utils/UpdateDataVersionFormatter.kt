@@ -65,7 +65,8 @@ object UpdateDataVersionFormatter {
         osPrefix = when (SystemVersionProperties.brandLowercase) {
             "oppo" -> "ColorOS " // space must be kept
             "realme" -> "realme UI " // space must be kept
-            "oneplus" -> "OxygenOS " // space must be kept
+            // OnePlus phones sold in mainland China ship ColorOS, not OxygenOS
+            "oneplus" -> if (SystemVersionProperties.isChinaBuild) "ColorOS " else "OxygenOS " // space must be kept
             else -> ""
         },
         versionInfo = versionInfo,

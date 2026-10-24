@@ -15,6 +15,9 @@ const val KeyUpdateMethodId = "update_method_id"
 
 const val KeyThemeId = "theme_id"
 
+/** Pure black (AMOLED) backgrounds in dark theme */
+const val KeyPureBlack = "pure_black"
+
 const val KeyAdvancedMode = "advanced_mode"
 const val KeySetupDone = "setup_done"
 const val KeySqlToRoomMigrationDone = "sql_to_room_migration_done"
@@ -59,5 +62,3 @@ const val KeyNotificationDeviceTopic = "notification_topic_device"
 
 const val KeyNotificationDelayInSeconds = "notification_delay_in_seconds"
 
-// IAB properties
-const val KeyAdFree = "34ejrtgalsJKDf;awljker;2k3jrpwosKjdfpio24uj3tp3oiwfjdscPOKj"

@@ -93,7 +93,6 @@
 	<string name="summary_privacy_policy">Podívat se online</string>
 	<string name="summary_rate_app">Zanechat pětihvězdičkové hodnocení</string>
 
-	<string name="label_buy_ad_free">Odstranit reklamy</string>
 	<string name="label_theme">Téma</string>
 	<string name="label_language">Jazyk</string>
 	<string name="label_privacy_policy">Zásady ochrany osobních údajů</string>
@@ -111,10 +110,6 @@
 	<string name="theme_additional_note">Všechny šablony podporují Material 3/You. Poznámka: pokud je aktivní téma \"Auto\" a je povolen spořič baterie, bude automaticky použito tmavé téma bez ohledu na denní dobu, aby se šetřila baterie.</string>
 
 	<string name="settings">Nastavení</string>
-	<string name="settings_buy_button_buy">Koupit (%1$s)</string>
-	<string name="settings_buy_button_bought">Koupeno</string>
-	<string name="settings_buy_button_not_possible">Nedostupné</string>
-	<string name="settings_buy_ad_free_label">Povýšit na verzi bez reklam</string>
 
 	<string name="settings_contribute_label">Pomozte aplikaci vylepšit</string>
 
@@ -136,8 +131,6 @@ To může být užitečné, pokud chcete:"</string>
 
 	<string name="settings_update_method">Způsob aktualizace</string>
 	<string name="settings_upload_logs">Sdílení dat o používání a sdílení protokolů</string>
-	<string name="settings_ad_privacy">Souhlas s reklamou podle GDPR</string>
-	<string name="settings_ad_privacy_subtitle">"Pro uživatele v EHP/UK"</string>
 	<string name="settings_clear_cache">Vymazat mezipaměť</string>
 
 	<!-- Řetězce FAQ -->
@@ -189,7 +182,6 @@ To může být užitečné, pokud chcete:"</string>
 	<!-- O řetězcích obrazovky -->
 	<string name="about">O nás</string>
 	<string name="about_description">Tato aplikace stahuje oficiální aktualizace přímo ze serverů společnosti OPPO/OnePlus a před povolením instalace dokonce ověří integritu staženého souboru ZIP. Aplikace vám tak umožní přeskočit frontu a nainstalovat oficiální aktualizace co nejdříve. Pokud narazíte na chyby v operačním systému, nahlaste je přímo společnosti OPPO/OnePlus: <a href="https://forums.oneplus.com/feedback">https://forums.oneplus.com/feedback</a>. Mohli byste se také chtít připojit na náš <a href="https://discord.gg/5TXdhKJ">Discord server</a>, abyste se mohli s ostatními uživateli poradit o nejnovějších aktualizacích. V opačném případě nám můžete napsat na adresu <a href="mailto:support@oxygenupdater.com">support@oxygenupdater.com</a> s vašimi návrhy/zpětnou vazbou.</string>
-	<string name="about_support">Pokud nás chcete podpořit, můžete si zakoupit odblokování bez reklam (nastavení aplikace) nebo se podívat na naši stránku. <a href="https://patreon.com/oxygenupdater">Patreon</a>.</string>
 	<string name="about_background_story_header">Průběh na pozadí</string>
 	<string name="about_background_story">Tuto aplikaci původně vyvinul Arjan Vlek v návaznosti na jinou svou aplikaci s názvem <a href="https://cyanogenupdatetracker.com/">Cyanogen Update Tracker</a> (ta umožňovala stejným způsobem provádět aktualizaci pro Cyanogen OS uživatele).\n\nPo čtyřech letech, v červenci 2019, se Arjan rozhodl od obou projektů odstoupit a převedl vlastnictví aplikace na tým vývojářů z různých zemí. Ti převzali odpovědnost za poskytování vynikajících služeb komunitě &amp; podporu rychlejšího získávání aktualizací OPPO/OnePlus.\nDalší informace o oznámení najdete <a href="https://oxygenupdater.com/article/81/">zde</a>.\n\n14. srpna 2019 vyšlo první vydání pod novým vlastnictvím, které přišlo s novými funkcemi, jako je tmavý režim a kompletní redesign.\n\nDalší informace o týmu najdete <a href="https://oxygenupdater.com/team/">na webových stránkách</a>.</string>
 	<string name="about_third_party_app_notice">Upozorňujeme, že se nejedná o oficiální aplikaci společnosti OPPO/OnePlus.\nNázev OPPO/OnePlus, logo OPPO/OnePlus a OxygenOS/ColorOS jsou majetkem společnosti OPPO/OnePlus.\nAndroid, Google, Google Play a logo Google Play jsou registrované ochranné známky společnosti Google Inc.\nTato aplikace používá k zobrazení informací o aktualizacích data společnosti OPPO/OnePlus a její mateřské společnosti Oppo.</string>
@@ -279,8 +271,6 @@ To může být užitečné, pokud chcete:"</string>
 	<string name="do_not_show_again_checkbox">Znovu se neukázat</string>
 
 	<!-- Nákupní řetězce -->
-	<string name="purchase_error_pending_payment">Váš nákup je ve stavu \"čekání na platbu\". Po dokončení platby vám budou poskytnuty všechny výhody, na které máte nárok.</string>
-	<string name="purchase_error_after_payment">Nákup verze bez reklam se nezdařil, protože došlo k interní chybě. Zkuste to prosím za několik minut znovu. Pokud jste již zaplatili, kontaktujte prosím podporu Google Play a požádejte o pomoc.</string>
 
 	<!-- Other strings-->
 	<string name="icon">Ikona</string>

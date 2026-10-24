@@ -93,7 +93,6 @@
 	<string name="summary_privacy_policy">צפה בדפדפן</string>
 	<string name="summary_rate_app">השאר דירוג 5 כוכבים</string>
 
-	<string name="label_buy_ad_free">הסר פרסומות</string>
 	<string name="label_theme">עיצוב</string>
 	<string name="label_language">שפה</string>
 	<string name="label_privacy_policy">מדיניות הפרטיות</string>
@@ -112,10 +111,6 @@
 	<string name="theme_additional_note">כל העיצובים תומכים ב-Material 3 וב-You. הערה: אם מצב \"אוטומטי\" מופעל וחיסכון בסוללה מופעל, עיצוב כהה יופעל למשך כל שעות היום.</string>
 
 	<string name="settings">הגדרות</string>
-	<string name="settings_buy_button_buy">קנה (%1$s)</string>
-	<string name="settings_buy_button_bought">נרכש</string>
-	<string name="settings_buy_button_not_possible">לא זמין</string>
-	<string name="settings_buy_ad_free_label">שדרג לגרסה בלי פרסומות</string>
 
 	<string name="settings_contribute_label">שתף אותנו בקבצי השמות של העדכונים</string>
 
@@ -136,8 +131,6 @@
 
 	<string name="settings_update_method">שיטת עדכון</string>
 	<string name="settings_upload_logs">שתף נתוני שימוש</string>
-	<string name="settings_ad_privacy">הסכמה למודעות GDPR</string>
-	<string name="settings_ad_privacy_subtitle">"עבור משתמשי EEA/בריטניה"</string>
 	<string name="settings_clear_cache">נקה את המטמון</string>
 
 	<!-- FAQ strings -->
@@ -189,7 +182,6 @@
 	<!-- About screen strings -->
 	<string name="about">אודות</string>
 	<string name="about_description">אפליקציה זו מורידה עדכונים רשמיים היישר מתוך השרתים של OPPO/OnePlus, ואף מאשרת את שלמות קובץ העדכון לפני שהמשתמש יוכל להוריד אותו מהאפליקציה. על ידי כך, האפליקציה מאפשרת לך לדלג על ההמתנה של שחרור העדכונים ולהוריד עדכונים רשמיים במהירות האפשרית. אם אתם נתקלים בבאגים בתוכנה, דווחו זאת ל־OnePlus ישירות: <a href="https://forums.oneplus.com/feedback">https://forums.oneplus.com/feedback</a>. אתם מוזמנים להצטרף<a href="https://discord.gg/5TXdhKJ"> לשרת ה־Discord שלנו </a>בשביל שתוכלו לדבר עם משתמשים אחרים על העדכונים האחרונים. בנוסף תרגישו חופשי לשלוח לנו אימייל בכתובת <a href="mailto:support@oxygenupdater.com">support@oxygenupdater.com</a> עם הרעיונות/המשוב שלכם.</string>
-	<string name="about_support">אם ברצונך לתמוך בנו, באפשרותך לקנות תוספת המעניקה לך חופש מפרסומות (יישום/ הגדרות), או לתרום לנו בעמוד ה- <a href="https://patreon.com/oxygenupdater">Patreon page</a>.</string>
 	<string name="about_background_story_header">סיפור רקע</string>
 	<string name="about_background_story">אפליקציית OS Updater פותחה במקור על ידי Arjan Vlek ככלי מעקב אחר תוכנה אחרת שלו, המכונה <a href="https://cyanogenupdatetracker.com/">Cyanogen Update Tracker</a> (היא מספקת פונקציונליות דומה עבור משתמשי Cyanogen OS).\n\nאחרי 4 שנים, ביולי 2019, Arjan החליט לפרוש משני הפרויקטים והעביר את הבעלות על האפליקציה לצוות מפתחים שמגיעים ממדינות שונות. הם לקחו על עצמם את האחריות לספק לקהילה שירות מצויין ומהיר; תמיכה לקבלת עדכונים למכשירי OPPO/OnePlus מהר יותר.\nהינך מוזמן לקרוא את ההכרזה <a href="https://oxygenupdater.com/article/81/">כאן</a>.\n\nב-14 לאוגוסט 2019 נרשמה המהדורה הראשונה תחת הבעלים החדשים, שהגיע עם תכונות חדשות כמו מצב חושך ועיצוב שונה לגמרי.\n\nעבור עוד מידע על הצוות בדוק את <a href="https://oxygenupdater.com/team/">האתר שלנו</a></string>
 	<string name="about_third_party_app_notice">שימו לב, זוהי אינה אפליקציה רשמית מ-OnePlus.\nשם ה-OnePlus, לוגו ה-OnePlus ו-OxygenOS/ColorOS הם רכוש של OPPO/OnePlus.\nAndroid, Google, Google Play, Google Play Logo הם סימנים מסחריים רשומים של Google Inc.\nאפליקציה זאת משתמשת בנתונים מבית OPPO/OnePlus ומחברת האם שלה Oppo כדי להראות מידע על עדכונים.</string>
@@ -276,8 +268,6 @@
 	<string name="do_not_show_again_checkbox">אל תראה שוב</string>
 
 	<!-- Purchasing strings -->
-	<string name="purchase_error_pending_payment">הרכישה שלך נמצאת במצב \"תשלום בהמתנה\". לאחר השלמת התשלום, תקבל את כל ההטבות שאתה זכאי להן.</string>
-	<string name="purchase_error_after_payment">רכישת הגרסה חסרת המודעות נכשלה, מכיוון שהתרחש שגיאה פנימית. נסה שוב בעוד מספר דקות. אם חוייבת בכרטיס האשראי, אנאא פנה לתמיכה של Google Play לקבלת סיוע.</string>
 
 	<string name="icon">סמל</string>
 	<string name="loading">טוען…</string>

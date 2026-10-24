@@ -197,15 +197,6 @@
 			android:name="com.google.android.gms.version"
 			android:value="@integer/google_play_services_version" />
 
-		<meta-data
-			android:name="com.google.android.gms.ads.APPLICATION_ID"
-			android:value="${advertisingAppId}" />
-
-		<!-- Delay app measurement until MobileAds.initialize() is called. -->
-		<meta-data
-			android:name="com.google.android.gms.ads.DELAY_APP_MEASUREMENT_INIT"
-			android:value="true" />
-
 		<!-- Opt out of WebView usage statistics collection -->
 		<meta-data
 			android:name="android.webkit.WebView.MetricsOptOut"

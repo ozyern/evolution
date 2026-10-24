@@ -15,6 +15,7 @@ import com.oxygenupdater.internal.NotSet
 import com.oxygenupdater.internal.NotSetL
 import com.oxygenupdater.internal.settings.KeyDevice
 import com.oxygenupdater.internal.settings.KeyDeviceId
+import com.oxygenupdater.internal.settings.KeyPureBlack
 import com.oxygenupdater.internal.settings.KeyThemeId
 import com.oxygenupdater.internal.settings.KeyUpdateMethod
 import com.oxygenupdater.internal.settings.KeyUpdateMethodId
@@ -54,6 +55,14 @@ class SettingsViewModel @Inject constructor(
     fun updateTheme(theme: Theme) {
         sharedPreferences[KeyThemeId] = theme.value
         this.theme = theme
+    }
+
+    var pureBlack by mutableStateOf(sharedPreferences[KeyPureBlack, false])
+        private set
+
+    fun updatePureBlack(pureBlack: Boolean) {
+        sharedPreferences[KeyPureBlack] = pureBlack
+        this.pureBlack = pureBlack
     }
 
     private val deviceConfigFlow = MutableStateFlow(SettingsListConfig(listOf<Device>(), 0, NotSetL))

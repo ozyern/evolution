@@ -34,6 +34,11 @@ accompanist = "0.37.3" # keep in sync with Compose version
 # https://developer.android.com/jetpack/androidx/releases/activity
 activity-compose = "1.13.0"
 
+# https://github.com/Kyant0/AndroidLiquidGlass/releases
+# 1.0.x is the last line built against androidx Compose 1.10 & Kotlin 2.3 (2.x needs Compose 1.12 & Kotlin 2.4)
+kyant-backdrop = "1.0.6"
+kyant-shapes = "1.2.0"
+
 # https://github.com/eygraber/compose-placeholder/releases
 eygraber-placeholder-compose = "1.0.12"
 
@@ -45,9 +50,6 @@ appcompat = "1.7.1"
 
 # https://developer.android.com/jetpack/androidx/releases/annotation
 annotation = "1.10.0"
-
-# https://developer.android.com/google/play/billing/release-notes
-billing = "8.3.0"
 
 # https://developer.android.com/jetpack/androidx/releases/browser
 browser = "1.10.0"
@@ -91,10 +93,6 @@ okhttp = "5.3.2"
 play-app-update = "2.1.0"
 # https://developers.google.com/android/guides/releases#:~:text=com.google.android.gms%3Aplay%2Dservices%2Dbase%3A
 play-services-base = "18.10.0"
-# https://developers.google.com/admob/android/rel-notes
-play-services-ads = "25.2.0"
-# https://developers.google.com/admob/android/privacy/release-notes
-ump = "4.0.0"
 
 # https://github.com/square/retrofit/tags
 # https://github.com/square/retrofit/blob/master/CHANGELOG.md
@@ -165,6 +163,9 @@ androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-ru
 
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 
+kyant-backdrop = { module = "io.github.kyant0:backdrop", version.ref = "kyant-backdrop" }
+kyant-shapes = { module = "io.github.kyant0:shapes", version.ref = "kyant-shapes" }
+
 eygraber-compose-placeholder-material3 = { module = "com.eygraber:compose-placeholder-material3", version.ref = "eygraber-placeholder-compose" }
 
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
@@ -181,12 +182,8 @@ firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 
-billing = { module = "com.android.billingclient:billing", version.ref = "billing" }
-billing-ktx = { module = "com.android.billingclient:billing-ktx", version.ref = "billing" }
 google-play-app-update = { module = "com.google.android.play:app-update", version.ref = "play-app-update" }
 google-play-services-base = { module = "com.google.android.gms:play-services-base", version.ref = "play-services-base" }
-google-play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "play-services-ads" }
-google-ump = { module = "com.google.android.ump:user-messaging-platform", version.ref = "ump" }
 
 libsu-core = { module = "com.github.topjohnwu.libsu:core", version.ref = "libsu" }
 libsu-nio = { module = "com.github.topjohnwu.libsu:nio", version.ref = "libsu" }
@@ -260,6 +257,8 @@ androidx-compose = [
     "androidx-activity-compose",
     "androidx-lifecycle-runtime-compose",
     "accompanist-permissions",
+    "kyant-backdrop",
+    "kyant-shapes",
 ]
 
 retrofit = [
@@ -281,12 +280,8 @@ firebase = [
 ]
 
 google-play = [
-    "billing",
-    "billing-ktx",
     "google-play-app-update",
     "google-play-services-base",
-    "google-play-services-ads",
-    "google-ump",
 ]
 
 libsu = [

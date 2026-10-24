@@ -55,7 +55,6 @@ import com.oxygenupdater.extensions.openAppLocalePage
 import com.oxygenupdater.extensions.openPlayStorePage
 import com.oxygenupdater.extensions.rememberCustomTabsIntent
 import com.oxygenupdater.extensions.showToast
-import com.oxygenupdater.icons.AdsClick
 import com.oxygenupdater.icons.Check
 import com.oxygenupdater.icons.CloudDownload
 import com.oxygenupdater.icons.Crowdsource
@@ -66,13 +65,12 @@ import com.oxygenupdater.icons.LogoNotification
 import com.oxygenupdater.icons.Logos
 import com.oxygenupdater.icons.Mobile
 import com.oxygenupdater.icons.Notifications
-import com.oxygenupdater.icons.Paid
 import com.oxygenupdater.icons.Palette
 import com.oxygenupdater.icons.Policy
 import com.oxygenupdater.icons.Star
 import com.oxygenupdater.icons.Symbols
 import com.oxygenupdater.icons.TrackChanges
-import com.oxygenupdater.internal.settings.KeyAdFree
+import com.oxygenupdater.icons.TripOrigin
 import com.oxygenupdater.internal.settings.KeyAdvancedMode
 import com.oxygenupdater.internal.settings.KeyDevice
 import com.oxygenupdater.internal.settings.KeyShareAnalyticsAndLogs
@@ -111,17 +109,15 @@ import kotlinx.coroutines.launch
 @Composable
 fun SettingsScreen(
     navType: NavType,
-    adFreePrice: String?,
-    adFreeConfig: Triple<Boolean, Int, (() -> Unit)?>?,
     onContributorEnrollmentChange: (Boolean) -> Unit,
     deviceConfig: SettingsListConfig<Device>,
     onDeviceSelect: (Device) -> Unit,
     methodConfig: SettingsListConfig<UpdateMethod>,
     onMethodSelect: (UpdateMethod) -> Unit,
     onThemeSelect: (Theme) -> Unit,
+    pureBlack: Boolean,
+    onPureBlackChange: (Boolean) -> Unit,
     onAdvancedModeChange: (Boolean) -> Unit,
-    isPrivacyOptionsRequired: Boolean,
-    showPrivacyOptionsForm: () -> Unit,
     openAboutScreen: () -> Unit,
     getPrefStr: (key: String, default: String) -> String,
     getPrefBool: (key: String, default: Boolean) -> Boolean,
@@ -132,23 +128,10 @@ fun SettingsScreen(
         .testTag(SettingsScreenTestTag)
 ) {
     // region Support us
-    Column(Modifier.background(MaterialTheme.colorScheme.surfaceContainer)) {
+    // Contributing OTA URLs is the only item left here (the app no longer has purchases),
+    // and it's available only on rooted devices, so skip the section entirely otherwise.
+    if (ContributorUtils.isAtLeastQAndPossiblyRooted) Column(Modifier.background(MaterialTheme.colorScheme.surfaceContainer)) {
         Header(R.string.preference_header_support)
-
-        val config = adFreeConfig ?: previousAdFreeConfig
-        previousAdFreeConfig = config
-        val (enabled, subtitleResId, onClick) = config
-        val subtitle = if (onClick != null && adFreePrice != null) {
-            stringResource(subtitleResId, adFreePrice)
-        } else stringResource(subtitleResId)
-
-        SettingsItem(
-            onClick = { onClick?.invoke() },
-            icon = Symbols.Paid,
-            titleResId = R.string.label_buy_ad_free,
-            subtitle = subtitle,
-            enabled = enabled,
-        )
 
         BecomeContributor(
             getPrefBool = getPrefBool,
@@ -169,6 +152,12 @@ fun SettingsScreen(
     // region UI
     Header(R.string.preference_header_ui)
     Theme(onSelect = onThemeSelect)
+    SettingsSwitchItem(
+        checked = pureBlack,
+        onCheckedChange = onPureBlackChange,
+        icon = Symbols.TripOrigin,
+        titleResId = R.string.settings_pure_black,
+    )
     Language()
     // endregion
 
@@ -176,11 +165,6 @@ fun SettingsScreen(
     Header(R.string.preference_header_advanced)
     AdvancedMode(getPrefBool = getPrefBool, onChange = onAdvancedModeChange)
     SettingsAnalytics(getPrefBool = getPrefBool, persistBool = persistBool)
-    PrivacyOptionsItem(
-        isPrivacyOptionsRequired = isPrivacyOptionsRequired,
-        showPrivacyOptionsForm = showPrivacyOptionsForm,
-        getPrefBool = getPrefBool,
-    )
     ClearCache()
     // endregion
 
@@ -509,23 +493,6 @@ private fun ClearCache() {
 }
 
 @Composable
-fun PrivacyOptionsItem(
-    isPrivacyOptionsRequired: Boolean,
-    showPrivacyOptionsForm: () -> Unit,
-    getPrefBool: (key: String, default: Boolean) -> Boolean,
-) {
-    if (!isPrivacyOptionsRequired) return
-    if (getPrefBool(KeyAdFree, false)) return
-
-    SettingsItem(
-        onClick = showPrivacyOptionsForm,
-        icon = Symbols.AdsClick,
-        titleResId = R.string.settings_ad_privacy,
-        subtitle = stringResource(R.string.settings_ad_privacy_subtitle),
-    )
-}
-
-@Composable
 fun SettingsSwitchItem(
     checked: Boolean,
     onCheckedChange: (checked: Boolean) -> Unit,
@@ -670,27 +637,20 @@ val MethodSettingsListConfig = SettingsListConfig(
     selectedId = 1,
 )
 
-@VisibleForTesting
-var previousAdFreeConfig = Triple<Boolean, Int, (() -> Unit)?>(
-    false, R.string.settings_buy_ad_free_label, null
-)
-
 @PreviewThemes
 @Composable
 fun PreviewSettingsScreen() = PreviewAppTheme {
     SettingsScreen(
         navType = NavType.BottomBar,
-        adFreePrice = null,
-        adFreeConfig = previousAdFreeConfig,
         onContributorEnrollmentChange = {},
         deviceConfig = DeviceSettingsListConfig,
         onDeviceSelect = {},
         methodConfig = MethodSettingsListConfig,
         onMethodSelect = {},
         onThemeSelect = {},
+        pureBlack = false,
+        onPureBlackChange = {},
         onAdvancedModeChange = {},
-        isPrivacyOptionsRequired = true,
-        showPrivacyOptionsForm = {},
         openAboutScreen = {},
         getPrefStr = PreviewGetPrefStr,
         getPrefBool = PreviewGetPrefBool,

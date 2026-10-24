@@ -24,6 +24,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.oxygenupdater.database.SqliteMigrations
 import com.oxygenupdater.extensions.get
 import com.oxygenupdater.extensions.set
+import com.oxygenupdater.internal.NotSet
 import com.oxygenupdater.internal.settings.KeyShareAnalyticsAndLogs
 import com.oxygenupdater.internal.settings.KeyVersionCode
 import com.oxygenupdater.models.SystemVersionProperties
@@ -107,9 +108,13 @@ class OxygenUpdater : Application(), Configuration.Provider, SingletonImageLoade
 
         if (SDK_INT >= VERSION_CODES.O) NotifUtils.refreshNotificationChannels(this)
 
-        // Save app's version code to aid in future migrations (added in 5.4.0)
-        sharedPreferences[KeyVersionCode] = BuildConfig.VERSION_CODE
-        SqliteMigrations.deleteLocalBillingDatabase(this)
+        // Save app's version code to aid in future migrations (added in 5.4.0).
+        // One-time cleanups run only after an app update, to keep cold starts free of disk I/O.
+        if (sharedPreferences[KeyVersionCode, NotSet] != BuildConfig.VERSION_CODE) {
+            sharedPreferences[KeyVersionCode] = BuildConfig.VERSION_CODE
+            // Leftover from the old in-app purchase cache; the app no longer has purchases
+            SqliteMigrations.deleteLocalBillingDatabase(this)
+        }
     }
 
     private fun setupStrictMode() {
@@ -132,7 +137,7 @@ class OxygenUpdater : Application(), Configuration.Provider, SingletonImageLoade
                 if (SDK_INT >= VERSION_CODES.P) detectNonSdkApiUsage()
 
                 if (SDK_INT >= VERSION_CODES.S) {
-                    // detectIncorrectContextUse() // noisy; GMS Ads often causes violations
+                    // detectIncorrectContextUse() // noisy
                     detectUnsafeIntentLaunch()
                 }
 
