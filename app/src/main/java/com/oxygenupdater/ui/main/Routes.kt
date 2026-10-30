@@ -115,6 +115,16 @@ object FaqRoute : ChildRoute {
     override fun toString() = "ChildScreen.Faq"
 }
 
+@Serializable
+@Immutable
+object CnRomsRoute : ChildRoute {
+
+    @StringRes
+    override val labelResId = R.string.cn_roms_title
+
+    override fun toString() = "ChildScreen.CnRoms"
+}
+
 const val OuScheme = "oxygenupdater"
 const val OuSchemeSuffixed = "$OuScheme://"
 
@@ -124,6 +134,7 @@ const val DownloadedArg = "downloaded"
 const val DeepLinkArticle = "article"
 const val DeepLinkGuide = "guide"
 const val DeepLinkFaq = "faq"
+const val DeepLinkCnRoms = "cnroms"
 
 const val DeepLinkUpdate = "update"
 const val DeepLinkNewsList = "news"

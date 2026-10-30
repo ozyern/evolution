@@ -111,6 +111,8 @@ import com.oxygenupdater.ui.device.DeviceScreen
 import com.oxygenupdater.ui.device.DeviceViewModel
 import com.oxygenupdater.ui.device.IncorrectDeviceDialog
 import com.oxygenupdater.ui.device.UnsupportedDeviceOsSpecDialog
+import com.oxygenupdater.ui.cnroms.CnRomsScreen
+import com.oxygenupdater.ui.cnroms.CnRomsViewModel
 import com.oxygenupdater.ui.faq.FaqScreen
 import com.oxygenupdater.ui.faq.FaqViewModel
 import com.oxygenupdater.ui.install.InstallGuideScreen
@@ -120,6 +122,8 @@ import com.oxygenupdater.ui.main.ChildRoute
 import com.oxygenupdater.ui.main.DeepLinkAbout
 import com.oxygenupdater.ui.main.DeepLinkArticle
 import com.oxygenupdater.ui.main.DeepLinkDevice
+import com.oxygenupdater.ui.main.CnRomsRoute
+import com.oxygenupdater.ui.main.DeepLinkCnRoms
 import com.oxygenupdater.ui.main.DeepLinkFaq
 import com.oxygenupdater.ui.main.DeepLinkGuide
 import com.oxygenupdater.ui.main.DeepLinkNewsList
@@ -452,6 +456,7 @@ class MainActivity : AppCompatActivity() {
                                 navType = navType,
                                 windowWidthSize = windowWidthSize,
                                 allDevices = allDevices,
+                                openCnRoms = dropUnlessResumed { backStack.navigate(CnRomsRoute) },
                             )
 
                             aboutScreen(
@@ -474,6 +479,7 @@ class MainActivity : AppCompatActivity() {
                             articleScreen(scrollBehavior = scrollBehavior)
                             installGuideScreen()
                             faqScreen()
+                            cnRomsScreen(navType = navType)
                         },
                         modifier = Modifier
                             .fillMaxSize()
@@ -637,6 +643,7 @@ class MainActivity : AppCompatActivity() {
         navType: NavType,
         windowWidthSize: WindowWidthSizeClass,
         allDevices: List<Device>?,
+        openCnRoms: () -> Unit,
     ) = surfacedEntry<MainRoute.Device> {
         val cpuFrequencies by hiltViewModel<DeviceViewModel>(this@MainActivity)
             .cpuFrequencies.collectAsStateWithLifecycle()
@@ -652,6 +659,7 @@ class MainActivity : AppCompatActivity() {
             deviceOsSpec = viewModel.deviceOsSpec,
             deviceMismatchStatus = viewModel.deviceMismatch,
             cpuFrequencies = cpuFrequencies,
+            openCnRoms = openCnRoms,
         )
     }
 
@@ -736,6 +744,15 @@ class MainActivity : AppCompatActivity() {
     ) {
         FaqScreen(
             viewModel = hiltViewModel<FaqViewModel>(this@MainActivity),
+        )
+    }
+
+    private fun EntryProviderScope<Route>.cnRomsScreen(navType: NavType) = surfacedEntry<CnRomsRoute>(
+        metadata = NavDisplay.transitionSpec(scaleChildTransitionSpec()),
+    ) {
+        CnRomsScreen(
+            navType = navType,
+            viewModel = hiltViewModel<CnRomsViewModel>(this@MainActivity),
         )
     }
 
@@ -955,6 +972,7 @@ class MainActivity : AppCompatActivity() {
 
                 DeepLinkGuide -> GuideRoute(uri.getBooleanQueryParameter(DownloadedArg, false))
                 DeepLinkFaq -> FaqRoute
+                DeepLinkCnRoms -> CnRomsRoute
 
                 DeepLinkUpdate -> MainRoute.Update
                 DeepLinkNewsList -> MainRoute.NewsList

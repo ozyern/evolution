@@ -9,7 +9,6 @@ import com.oxygenupdater.ComposeBaseTest
 import com.oxygenupdater.get
 import com.oxygenupdater.models.InAppFaq
 import com.oxygenupdater.ui.RefreshAwareState
-import com.oxygenupdater.ui.common.IconTextTestTag
 import com.oxygenupdater.ui.common.RichText_ContainerTestTag
 import com.oxygenupdater.validateLazyColumn
 import org.junit.Test
@@ -21,7 +20,7 @@ class FaqScreenTest : ComposeBaseTest() {
         val data = PreviewFaqScreenData.filter { it.type == TypeCategory }
         val itemCount = common(data)
 
-        rule.onAllNodesWithTag(IconTextTestTag).assertCountEquals(0)
+        rule.onAllNodesWithTag(FaqScreen_ItemRowTestTag).assertCountEquals(0)
         rule.onAllNodesWithTag(RichText_ContainerTestTag).assertCountEquals(0)
         rule.onAllNodesWithTag(FaqScreen_CategoryTextTestTag).run {
             repeat(itemCount) { index ->
@@ -35,7 +34,7 @@ class FaqScreenTest : ComposeBaseTest() {
         val data = PreviewFaqScreenData.filter { it.type == TypeItem }
         val itemCount = common(data)
 
-        val nodes = rule.onAllNodesWithTag(IconTextTestTag).run {
+        val nodes = rule.onAllNodesWithTag(FaqScreen_ItemRowTestTag).run {
             assertCountEquals(itemCount)
             assertAll(hasClickAction())
         }

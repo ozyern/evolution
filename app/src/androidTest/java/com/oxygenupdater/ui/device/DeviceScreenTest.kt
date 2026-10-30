@@ -14,6 +14,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onParent
 import androidx.compose.ui.test.performClick
 import com.oxygenupdater.ComposeBaseTest
+import com.oxygenupdater.assertAndPerformClick
 import com.oxygenupdater.R
 import com.oxygenupdater.assertHasScrollAction
 import com.oxygenupdater.get
@@ -49,10 +50,13 @@ class DeviceScreenTest : ComposeBaseTest() {
                 deviceOsSpec = spec,
                 deviceMismatchStatus = mismatchStatus,
                 cpuFrequencies = emptyScatterMap(),
+                openCnRoms = { trackCallback("openCnRoms") },
             )
         }
 
         rule[DeviceScreen_ScrollableColumnTestTag].assertHasScrollAction()
+        rule[DeviceScreen_CnRomsTestTag].assertAndPerformClick()
+        ensureCallbackInvokedExactlyOnce("openCnRoms")
 
         rule[DeviceScreen_NameTestTag].assertHasTextExactly(DefaultDeviceName)
         rule[DeviceScreen_ModelTestTag].run {

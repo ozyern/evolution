@@ -1,13 +1,20 @@
 package com.oxygenupdater.ui.faq
 
 import androidx.annotation.VisibleForTesting
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,22 +22,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.oxygenupdater.icons.KeyboardArrowDown
-import com.oxygenupdater.icons.KeyboardArrowUp
-import com.oxygenupdater.icons.Symbols
 import com.oxygenupdater.models.InAppFaq
 import com.oxygenupdater.ui.RefreshAwareState
+import com.oxygenupdater.ui.common.Chevron
 import com.oxygenupdater.ui.common.ExpandCollapse
-import com.oxygenupdater.ui.common.IconText
+import com.oxygenupdater.ui.common.GroupedHeader
 import com.oxygenupdater.ui.common.PullRefresh
 import com.oxygenupdater.ui.common.RichText
 import com.oxygenupdater.ui.common.animatedClickable
-import com.oxygenupdater.ui.common.modifierDefaultPadding
-import com.oxygenupdater.ui.common.modifierDefaultPaddingStartTopEnd
+import com.oxygenupdater.ui.common.groupedBackground
+import com.oxygenupdater.ui.common.groupedCell
 import com.oxygenupdater.ui.common.modifierMaxWidth
 import com.oxygenupdater.ui.common.withPlaceholder
 import com.oxygenupdater.ui.theme.PreviewAppTheme
@@ -47,29 +55,24 @@ fun FaqScreen(viewModel: FaqViewModel) {
 fun FaqScreen(
     state: RefreshAwareState<List<InAppFaq>>,
     onRefresh: () -> Unit,
-) = PullRefresh(
-    state = state,
-    shouldShowProgressIndicator = { it.isEmpty() },
-    onRefresh = onRefresh,
+) = Box(
+    Modifier
+        .fillMaxSize()
+        .background(groupedBackground)
 ) {
-    Column {
+    PullRefresh(
+        state = state,
+        shouldShowProgressIndicator = { it.isEmpty() },
+        onRefresh = onRefresh,
+    ) {
         val (refreshing, data) = state
         val list = if (!refreshing) rememberSaveable(data) { data } else data
         val lastIndex = list.lastIndex
 
-        // Perf: re-use common modifiers to avoid recreating the same object repeatedly
-        val typography = MaterialTheme.typography
-        val titleMedium = typography.titleMedium
-        val categoryModifier = modifierDefaultPaddingStartTopEnd
-            .withPlaceholder(refreshing, titleMedium)
-            .testTag(FaqScreen_CategoryTextTestTag)
-
-        val itemPlaceholderModifier = Modifier.withPlaceholder(refreshing, typography.bodyMedium)
-        val itemTextModifier = Modifier.padding(start = 56.dp, end = 16.dp, bottom = 16.dp)
-
+        val itemPlaceholderModifier = Modifier.withPlaceholder(refreshing)
         LazyColumn(
             Modifier
-                .weight(1f)
+                .fillMaxSize()
                 .testTag(FaqScreen_LazyColumnTestTag)
         ) {
             itemsIndexed(
@@ -81,48 +84,69 @@ fun FaqScreen(
                 },
                 contentType = { _, it -> it.type },
             ) { index, it ->
-                if (it.type == TypeCategory) Text(
+                // Categories become section headers; their items are grouped into one card
+                if (it.type == TypeCategory) GroupedHeader(
                     text = it.title ?: "",
-                    style = titleMedium,
-                    modifier = categoryModifier
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .then(itemPlaceholderModifier)
+                        .testTag(FaqScreen_CategoryTextTestTag)
                 ) else FaqItem(
                     item = it,
-                    last = index == lastIndex,
-                    textModifier = itemTextModifier,
+                    first = index == 0 || list[index - 1].type == TypeCategory,
+                    last = index == lastIndex || list[index + 1].type == TypeCategory,
                     modifier = itemPlaceholderModifier
                 )
+
+                if (index == lastIndex) {
+                    Spacer(Modifier.height(24.dp))
+                    Spacer(Modifier.navigationBarsPadding())
+                }
             }
         }
     }
 }
 
+/** An expandable question, with an iOS disclosure chevron that rotates when open */
 @VisibleForTesting
 @Composable
 fun FaqItem(
     item: InAppFaq,
+    first: Boolean,
     last: Boolean,
     modifier: Modifier,
-    textModifier: Modifier,
-) {
+) = Column(Modifier.groupedCell(first = first, last = last)) {
     var expanded by remember { item.expanded }
-    IconText(
-        icon = if (expanded) Symbols.KeyboardArrowUp else Symbols.KeyboardArrowDown,
-        text = item.title ?: "",
-        textModifier = modifier,
+    val rotation by animateFloatAsState(if (expanded) 90f else 0f, label = "FaqChevronRotation")
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
         modifier = modifierMaxWidth
             .animatedClickable { expanded = !expanded }
-            .then(modifierDefaultPadding) // must be after `clickable`
-    )
+            .heightIn(min = 52.dp)
+            .padding(horizontal = 16.dp, vertical = 12.dp) // must be after `clickable`
+            .testTag(FaqScreen_ItemRowTestTag)
+    ) {
+        Text(
+            text = item.title ?: "",
+            fontSize = 17.sp,
+            modifier = Modifier
+                .weight(1f)
+                .then(modifier)
+        )
+        Box(Modifier.rotate(rotation)) { Chevron() }
+    }
 
     ExpandCollapse(expanded) {
         RichText(
             text = item.body,
             contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = textModifier then modifier
+            modifier = Modifier
+                .padding(start = 16.dp, end = 16.dp, bottom = 14.dp)
+                .then(modifier)
         )
     }
-
-    if (last) Spacer(Modifier.navigationBarsPadding()) else HorizontalDivider()
 }
 
 @VisibleForTesting
@@ -149,6 +173,9 @@ const val FaqScreen_LazyColumnTestTag = TAG + "_LazyColumn"
 
 @VisibleForTesting
 const val FaqScreen_CategoryTextTestTag = TAG + "_CategoryText"
+
+@VisibleForTesting
+const val FaqScreen_ItemRowTestTag = TAG + "_ItemRow"
 
 @VisibleForTesting
 val PreviewFaqScreenData = listOf(

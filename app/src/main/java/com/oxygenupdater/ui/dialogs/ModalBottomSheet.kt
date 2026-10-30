@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
@@ -25,9 +24,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.oxygenupdater.ui.common.GroupedFooter
 import com.oxygenupdater.ui.common.IconTextButton
-import com.oxygenupdater.ui.common.modifierDefaultPadding
+import com.oxygenupdater.ui.common.groupedBackground
 import com.oxygenupdater.ui.common.modifierMaxWidth
 import com.oxygenupdater.ui.theme.PreviewAppTheme
 
@@ -44,19 +47,22 @@ fun ModalBottomSheet(
 ) = ModalBottomSheet(
     onDismissRequest = hide,
     sheetState = rememberModalBottomSheetState(true),
+    containerColor = groupedBackground,
     modifier = Modifier.testTag(BottomSheetTestTag)
 ) { content(hide) }
 
+/** Centred, semibold title, like an iOS sheet's navigation bar */
 @Composable
 @NonRestartableComposable
 fun SheetHeader(@StringRes titleResId: Int) = Text(
     text = stringResource(titleResId),
-    color = MaterialTheme.colorScheme.primary,
+    fontSize = 17.sp,
+    fontWeight = FontWeight.SemiBold,
+    textAlign = TextAlign.Center,
     maxLines = 1,
-    style = MaterialTheme.typography.titleMedium,
-    modifier = Modifier
+    modifier = modifierMaxWidth
         .basicMarquee()
-        .padding(start = 16.dp, end = 4.dp, bottom = 16.dp)
+        .padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
         .testTag(BottomSheet_HeaderTestTag)
 )
 
@@ -96,15 +102,13 @@ fun SheetButtons(
 
 @Composable
 @NonRestartableComposable
-fun SheetCaption(@StringRes captionResId: Int) {
-    HorizontalDivider()
-    Text(
-        text = stringResource(captionResId),
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        style = MaterialTheme.typography.bodySmall,
-        modifier = modifierDefaultPadding.testTag(BottomSheet_CaptionTestTag)
-    )
-}
+fun SheetCaption(@StringRes captionResId: Int) = GroupedFooter(
+    text = stringResource(captionResId),
+    modifier = Modifier
+        .padding(horizontal = 16.dp)
+        .padding(bottom = 16.dp)
+        .testTag(BottomSheet_CaptionTestTag)
+)
 
 private const val TAG = "ModalBottomSheet"
 

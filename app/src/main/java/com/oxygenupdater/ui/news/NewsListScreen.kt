@@ -5,45 +5,34 @@ import android.text.format.DateUtils
 import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.basicMarquee
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyGridItemScope
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.ZeroCornerSize
-import androidx.compose.foundation.text.BasicText
-import androidx.compose.foundation.text.TextAutoSize
-import androidx.compose.material3.Badge
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
@@ -58,33 +47,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.RenderVectorGroup
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.SemanticsProperties
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.drawText
-import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
+import com.kyant.shapes.RoundedRectangle
 import com.oxygenupdater.R
 import com.oxygenupdater.extensions.copyToClipboard
 import com.oxygenupdater.extensions.launch
@@ -94,11 +74,8 @@ import com.oxygenupdater.icons.Cancel
 import com.oxygenupdater.icons.CheckCircle
 import com.oxygenupdater.icons.FullCoverage
 import com.oxygenupdater.icons.ImageFilled
-import com.oxygenupdater.icons.Info
 import com.oxygenupdater.icons.Link
-import com.oxygenupdater.icons.MoreVert
 import com.oxygenupdater.icons.OpenInBrowser
-import com.oxygenupdater.icons.PlaylistAddCheck
 import com.oxygenupdater.icons.Share
 import com.oxygenupdater.icons.Symbols
 import com.oxygenupdater.internal.NotSetL
@@ -107,12 +84,11 @@ import com.oxygenupdater.ui.RefreshAwareState
 import com.oxygenupdater.ui.common.ConditionalNavBarPadding
 import com.oxygenupdater.ui.common.DropdownMenuItem
 import com.oxygenupdater.ui.common.ErrorState
-import com.oxygenupdater.ui.common.IconText
+import com.oxygenupdater.ui.common.GroupedCardShape
 import com.oxygenupdater.ui.common.PullRefresh
-import com.oxygenupdater.ui.common.modifierDefaultPadding
-import com.oxygenupdater.ui.common.modifierDefaultPaddingStartTopEnd
-import com.oxygenupdater.ui.common.modifierMaxSize
-import com.oxygenupdater.ui.common.modifierMaxWidth
+import com.oxygenupdater.ui.common.SegmentedControl
+import com.oxygenupdater.ui.common.groupedBackground
+import com.oxygenupdater.ui.common.groupedCardColor
 import com.oxygenupdater.ui.common.rememberState
 import com.oxygenupdater.ui.common.scrollbar.Scrollbar
 import com.oxygenupdater.ui.common.scrollbar.rememberDraggableScroller
@@ -125,9 +101,13 @@ import com.oxygenupdater.ui.theme.PreviewAppTheme
 import com.oxygenupdater.ui.theme.PreviewThemes
 import com.oxygenupdater.ui.theme.PreviewWindowSize
 import java.time.LocalDateTime
-import kotlin.math.abs
 import kotlin.random.Random
 
+/**
+ * Styled after Apple News: a segmented "All / Unread" filter, then each article as a rounded card with
+ * a meta line (unread dot, time & author), a bold headline, a short summary and a thumbnail. Long-press
+ * an article for its context menu.
+ */
 @Composable
 fun NewsListScreen(
     navType: NavType,
@@ -139,47 +119,55 @@ fun NewsListScreen(
     onMarkAllReadClick: () -> Unit,
     onToggleReadClick: (Article) -> Unit,
     openItem: (id: Long) -> Unit,
-) = PullRefresh(
-    state = state,
-    shouldShowProgressIndicator = { it.isEmpty() },
-    onRefresh = onRefresh,
+) = Box(
+    Modifier
+        .fillMaxSize()
+        .background(groupedBackground)
 ) {
-    val refreshing = state.refreshing
-    var onlyUnread by rememberState(false)
+    PullRefresh(
+        state = state,
+        shouldShowProgressIndicator = { it.isEmpty() },
+        onRefresh = onRefresh,
+    ) {
+        val refreshing = state.refreshing
+        var onlyUnread by rememberState(false)
 
-    val data = if (onlyUnread) state.data.filterNot { it.readState } else state.data
-    val list = if (!refreshing) rememberSaveable(data) { data } else data
+        val data = if (onlyUnread) state.data.filterNot { it.readState } else state.data
+        val list = if (!refreshing) rememberSaveable(data) { data } else data
 
-    LaunchedEffect(onlyUnread) {
-        unreadCountState.intValue = if (onlyUnread) list.size else list.count { !it.readState }
-    }
+        LaunchedEffect(onlyUnread) {
+            unreadCountState.intValue = if (onlyUnread) list.size else list.count { !it.readState }
+        }
 
-    val unreadCount by remember { unreadCountState }
-    MainRoute.NewsList.badge = unreadCount.let { if (it == 0) null else it.toString() }
+        val unreadCount by remember { unreadCountState }
+        MainRoute.NewsList.badge = unreadCount.let { if (it == 0) null else it.toString() }
 
-    Column {
-        Banner(
-            text = stringResource(
-                if (onlyUnread) R.string.news_unread_count_2 else R.string.news_unread_count_1,
-                unreadCount,
-            ),
-            onClick = { onlyUnread = !onlyUnread },
-            onMarkAllReadClick = {
-                onMarkAllReadClick()
-                unreadCountState.intValue = 0
-            },
-        )
+        val filter: @Composable () -> Unit = {
+            SegmentedControl(
+                options = listOf(
+                    stringResource(R.string.news_filter_all),
+                    stringResource(R.string.news_filter_unread, unreadCount),
+                ),
+                selectedIndex = if (onlyUnread) 1 else 0,
+                onSelect = { onlyUnread = it == 1 },
+                modifier = Modifier
+                    .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 4.dp)
+                    .widthIn(max = 480.dp)
+                    .testTag(NewsListScreen_FilterTestTag)
+            )
+        }
 
-        HorizontalDivider()
-
-        if (onlyUnread && unreadCount == 0) ErrorState(
-            navType = navType,
-            titleResId = R.string.news_empty_state_all_read_header,
-            icon = Symbols.FullCoverage,
-            textResId = R.string.news_empty_state_all_read_text,
-            rich = false,
-            onRefreshClick = null,
-        ) else if (list.isEmpty()) ErrorState(
+        if (onlyUnread && unreadCount == 0) Column {
+            filter()
+            ErrorState(
+                navType = navType,
+                titleResId = R.string.news_empty_state_all_read_header,
+                icon = Symbols.FullCoverage,
+                textResId = R.string.news_empty_state_all_read_text,
+                rich = false,
+                onRefreshClick = null,
+            )
+        } else if (list.isEmpty()) ErrorState(
             navType = navType,
             titleResId = R.string.news_empty_state_none_available_header,
             icon = Symbols.FullCoverage,
@@ -202,7 +190,6 @@ fun NewsListScreen(
 
             if (navType == NavType.BottomBar) {
                 val listState = rememberLazyListState()
-                val size = DpSize(80.dp, 80.dp)
 
                 // Run when we have new articles, by keying the first item's ID.
                 // This should be more performant than using the list itself as the key.
@@ -219,50 +206,45 @@ fun NewsListScreen(
                     }
                 }
 
-                Box {
-                    // Let items scroll under the floating glass dock, but keep the last one reachable
-                    val navBarBottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-                    LazyColumn(
-                        state = listState,
-                        contentPadding = PaddingValues(bottom = navBarBottom + LiquidDockReservedHeight),
-                        modifier = modifierMaxSize.testTag(NewsListScreen_LazyColumnTestTag)
-                    ) {
-                        items(items = list, key = { it.id ?: Random.nextLong() }) {
-                            NewsListItem(
-                                refreshing = refreshing,
-                                item = it,
-                                size = size,
-                                onToggleReadClick = { onItemToggleRead(it) },
-                                onClick = { onItemClick(it) },
-                            )
-                        }
-                    }
+                // Let items scroll under the floating glass dock, but keep the last one reachable
+                val navBarBottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+                LazyColumn(
+                    state = listState,
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(bottom = navBarBottom + LiquidDockReservedHeight),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .testTag(NewsListScreen_LazyColumnTestTag)
+                ) {
+                    item(key = "filter") { filter() }
 
-                    // Must be at the end — highest in the Z-hierarchy => nothing draws above it,
-                    // and user can press/drag for fast scrolling.
-                    // TODO(compose/news): switch to first-party solution when it's out: https://developer.android.com/jetpack/androidx/compose-roadmap
-                    val numItems = list.size
-                    listState.Scrollbar(
-                        state = listState.scrollbarState(numItems),
-                        onThumbMoved = listState.rememberDraggableScroller(numItems),
-                        modifier = Modifier.align(Alignment.CenterEnd),
-                    )
+                    items(items = list, key = { it.id ?: Random.nextLong() }) {
+                        NewsCard(
+                            refreshing = refreshing,
+                            item = it,
+                            imageOnTop = false,
+                            onToggleReadClick = { onItemToggleRead(it) },
+                            onClick = { onItemClick(it) },
+                            modifier = Modifier
+                                .animateItem(fadeInSpec = null, fadeOutSpec = null)
+                                .padding(horizontal = 16.dp)
+                        )
+                    }
                 }
-            } else Column {
+
+                // Must be at the end — highest in the Z-hierarchy => nothing draws above it,
+                // and user can press/drag for fast scrolling.
+                val numItems = list.size + 1 // + filter
+                listState.Scrollbar(
+                    state = listState.scrollbarState(numItems),
+                    onThumbMoved = listState.rememberDraggableScroller(numItems),
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                )
+            } else {
                 val gridState = rememberLazyGridState()
-                val size = remember(windowWidthSize, windowHeightSize) {
-                    DpSize(
-                        width = when (windowWidthSize) {
-                            WindowWidthSizeClass.Medium -> 192.dp
-                            WindowWidthSizeClass.Expanded -> 224.dp
-                            else -> 160.dp
-                        },
-                        height = when (windowHeightSize) {
-                            WindowHeightSizeClass.Medium -> 192.dp
-                            WindowHeightSizeClass.Expanded -> 224.dp
-                            else -> 128.dp
-                        },
-                    )
+                val minCardWidth = when (windowWidthSize) {
+                    WindowWidthSizeClass.Expanded -> 320.dp
+                    else -> 280.dp
                 }
 
                 // Run when we have new articles, by keying the first item's ID.
@@ -280,286 +262,171 @@ fun NewsListScreen(
                     }
                 }
 
-                Box {
+                Column {
                     LazyVerticalGrid(
-                        columns = GridCells.FixedSize(size.width),
+                        columns = GridCells.Adaptive(minCardWidth),
                         state = gridState,
-                        contentPadding = PaddingValues(16.dp),
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(32.dp, Alignment.CenterHorizontally),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier
+                            .weight(1f)
                             // Leave space for 2/3-button nav bar in landscape mode
                             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
                             .testTag(NewsListScreen_LazyVerticalGridTestTag)
                     ) {
+                        item(key = "filter", span = { GridItemSpan(maxLineSpan) }) {
+                            Box(contentAlignment = Alignment.Center) { filter() }
+                        }
+
                         items(items = list, key = { it.id ?: Random.nextLong() }) {
-                            NewsGridItem(
+                            NewsCard(
                                 refreshing = refreshing,
                                 item = it,
-                                size = size,
+                                imageOnTop = windowHeightSize != WindowHeightSizeClass.Compact,
                                 onToggleReadClick = { onItemToggleRead(it) },
                                 onClick = { onItemClick(it) },
+                                modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
                             )
                         }
                     }
 
-                    // Must be at the end — highest in the Z-hierarchy => nothing draws above it,
-                    // and user can press/drag for fast scrolling.
-                    // TODO(compose/news): switch to first-party solution when it's out: https://developer.android.com/jetpack/androidx/compose-roadmap
-                    val numItems = list.size
-                    gridState.Scrollbar(
-                        state = gridState.scrollbarState(numItems),
-                        onThumbMoved = gridState.rememberDraggableScroller(numItems),
-                        modifier = Modifier.align(Alignment.CenterEnd),
-                    )
+                    ConditionalNavBarPadding(navType)
                 }
-
-                ConditionalNavBarPadding(navType)
             }
         }
     }
 }
 
+/**
+ * @param imageOnTop `true` for a tall card with a wide image above the text (grids on larger screens),
+ *   `false` for a compact card with a square thumbnail at the trailing edge (phones)
+ */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun LazyItemScope.NewsListItem(
+private fun NewsCard(
     refreshing: Boolean,
     item: Article,
-    size: DpSize,
+    imageOnTop: Boolean,
     onToggleReadClick: () -> Unit,
     onClick: () -> Unit,
-) = Column(
-    Modifier
-        .animateItem(fadeInSpec = null, fadeOutSpec = null)
-        .clickable(!refreshing, onClick = onClick)
+    modifier: Modifier = Modifier,
+) = Box(modifier) {
+    var showMenu by rememberState(false)
+    val haptic = LocalHapticFeedback.current
+    val cardModifier = Modifier
+        .fillMaxWidth()
+        .clip(GroupedCardShape)
+        .background(groupedCardColor)
+        .combinedClickable(
+            enabled = !refreshing,
+            onLongClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                showMenu = true
+            },
+            onClick = onClick,
+        )
         .testTag(NewsListScreen_ItemColumnTestTag)
-) {
-    Box {
-        if (!refreshing && !item.readState) Badge(
+
+    // Read articles recede, like read mail
+    val readAlpha = Modifier.graphicsLayer {
+        if (!refreshing && item.readState) alpha = 0.6f
+    }
+
+    if (imageOnTop) Column(cardModifier) {
+        NewsImage(
+            refreshing = refreshing,
+            item = item,
+            size = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(16f / 9f)
+                .then(readAlpha)
+        )
+        Column(Modifier.padding(14.dp)) {
+            CardText(refreshing = refreshing, item = item, readAlpha = readAlpha)
+        }
+    } else Row(
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = cardModifier.padding(14.dp)
+    ) {
+        Column(Modifier.weight(1f)) {
+            CardText(refreshing = refreshing, item = item, readAlpha = readAlpha)
+        }
+        NewsImage(
+            refreshing = refreshing,
+            item = item,
+            size = 84.dp,
+            modifier = Modifier
+                .clip(RoundedRectangle(12.dp))
+                .then(readAlpha)
+        )
+    }
+
+    ItemMenu(showMenu, { showMenu = false }, item, onToggleReadClick)
+}
+
+@Composable
+private fun CardText(refreshing: Boolean, item: Article, readAlpha: Modifier) {
+    val colorScheme = MaterialTheme.colorScheme
+
+    // Meta line: unread dot (like Mail), relative time & author
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        if (!refreshing && !item.readState) Box(
             Modifier
-                .offset(4.dp, 16.dp)
+                .padding(end = 6.dp)
+                .size(8.dp)
+                .clip(RoundedRectangle(4.dp))
+                .background(colorScheme.primary)
                 .testTag(NewsListScreen_ItemBadgeTestTag)
         )
 
-        Row(modifierDefaultPaddingStartTopEnd) {
-            Column(
-                Modifier
-                    .weight(1f)
-                    .requiredHeight(size.height) // same as image
-                    .padding(end = 8.dp)
-            ) {
-                ListItemTitles(refreshing = refreshing, item = item)
-            }
-
-            NewsImage(
-                refreshing = refreshing,
-                item = item,
-                size = size,
-                modifier = Modifier.graphicsLayer {
-                    if (refreshing) return@graphicsLayer
-                    alpha = if (item.readState) 0.87f else 1f
-                }
-            )
-        }
-    }
-
-    Footer(
-        refreshing = refreshing,
-        item = item,
-        onToggleReadClick = onToggleReadClick,
-        startPadding = 16.dp,
-        menuXOffset = 6.dp, // bring inline with image
-    )
-}
-
-@Composable
-private fun LazyGridItemScope.NewsGridItem(
-    refreshing: Boolean,
-    item: Article,
-    size: DpSize,
-    onToggleReadClick: () -> Unit,
-    onClick: () -> Unit,
-) = Column(
-    Modifier
-        .animateItem(fadeInSpec = null, fadeOutSpec = null)
-        .testTag(NewsListScreen_ItemColumnTestTag)
-) {
-    Box(
-        Modifier
-            .requiredSize(size)
-            .clickable(!refreshing, onClick = onClick)
-    ) {
-        NewsImage(refreshing = refreshing, item = item, size = size)
-
-        // Overlay over image
-        Box(
-            modifierMaxSize
-                .clip(MaterialTheme.shapes.small)
-                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.75f))
+        Text(
+            text = item.getFooterText(),
+            color = colorScheme.onSurfaceVariant,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.withPlaceholder(refreshing)
         )
-
-        if (!refreshing && !item.readState) GridItemBadge()
-
-        GridItemTitles(refreshing = refreshing, item = item)
     }
-
-    Footer(
-        refreshing = refreshing,
-        item = item,
-        onToggleReadClick = onToggleReadClick,
-        startPadding = 0.dp,
-        menuXOffset = 22.dp, // bring inline with image
-    )
-}
-
-@Composable
-private fun GridItemBadge() {
-    val ltr = LocalLayoutDirection.current == LayoutDirection.Ltr
-    val error = MaterialTheme.colorScheme.error
-    Spacer(
-        Modifier
-            .size(24.dp)
-            .clip(
-                // Clip only top-left
-                MaterialTheme.shapes.small.copy(
-                    topEnd = ZeroCornerSize,
-                    bottomEnd = ZeroCornerSize,
-                    bottomStart = ZeroCornerSize,
-                )
-            )
-            .drawWithCache {
-                // Top-left triangle
-                val path = Path()
-                val width = size.width
-                val height = size.height
-
-                path.moveTo(0f, 0f)
-                if (ltr) {
-                    path.lineTo(width, 0f)
-                    path.lineTo(0f, height)
-                } else {
-                    path.lineTo(width, height)
-                    path.lineTo(width, 0f)
-                }
-                path.close()
-
-                onDrawBehind { drawPath(path, error) }
-            }
-            .testTag(NewsListScreen_ItemBadgeTestTag)
-    )
-}
-
-/**
- * Draws max 2 [title][Article.title] & [subtitle][Article.subtitle] lines, with the latter being
- * auto-resized to fit available space (from 12sp to 14sp).
- *
- * Even though [GridItemTitles] text measurer logic is superior (max title lines with min 1 subtitle line),
- * we don't use it here because it's important to show refresh placeholders for title & subtitle separately,
- * which isn't possible if drawing both together in the same element.
- */
-@Composable
-private fun ListItemTitles(refreshing: Boolean, item: Article) {
-    val titleMedium = MaterialTheme.typography.titleMedium
 
     Text(
         text = item.title ?: "Unknown title",
-        overflow = TextOverflow.Ellipsis, maxLines = 2,
-        style = titleMedium,
+        fontSize = 17.sp,
+        lineHeight = 22.sp,
+        fontWeight = FontWeight.Bold,
+        maxLines = 3,
+        overflow = TextOverflow.Ellipsis,
         modifier = Modifier
-            .withPlaceholder(refreshing, titleMedium)
-            .graphicsLayer {
-                if (refreshing) return@graphicsLayer
-                alpha = if (item.readState) 0.7f else 1f
-            }
+            .padding(top = 4.dp)
+            .withPlaceholder(refreshing)
+            .then(readAlpha)
     )
 
-    BasicText(
-        text = item.subtitle ?: "",
-        overflow = TextOverflow.Ellipsis, maxLines = 2,
-        style = MaterialTheme.typography.bodyMedium.merge(
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        ),
-        autoSize = TextAutoSize.StepBased(
-            minFontSize = 12.sp,
-            maxFontSize = 14.sp,
-        ),
-        modifier = Modifier.withPlaceholder(refreshing)
-    )
-}
-
-/**
- * This draws text via [rememberTextMeasurer] into [Spacer] to maximize [title][Article.title] lines
- * while also ensuring at least 1 line for [subtitle][Article.subtitle].
- *
- * Because of how grid items are laid out (titles are drawn over a "background" image) we skip drawing
- * titles when UI is refreshing, because image's [withPlaceholder] is already enough to signal refresh status.
- */
-@Composable
-private fun GridItemTitles(refreshing: Boolean, item: Article) {
-    if (refreshing) return // don't draw titles for grid items if refreshing
-
-    val titleMedium = MaterialTheme.typography.titleMedium
-    val bodyMedium = MaterialTheme.typography.bodyMedium
-
-    val currentColor = LocalContentColor.current
-    val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
-
-    val textMeasurer = rememberTextMeasurer()
-    val spaceForOneSubtitleLine = LocalDensity.current.run {
-        val subtitleLineHeight = bodyMedium.lineHeight.value
-        val titleFontPadding = abs(titleMedium.lineHeight.value - titleMedium.fontSize.value) / 2
-        (subtitleLineHeight + titleFontPadding).sp.roundToPx()
+    item.subtitle?.takeIf { it.isNotBlank() }?.let {
+        Text(
+            text = it,
+            color = colorScheme.onSurfaceVariant,
+            fontSize = 15.sp,
+            lineHeight = 20.sp,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .padding(top = 2.dp)
+                .withPlaceholder(refreshing)
+        )
     }
-
-    val titleStr = item.title ?: "Unknown title"
-    val subtitleStr = item.subtitle ?: ""
-    Spacer(
-        modifierMaxSize
-            .padding(horizontal = 12.dp, vertical = 8.dp)
-            .drawWithCache {
-                val width = size.width.toInt()
-                val height = size.height.toInt()
-
-                val title = textMeasurer.measure(
-                    text = titleStr,
-                    // Leave space for min 1 subtitle line
-                    constraints = Constraints(maxWidth = width, maxHeight = height - spaceForOneSubtitleLine),
-                    overflow = TextOverflow.Ellipsis,
-                    style = titleMedium,
-                )
-
-                val titleHeight = title.size.height
-                val subtitle = textMeasurer.measure(
-                    text = subtitleStr,
-                    // Limit to remaining space
-                    constraints = Constraints(maxWidth = width, maxHeight = height - titleHeight),
-                    overflow = TextOverflow.Ellipsis,
-                    style = bodyMedium,
-                )
-
-                onDrawBehind {
-                    drawText(title, currentColor)
-                    drawText(subtitle, onSurfaceVariant, Offset(0f, titleHeight.toFloat())) // position just below title
-                }
-            }
-            // We need to explicitly set text semantics here, because we're drawing it ourselves
-            .semantics {
-                set(
-                    SemanticsProperties.Text,
-                    listOf(
-                        AnnotatedString(item.title ?: "Unknown title"),
-                        AnnotatedString(item.subtitle ?: ""),
-                    )
-                )
-            }
-    )
 }
 
+/** @param size fixed square size, or `null` to fill the space given by [modifier] */
 @Composable
 private fun NewsImage(
     modifier: Modifier = Modifier,
     refreshing: Boolean,
     item: Article,
-    size: DpSize,
+    size: Dp?,
 ) {
     val defaultImage = Symbols.ImageFilled.run {
         rememberVectorPainter(
@@ -578,16 +445,11 @@ private fun NewsImage(
     AsyncImage(
         model = item.imageUrl?.let {
             val context = LocalContext.current
-            val widthPx: Int
-            val heightPx: Int
-            LocalDensity.current.run {
-                widthPx = size.width.roundToPx()
-                heightPx = size.height.roundToPx()
-            }
-            remember(it, widthPx, heightPx) {
+            val sizePx = size?.let { size -> LocalDensity.current.run { size.roundToPx() } }
+            remember(it, sizePx) {
                 ImageRequest.Builder(context)
                     .data(it)
-                    .size(widthPx, heightPx)
+                    .apply { if (sizePx != null) size(sizePx) }
                     .build()
             }
         },
@@ -595,102 +457,15 @@ private fun NewsImage(
         placeholder = defaultImage,
         error = defaultImage,
         contentScale = ContentScale.Crop,
-        modifier = Modifier
-            .requiredSize(size)
-            .clip(MaterialTheme.shapes.small)
+        modifier = (if (size != null) Modifier.size(size) else Modifier)
+            .then(modifier)
+            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
             .withPlaceholder(refreshing)
-            .then(modifier.testTag(NewsListScreen_ItemImageTestTag))
+            .testTag(NewsListScreen_ItemImageTestTag)
     )
 }
 
-@Composable
-private fun Footer(
-    refreshing: Boolean,
-    item: Article,
-    onToggleReadClick: () -> Unit,
-    startPadding: Dp,
-    menuXOffset: Dp,
-) = Row(
-    horizontalArrangement = Arrangement.SpaceBetween,
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = modifierMaxWidth.padding(start = startPadding)
-) {
-    val bodySmall = MaterialTheme.typography.bodySmall
-    Text(
-        text = item.getFooterText(),
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        maxLines = 1,
-        style = bodySmall,
-        modifier = Modifier
-            .weight(1f, false)
-            .basicMarquee()
-            .withPlaceholder(refreshing, bodySmall)
-    )
-
-    ItemMenuOpener(
-        refreshing = refreshing,
-        item = item,
-        onToggleReadClick = onToggleReadClick,
-        xOffset = menuXOffset,
-    )
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun Banner(
-    text: String,
-    onClick: () -> Unit,
-    onMarkAllReadClick: () -> Unit,
-) {
-    var showMenu by rememberState(false)
-    IconText(
-        icon = Symbols.Info,
-        text = text,
-        modifier = modifierMaxWidth
-            .combinedClickable(onLongClick = { showMenu = true }, onClick = onClick)
-            .then(modifierDefaultPadding) // must be after `clickable`
-    ) {
-        DropdownMenu(
-            expanded = showMenu,
-            onDismissRequest = { showMenu = false },
-            offset = DpOffset(24.dp, 0.dp),
-            modifier = Modifier.testTag(NewsListScreen_MarkAllReadMenuTestTag)
-        ) {
-            DropdownMenuItem(
-                icon = Symbols.PlaylistAddCheck,
-                textResId = R.string.news_mark_all_read,
-                onClick = {
-                    onMarkAllReadClick()
-                    showMenu = false
-                },
-            )
-        }
-    }
-}
-
-@Composable
-private fun ItemMenuOpener(
-    refreshing: Boolean,
-    item: Article,
-    onToggleReadClick: () -> Unit,
-    xOffset: Dp,
-) = Box {
-    var showMenu by rememberState(false)
-    ItemMenu(showMenu, { showMenu = false }, item, onToggleReadClick)
-
-    IconButton(
-        onClick = { showMenu = true },
-        enabled = !refreshing,
-        modifier = Modifier.offset(xOffset)
-    ) {
-        Icon(
-            imageVector = Symbols.MoreVert, contentDescription = stringResource(R.string.icon),
-            tint = if (refreshing) LocalContentColor.current else MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = itemMenuIconModifier
-        )
-    }
-}
-
+/** Long-press context menu */
 @SuppressLint("PrivateResource")
 @Composable
 private fun ItemMenu(
@@ -701,6 +476,7 @@ private fun ItemMenu(
 ) = DropdownMenu(
     expanded = expanded,
     onDismissRequest = onDismiss,
+    shape = RoundedRectangle(14.dp),
     modifier = Modifier.testTag(NewsListScreen_ItemMenuTestTag)
 ) {
     DropdownMenuItem(
@@ -742,9 +518,6 @@ private fun ItemMenu(
     )
 }
 
-// Perf: re-use common modifiers to avoid recreating the same object repeatedly
-private val itemMenuIconModifier = Modifier.requiredSize(20.dp)
-
 @VisibleForTesting
 fun Article.getFooterText(): String {
     val authorName = authorName ?: "Unknown Author"
@@ -763,7 +536,7 @@ fun Article.getFooterText(): String {
 private const val TAG = "NewsListScreen"
 
 @VisibleForTesting
-const val NewsListScreen_MarkAllReadMenuTestTag = TAG + "_MarkAllReadMenu"
+const val NewsListScreen_FilterTestTag = TAG + "_Filter"
 
 @VisibleForTesting
 const val NewsListScreen_LazyColumnTestTag = TAG + "_LazyColumn"

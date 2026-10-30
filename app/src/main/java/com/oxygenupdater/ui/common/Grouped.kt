@@ -1,5 +1,7 @@
 package com.oxygenupdater.ui.common
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,35 +11,46 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kyant.shapes.Capsule
 import com.kyant.shapes.RoundedRectangle
 import com.oxygenupdater.ui.theme.light
+import kotlin.math.roundToInt
 
 /*
  * iOS-style grouped ("inset grouped") list building blocks, following Apple's Human Interface
@@ -243,4 +256,163 @@ fun GroupedColumn(
         .fillMaxWidth()
         .background(groupedBackground),
     content = content,
+)
+
+/**
+ * For rows of a lazy list that should look like one [GroupedSection] card: rounds the outer corners of the
+ * [first] & [last] rows, and draws an inset separator above every row but the first.
+ */
+@Composable
+fun Modifier.groupedCell(
+    first: Boolean,
+    last: Boolean,
+    separatorStart: Dp = SeparatorInset,
+): Modifier {
+    val separatorColor = MaterialTheme.colorScheme.outlineVariant
+    val radius = 20.dp
+    val shape = RoundedCornerShape(
+        topStart = if (first) radius else 0.dp,
+        topEnd = if (first) radius else 0.dp,
+        bottomStart = if (last) radius else 0.dp,
+        bottomEnd = if (last) radius else 0.dp,
+    )
+    return this
+        .padding(horizontal = 16.dp)
+        .fillMaxWidth()
+        .clip(shape)
+        .background(groupedCardColor)
+        .drawWithContent {
+            drawContent()
+            if (!first) drawLine(
+                color = separatorColor,
+                start = Offset(separatorStart.toPx(), 0f),
+                end = Offset(size.width, 0f),
+                strokeWidth = 0.5.dp.toPx().coerceAtLeast(1f),
+            )
+        }
+}
+
+/**
+ * iOS segmented control: a capsule track with a raised "thumb" that slides to the selected segment.
+ */
+@Composable
+fun SegmentedControl(
+    options: List<String>,
+    selectedIndex: Int,
+    onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val colorScheme = MaterialTheme.colorScheme
+    val light = colorScheme.light
+    val track = if (light) Color(0x1F767680) else Color(0x3D767680)
+    val thumb = if (light) Color.White else Color(0xFF636366)
+    val count = options.size.coerceAtLeast(1)
+    val position by animateFloatAsState(selectedIndex.toFloat(), spring(0.8f, 500f), label = "SegmentPosition")
+
+    Box(
+        modifier
+            .fillMaxWidth()
+            .height(36.dp)
+            .clip(RoundedRectangle(10.dp))
+            .background(track)
+            .padding(2.dp)
+            .selectableGroup()
+    ) {
+        // Thumb
+        Layout(
+            content = {
+                Box(
+                    Modifier
+                        .shadow(2.dp, RoundedRectangle(8.dp))
+                        .clip(RoundedRectangle(8.dp))
+                        .background(thumb)
+                )
+            },
+        ) { measurables, constraints ->
+            val width = constraints.maxWidth / count
+            val placeable = measurables.first().measure(Constraints.fixed(width, constraints.maxHeight))
+            layout(constraints.maxWidth, constraints.maxHeight) {
+                placeable.placeRelative((position * width).roundToInt(), 0)
+            }
+        }
+
+        Row(Modifier.matchParentSize()) {
+            options.forEachIndexed { index, label ->
+                val selected = index == selectedIndex
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .selectable(
+                            selected = selected,
+                            interactionSource = null,
+                            indication = null,
+                            role = Role.Tab,
+                            onClick = { onSelect(index) },
+                        )
+                ) {
+                    Text(
+                        text = label,
+                        fontSize = 13.sp,
+                        fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * iOS-style capsule button.
+ *
+ * @param filled `true` for a prominent (accent-filled) button, `false` for a tinted ("gray") one
+ */
+@Composable
+fun CapsuleButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    filled: Boolean = false,
+    enabled: Boolean = true,
+    color: Color = MaterialTheme.colorScheme.primary,
+) = Row(
+    horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = modifier
+        .heightIn(min = 44.dp)
+        .alpha(if (enabled) 1f else 0.4f)
+        .clip(Capsule())
+        .background(if (filled) color else color.copy(alpha = 0.12f))
+        .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+        .padding(horizontal = 18.dp, vertical = 10.dp)
+) {
+    val contentColor = if (filled) Color.White else color
+    if (icon != null) Icon(icon, null, tint = contentColor, modifier = Modifier.size(18.dp))
+    Text(
+        text = text,
+        color = contentColor,
+        fontSize = 15.sp,
+        fontWeight = FontWeight.SemiBold,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
+}
+
+/** Small uppercase-free "pill" label, e.g. "Latest" or "Installed" */
+@Composable
+fun PillLabel(text: String, color: Color = MaterialTheme.colorScheme.primary) = Text(
+    text = text,
+    color = color,
+    fontSize = 12.sp,
+    fontWeight = FontWeight.SemiBold,
+    maxLines = 1,
+    modifier = Modifier
+        .clip(Capsule())
+        .background(color.copy(alpha = 0.14f))
+        .padding(horizontal = 8.dp, vertical = 2.dp)
 )

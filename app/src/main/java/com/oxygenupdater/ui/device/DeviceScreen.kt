@@ -35,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -55,6 +56,7 @@ import com.oxygenupdater.icons.Android
 import com.oxygenupdater.icons.AspectRatio
 import com.oxygenupdater.icons.Commit
 import com.oxygenupdater.icons.DeveloperBoard
+import com.oxygenupdater.icons.Download
 import com.oxygenupdater.icons.Error
 import com.oxygenupdater.icons.Memory
 import com.oxygenupdater.icons.MobileCancel
@@ -109,6 +111,7 @@ fun DeviceScreen(
     deviceOsSpec: DeviceOsSpec?,
     deviceMismatchStatus: Triple<Boolean, String, String>?,
     cpuFrequencies: ScatterMap<Float, Int>,
+    openCnRoms: () -> Unit,
 ) = GroupedColumn(
     Modifier
         .fillMaxHeight()
@@ -151,6 +154,19 @@ fun DeviceScreen(
         }
 
         DeviceSupportSection(deviceOsSpec = deviceOsSpec, deviceMismatchStatus = deviceMismatchStatus)
+
+        // The update server has no China firmware, so offer it from the community ROM archive instead
+        GroupedSection(header = stringResource(R.string.about_firmware_header)) {
+            GroupedRow(
+                title = stringResource(R.string.cn_roms_title),
+                subtitle = stringResource(R.string.cn_roms_row_subtitle),
+                icon = Symbols.Download,
+                iconTint = Color(0xFFFF3B30),
+                chevron = true,
+                onClick = openCnRoms,
+                modifier = Modifier.testTag(DeviceScreen_CnRomsTestTag)
+            )
+        }
 
         GroupedSection(header = stringResource(R.string.device_information_software_header)) {
             DeviceSoftwareInfo()
@@ -493,6 +509,9 @@ const val DeviceScreen_NotSupportedIconTestTag = TAG + "_NotSupportedIcon"
 @VisibleForTesting
 const val DeviceScreen_MismatchTextTestTag = TAG + "_MismatchText"
 
+@VisibleForTesting
+const val DeviceScreen_CnRomsTestTag = TAG + "_CnRoms"
+
 @PreviewThemes
 @Composable
 fun PreviewDeviceScreen() = PreviewAppTheme {
@@ -505,5 +524,6 @@ fun PreviewDeviceScreen() = PreviewAppTheme {
         deviceOsSpec = DeviceOsSpec.SupportedDeviceAndOs,
         deviceMismatchStatus = Triple(false, name, name),
         cpuFrequencies = emptyScatterMap(),
+        openCnRoms = {},
     )
 }

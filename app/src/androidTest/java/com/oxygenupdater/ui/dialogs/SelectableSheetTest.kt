@@ -17,6 +17,7 @@ import com.oxygenupdater.R
 import com.oxygenupdater.assertAndPerformClick
 import com.oxygenupdater.get
 import com.oxygenupdater.models.SelectableModel
+import com.oxygenupdater.ui.common.GlassSearchBar_FieldTestTag
 import com.oxygenupdater.ui.settings.DeviceSearchFilter
 import com.oxygenupdater.ui.settings.DeviceSettingsListConfig
 import com.oxygenupdater.validateLazyColumn
@@ -45,8 +46,8 @@ class SelectableSheetTest : ComposeBaseTest() {
             }
         }
 
-        rule[BottomSheet_HeaderTestTag].assertDoesNotExist()
-        rule[SelectableSheet_SearchBarFieldTestTag].assertHasTextExactly(titleResId)
+        rule[BottomSheet_HeaderTestTag].assertHasTextExactly(titleResId)
+        rule[GlassSearchBar_FieldTestTag].assertHasTextExactly(R.string.search)
         rule[SelectableSheet_LazyColumnTestTag].validateLazyColumn(itemCount)
 
         rule.onAllNodesWithTag(BottomSheet_ItemRowTestTag, true).run {
@@ -59,14 +60,13 @@ class SelectableSheetTest : ComposeBaseTest() {
 
                 ensureCallbackInvokedExactlyOnce("hide")
 
-                // Icon (on) or Spacer (off)
-                isToggleable().matches(children[0].fetchSemanticsNode())
+                children[0].assertHasTextExactly(item.name) // name
+                children[1].assertHasTextExactly(item.subtitle) // model number
 
-                children[1].assertHasTextExactly(item.name) // name
-                children[2].assertHasTextExactly(item.subtitle) // model number
-                children[3].run { // optional "recommended" icon
-                    if (item.id == config.recommendedId) assertExists() else assertDoesNotExist()
-                }
+                // Optional "recommended" icon, then trailing checkmark (on) or Spacer (off)
+                val recommended = item.id == config.recommendedId
+                if (recommended) children[2].assertExists()
+                isToggleable().matches(children[if (recommended) 3 else 2].fetchSemanticsNode())
             }
         }
 
@@ -77,7 +77,7 @@ class SelectableSheetTest : ComposeBaseTest() {
             it.id == DeviceSettingsListConfig.recommendedId
         }!!
 
-        rule[SelectableSheet_SearchBarFieldTestTag].run {
+        rule[GlassSearchBar_FieldTestTag].run {
             assert(
                 // Test only the semantics we care about
                 SemanticsMatcher.keyIsDefined(SemanticsProperties.EditableText)
@@ -103,9 +103,9 @@ class SelectableSheetTest : ComposeBaseTest() {
             assertCountEquals(1)
 
             val children = get(0).onChildren()
-            children[1].assertHasTextExactly(recommendedItem.name) // name
-            children[2].assertHasTextExactly(recommendedItem.subtitle) // model number
-            children[3].assertExists() // "recommended" icon
+            children[0].assertHasTextExactly(recommendedItem.name) // name
+            children[1].assertHasTextExactly(recommendedItem.subtitle) // model number
+            children[2].assertExists() // "recommended" icon
         }
     }
 }

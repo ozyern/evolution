@@ -3,7 +3,9 @@ package com.oxygenupdater.ui.news
 import android.annotation.SuppressLint
 import android.text.format.DateUtils
 import androidx.annotation.VisibleForTesting
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -13,6 +15,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -24,22 +27,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oxygenupdater.extensions.copyToClipboard
 import com.oxygenupdater.extensions.shareExternally
 import com.oxygenupdater.icons.Link
-import com.oxygenupdater.icons.Notes
-import com.oxygenupdater.icons.Schedule
 import com.oxygenupdater.icons.Share
 import com.oxygenupdater.icons.Symbols
 import com.oxygenupdater.models.Article
 import com.oxygenupdater.ui.RefreshAwareState
-import com.oxygenupdater.ui.common.GridItem
-import com.oxygenupdater.ui.common.IconText
-import com.oxygenupdater.ui.common.LazyVerticalGrid
+import com.oxygenupdater.ui.common.CapsuleButton
 import com.oxygenupdater.ui.common.PullRefresh
-import com.oxygenupdater.ui.common.modifierDefaultPaddingStartTopEnd
 import com.oxygenupdater.ui.common.modifierDefaultPaddingTop
 import com.oxygenupdater.ui.common.modifierMaxWidth
 import com.oxygenupdater.ui.common.rememberState
@@ -114,33 +116,40 @@ fun ArticleScreen(
                 .fillMaxHeight()
                 .verticalScroll(scrollState)
         ) {
-            Buttons(item = item)
-
+            // Like Apple News: a "deck" (summary) under the headline, a dateline, then actions
+            val colorScheme = MaterialTheme.colorScheme
+            val textModifier = Modifier.withPlaceholder(refreshing)
             var showDivider = false
-            val bodySmall = MaterialTheme.typography.bodySmall
-            val textModifier = Modifier.withPlaceholder(refreshing, bodySmall)
 
             item.subtitle?.let {
                 showDivider = true
-                IconText(
-                    icon = Symbols.Notes,
+                Text(
                     text = it,
-                    style = bodySmall,
-                    textModifier = textModifier,
-                    modifier = modifierDefaultPaddingStartTopEnd
+                    color = colorScheme.onSurfaceVariant,
+                    fontSize = 19.sp,
+                    lineHeight = 25.sp,
+                    modifier = Modifier
+                        .padding(start = 20.dp, end = 20.dp, top = 16.dp)
+                        .then(textModifier)
+                        .testTag(ArticleScreen_SubtitleTestTag)
                 )
             }
 
             item.getRelativeTime()?.let {
                 showDivider = true
-                IconText(
-                    icon = Symbols.Schedule,
+                Text(
                     text = it,
-                    style = bodySmall,
-                    textModifier = textModifier,
-                    modifier = modifierDefaultPaddingStartTopEnd
+                    color = colorScheme.onSurfaceVariant,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier
+                        .padding(start = 20.dp, end = 20.dp, top = 8.dp)
+                        .then(textModifier)
+                        .testTag(ArticleScreen_TimeTestTag)
                 )
             }
+
+            Buttons(item = item)
 
             // We can't edit CSS in WebViews, so pass theme to backend to style it accordingly
             val language = if (currentLocale().language == "nl") "NL" else "EN"
@@ -167,19 +176,42 @@ fun ArticleScreen(
 
 @SuppressLint("PrivateResource")
 @Composable
-private fun Buttons(item: Article) = with(LocalContext.current) {
-    LazyVerticalGrid(
-        columnCount = 2,
-        items = arrayOf(
-            GridItem(Symbols.Share, androidx.browser.R.string.fallback_menu_item_share_link) {
-                shareExternally(item.title ?: "", item.webUrl)
-            },
-            GridItem(Symbols.Link, androidx.browser.R.string.fallback_menu_item_copy_link) {
-                copyToClipboard(item.webUrl)
-            },
-        ),
+private fun Buttons(item: Article) = Row(
+    horizontalArrangement = Arrangement.spacedBy(10.dp),
+    modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp)
+) {
+    val context = LocalContext.current
+    CapsuleButton(
+        text = stringResource(androidx.browser.R.string.fallback_menu_item_share_link),
+        icon = Symbols.Share,
+        onClick = { context.shareExternally(item.title ?: "", item.webUrl) },
+        modifier = Modifier
+            .weight(1f)
+            .testTag(ArticleScreen_ShareButtonTestTag)
+    )
+    CapsuleButton(
+        text = stringResource(androidx.browser.R.string.fallback_menu_item_copy_link),
+        icon = Symbols.Link,
+        onClick = { context.copyToClipboard(item.webUrl) },
+        modifier = Modifier
+            .weight(1f)
+            .testTag(ArticleScreen_CopyButtonTestTag)
     )
 }
+
+private const val TAG = "ArticleScreen"
+
+@VisibleForTesting
+const val ArticleScreen_SubtitleTestTag = TAG + "_Subtitle"
+
+@VisibleForTesting
+const val ArticleScreen_TimeTestTag = TAG + "_Time"
+
+@VisibleForTesting
+const val ArticleScreen_ShareButtonTestTag = TAG + "_ShareButton"
+
+@VisibleForTesting
+const val ArticleScreen_CopyButtonTestTag = TAG + "_CopyButton"
 
 @Composable
 private fun RefreshAwareWebView(
