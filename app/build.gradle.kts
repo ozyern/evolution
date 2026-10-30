@@ -117,7 +117,7 @@ fun ApplicationBuildType.setupBuildConfig(
 }
 
 android {
-    namespace = "com.oxygenupdater"
+    namespace = "com.ozyern.evolution"
 
     // https://developer.android.com/studio/releases/build-tools
     buildToolsVersion = "37.0.0"

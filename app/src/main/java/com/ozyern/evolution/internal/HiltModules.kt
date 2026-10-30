@@ -1,0 +1,109 @@
+package com.ozyern.evolution.internal
+
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.core.app.NotificationManagerCompat
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.work.WorkManager
+import com.ozyern.evolution.apis.DownloadApi
+import com.ozyern.evolution.apis.ServerApi
+import com.ozyern.evolution.database.LocalAppDb
+import com.ozyern.evolution.database.SqliteMigrations
+import com.ozyern.evolution.extensions.get
+import com.ozyern.evolution.extensions.set
+import com.ozyern.evolution.internal.settings.KeySqlToRoomMigrationDone
+import com.ozyern.evolution.utils.createDownloadApi
+import com.ozyern.evolution.utils.createServerApi
+import com.ozyern.evolution.utils.logDebug
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object NetworkModule {
+
+    @Singleton
+    @Provides
+    fun serverApi(@ApplicationContext context: Context): ServerApi = createServerApi(context)
+
+    @Singleton
+    @Provides
+    fun downloadApi(): DownloadApi = createDownloadApi()
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object PrefModule {
+
+    @Singleton
+    @Provides
+    fun sharedPreferences(
+        @ApplicationContext context: Context,
+    ): SharedPreferences = context.getSharedPreferences(
+        "${context.packageName}_preferences", Context.MODE_PRIVATE
+    )
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object DatabaseModule {
+
+    const val AppDb = "oxygen_updater"
+
+    @Singleton
+    @Provides
+    fun buildLocalAppDb(
+        @ApplicationContext context: Context,
+        sharedPreferences: SharedPreferences,
+    ) = Room.databaseBuilder(context, LocalAppDb::class.java, AppDb).apply {
+        // Ensure migration is done only once (skip `onOpen` callback)
+        if (sharedPreferences[KeySqlToRoomMigrationDone, false]) {
+            logDebug("DatabaseModule", "SQLite to Room migration has already been done")
+        } else addCallback(object : RoomDatabase.Callback() {
+            /**
+             * While overriding [RoomDatabase.Callback.onCreate] would be ideal, attaching
+             * other databases doesn't work (due to some WAL/transaction restrictions).
+             */
+            override fun onOpen(db: SupportSQLiteDatabase) = super.onOpen(db).also {
+                SqliteMigrations.prepopulateFromSqlite(context, db)
+                sharedPreferences[KeySqlToRoomMigrationDone] = true
+            }
+        })
+    }.fallbackToDestructiveMigrationOnDowngrade(false).build()
+
+    @Singleton
+    @Provides
+    fun articleDao(localAppDb: LocalAppDb) = localAppDb.articleDao()
+
+    @Singleton
+    @Provides
+    fun submittedUpdateFileDao(localAppDb: LocalAppDb) = localAppDb.submittedUpdateFileDao()
+
+    @Singleton
+    @Provides
+    fun updateDataDao(localAppDb: LocalAppDb) = localAppDb.updateDataDao()
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object NotificationModule {
+
+    @Singleton
+    @Provides
+    fun notificationManagerCompat(@ApplicationContext context: Context) = NotificationManagerCompat.from(context)
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object MiscellaneousModule {
+
+    @Singleton
+    @Provides
+    fun workManager(@ApplicationContext context: Context) = WorkManager.getInstance(context)
+}

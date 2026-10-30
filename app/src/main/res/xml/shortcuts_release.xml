@@ -9,8 +9,8 @@
 		android:shortcutLongLabel="@string/update_information_header"
 		android:shortcutShortLabel="@string/update_information_header">
 		<intent
-			android:action="com.oxygenupdater.action.page_update"
-			android:targetClass="com.oxygenupdater.activities.MainActivity"
+			android:action="com.ozyern.evolution.action.page_update"
+			android:targetClass="com.ozyern.evolution.activities.MainActivity"
 			android:targetPackage="com.ozyern.evolution" />
 		<categories android:name="android.shortcut.conversation" />
 	</shortcut>
@@ -22,8 +22,8 @@
 		android:shortcutLongLabel="@string/news"
 		android:shortcutShortLabel="@string/news">
 		<intent
-			android:action="com.oxygenupdater.action.page_news"
-			android:targetClass="com.oxygenupdater.activities.MainActivity"
+			android:action="com.ozyern.evolution.action.page_news"
+			android:targetClass="com.ozyern.evolution.activities.MainActivity"
 			android:targetPackage="com.ozyern.evolution" />
 		<categories android:name="android.shortcut.conversation" />
 	</shortcut>
@@ -35,8 +35,8 @@
 		android:shortcutLongLabel="@string/device_information_header"
 		android:shortcutShortLabel="@string/device_information_header">
 		<intent
-			android:action="com.oxygenupdater.action.page_device"
-			android:targetClass="com.oxygenupdater.activities.MainActivity"
+			android:action="com.ozyern.evolution.action.page_device"
+			android:targetClass="com.ozyern.evolution.activities.MainActivity"
 			android:targetPackage="com.ozyern.evolution" />
 		<categories android:name="android.shortcut.conversation" />
 	</shortcut>

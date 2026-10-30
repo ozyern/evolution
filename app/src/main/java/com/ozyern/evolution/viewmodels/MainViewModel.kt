@@ -1,0 +1,332 @@
+package com.ozyern.evolution.viewmodels
+
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
+import android.content.IntentSender
+import android.content.SharedPreferences
+import android.os.Build
+import android.os.Environment
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.core.net.toUri
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.work.BackoffPolicy
+import androidx.work.Constraints
+import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
+import androidx.work.ExperimentalWorkRequestBuilderApi
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
+import androidx.work.WorkInfo.State
+import androidx.work.WorkManager
+import androidx.work.WorkRequest.Companion.MIN_BACKOFF_MILLIS
+import com.ozyern.evolution.utils.CrashLogger
+import com.ozyern.evolution.BuildConfig
+import com.ozyern.evolution.activities.MainActivity
+import com.ozyern.evolution.extensions.get
+import com.ozyern.evolution.extensions.incrementInt
+import com.ozyern.evolution.extensions.remove
+import com.ozyern.evolution.extensions.set
+import com.ozyern.evolution.extensions.showToast
+import com.ozyern.evolution.internal.NotSet
+import com.ozyern.evolution.internal.NotSetL
+import com.ozyern.evolution.internal.settings.KeyAdvancedMode
+import com.ozyern.evolution.internal.settings.KeyDevice
+import com.ozyern.evolution.internal.settings.KeyDeviceId
+import com.ozyern.evolution.internal.settings.KeyDownloadBytesDone
+import com.ozyern.evolution.internal.settings.KeyIgnoreIncorrectDeviceWarnings
+import com.ozyern.evolution.internal.settings.KeyIgnoreNotificationPermissionSheet
+import com.ozyern.evolution.internal.settings.KeyIgnoreUnsupportedDeviceWarnings
+import com.ozyern.evolution.internal.settings.KeySetupDone
+import com.ozyern.evolution.internal.settings.KeyUpdateMethod
+import com.ozyern.evolution.internal.settings.KeyUpdateMethodId
+import com.ozyern.evolution.models.Device
+import com.ozyern.evolution.models.DeviceOsSpec
+import com.ozyern.evolution.models.DeviceRequestFilter
+import com.ozyern.evolution.models.ServerMessage
+import com.ozyern.evolution.models.ServerStatus
+import com.ozyern.evolution.models.SystemVersionProperties
+import com.ozyern.evolution.repositories.ServerRepository
+import com.ozyern.evolution.ui.device.DefaultDeviceName
+import com.ozyern.evolution.ui.update.DownloadStatus
+import com.ozyern.evolution.ui.update.WorkInfoWithStatus
+import com.ozyern.evolution.utils.Utils
+import com.ozyern.evolution.utils.logDebug
+import com.ozyern.evolution.workers.DirectoryRoot
+import com.ozyern.evolution.workers.DownloadWorker
+import com.ozyern.evolution.workers.WorkDataDownloadFailureExtraFilename
+import com.ozyern.evolution.workers.WorkDataDownloadFailureExtraHttpCode
+import com.ozyern.evolution.workers.WorkDataDownloadFailureExtraHttpMessage
+import com.ozyern.evolution.workers.WorkDataDownloadFailureExtraOtaVersion
+import com.ozyern.evolution.workers.WorkDataDownloadFailureExtraUrl
+import com.ozyern.evolution.workers.WorkDataDownloadFailureExtraVersion
+import com.ozyern.evolution.workers.WorkDataDownloadFailureType
+import com.ozyern.evolution.workers.WorkDataDownloadProgress
+import com.ozyern.evolution.workers.WorkDataDownloadSuccessType
+import com.ozyern.evolution.workers.WorkDataMd5VerificationFailureType
+import com.ozyern.evolution.workers.WorkUniqueDownload
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import java.io.File
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
+import javax.inject.Inject
+
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val sharedPreferences: SharedPreferences,
+    private val serverRepository: ServerRepository,
+    private val workManager: WorkManager,
+    private val crashlytics: CrashLogger,
+) : ViewModel() {
+
+    private val allDevicesFlow = MutableStateFlow<List<Device>?>(null)
+    val allDevicesState = allDevicesFlow.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = allDevicesFlow.value
+    )
+
+    private val serverMessagesFlow = MutableStateFlow<List<ServerMessage>>(listOf())
+    val serverMessages = serverMessagesFlow.asStateFlow()
+
+    private val serverStatusFlow = MutableStateFlow(ServerStatus(ServerStatus.Status.NORMAL, BuildConfig.VERSION_NAME))
+    val serverStatus = serverStatusFlow.asStateFlow()
+
+
+
+    var deviceOsSpec: DeviceOsSpec? = null
+    var deviceMismatch by mutableStateOf<Triple<Boolean, String, String>?>(null)
+        private set
+
+    var shouldShowOnboarding by mutableStateOf(!sharedPreferences[KeySetupDone, false])
+
+    val canShowNotifPermissionSheet = !sharedPreferences[KeyIgnoreNotificationPermissionSheet, false]
+
+    val shouldShowUnsupportedDeviceDialog
+        get() = !sharedPreferences[KeyIgnoreUnsupportedDeviceWarnings, false]
+
+    val shouldShowIncorrectDeviceDialog
+        get() = !sharedPreferences[KeyIgnoreIncorrectDeviceWarnings, false]
+
+    val deviceId
+        get() = sharedPreferences[KeyDeviceId, NotSetL]
+
+    val updateMethodId
+        get() = sharedPreferences[KeyUpdateMethodId, NotSetL]
+
+    /** Checks if [deviceId] & [updateMethodId] are set (i.e. not [NotSetL]) */
+    val isDeviceAndMethodSet
+        get() = deviceId != NotSetL && updateMethodId != NotSetL
+
+    /**
+     * Checks if user has completed the onboarding process, meaning they've
+     * selected a device & method, and also pressed the "Start app" button.
+     */
+    val isOnboardingComplete
+        get() = sharedPreferences[KeySetupDone, false] && isDeviceAndMethodSet
+
+    /** Ensure `init` is placed after all declarations that may be used in contained functions */
+    init {
+        fetchAllDevices()
+        fetchServerStatus()
+    }
+
+    private var lastDownloadStatus: DownloadStatus? = null
+    private val cancelShouldPauseDownload = AtomicBoolean(false)
+    val workInfoWithStatus = workManager.getWorkInfosForUniqueWorkFlow(WorkUniqueDownload).map { info ->
+        val infoAndStatus = info.firstOrNull()?.let {
+            val status = when (it.state) {
+                State.ENQUEUED, State.BLOCKED -> DownloadStatus.DownloadQueued
+                State.RUNNING -> when (it.progress.getInt(WorkDataDownloadProgress, 0)) {
+                    NotSet -> DownloadStatus.Verifying
+                    else -> DownloadStatus.Downloading
+                }
+
+                State.SUCCEEDED -> when (it.outputData.getInt(WorkDataDownloadSuccessType, NotSet)) {
+                    // We don't set any output data until the verification process has also completed
+                    NotSet -> DownloadStatus.DownloadCompleted
+                    else -> DownloadStatus.VerificationCompleted
+                }
+
+                State.FAILED -> {
+                    val outputData = it.outputData
+                    when (outputData.getInt(WorkDataMd5VerificationFailureType, NotSet)) {
+                        NotSet -> when (outputData.getInt(WorkDataDownloadFailureType, NotSet)) {
+                            NotSet -> DownloadStatus.DownloadFailed
+                            else -> DownloadStatus.NotDownloading
+                        }
+
+                        else -> DownloadStatus.VerificationFailed
+                    }
+                }
+
+                // Downloads are paused by cancelling work (we're tracking `bytesDone` and sending a `Range` header for
+                // resume operations). The only place from where the user can cancel the download is the action button,
+                // and we use the [cancelShouldPauseDownload] flag to temporarily force pause/delete. Status is also set
+                // in UpdateInformationFragment's downloadAction callback right after pausing/cancelling work.
+                State.CANCELLED -> {
+                    val pause = cancelShouldPauseDownload.getAndSet(false) // reset to initial value
+                    if (pause) DownloadStatus.DownloadPaused else DownloadStatus.NotDownloading
+                }
+            }
+            WorkInfoWithStatus(it, status)
+        } ?: WorkInfoWithStatus(null, lastDownloadStatus ?: DownloadStatus.NotDownloading)
+
+        infoAndStatus.also { lastDownloadStatus = it.downloadStatus }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = WorkInfoWithStatus(null, DownloadStatus.NotDownloading)
+    )
+
+    fun updateDeviceMismatch(
+        allDevices: List<Device>? = allDevicesFlow.value,
+    ) = Utils.checkDeviceMismatch(
+        devices = allDevices,
+        savedDeviceId = sharedPreferences[KeyDeviceId, NotSetL],
+    ).let {
+        val savedDeviceName = sharedPreferences[KeyDevice, DefaultDeviceName]
+        deviceMismatch = Triple(it.first, savedDeviceName, it.second ?: DefaultDeviceName)
+    }
+
+    private fun fetchAllDevices() = viewModelScope.launch(Dispatchers.IO) {
+        val response = serverRepository.fetchDevices(DeviceRequestFilter.All) ?: listOf()
+        deviceOsSpec = Utils.checkDeviceOsSpec(response)
+        updateDeviceMismatch(response)
+        allDevicesFlow.emit(response)
+    }
+
+    fun fetchServerMessages() = viewModelScope.launch(Dispatchers.IO) {
+        serverMessagesFlow.emit(serverRepository.fetchServerMessages()?.filterNot {
+            it.text.isNullOrBlank() // filter out empty text just in case
+        } ?: return@launch)
+    }
+
+    fun fetchServerStatus() = viewModelScope.launch(Dispatchers.IO) {
+        serverStatusFlow.emit(serverRepository.fetchServerStatus())
+    }
+
+    /**
+     * @return true if the downloaded ZIP was successfully deleted
+     */
+    fun deleteDownloadedFile(context: Context, filename: String?): Boolean {
+        if (filename == null) {
+            crashlytics.logWarning(TAG, "Can't delete downloaded file: filename null")
+            return false
+        }
+
+        logDebug(TAG, "Deleting any associated tracker preferences for downloaded file")
+        sharedPreferences.remove(KeyDownloadBytesDone)
+        logDebug(TAG, "Deleting downloaded update file $filename")
+
+        File(context.getExternalFilesDir(null), filename).run {
+            if (exists() && !delete()) crashlytics.logWarning(TAG, "Can't delete temporary file $filename")
+        }
+
+        return File(Environment.getExternalStoragePublicDirectory(DirectoryRoot).absolutePath, filename).run {
+            if (exists() && !delete()) {
+                crashlytics.logWarning(TAG, "Can't delete downloaded file $filename")
+                false
+            } else true
+        }
+    }
+
+    @OptIn(ExperimentalWorkRequestBuilderApi::class)
+    fun enqueueDownloadWork() = workManager.enqueueUniqueWork(
+        WorkUniqueDownload,
+        ExistingWorkPolicy.REPLACE,
+        OneTimeWorkRequestBuilder<DownloadWorker>()
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            .setBackoffCriteria(BackoffPolicy.LINEAR, MIN_BACKOFF_MILLIS, TimeUnit.MILLISECONDS)
+            .setBackoffForSystemInterruptions()
+            .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+            .build()
+    )
+
+    fun cancelDownloadWork(context: Context, filename: String?) {
+        cancelShouldPauseDownload.set(false) // make work's CANCELLED state map to DownloadStatus.NOT_DOWNLOADING
+        workManager.cancelUniqueWork(WorkUniqueDownload)
+        deleteDownloadedFile(context, filename)
+    }
+
+    fun pauseDownloadWork() {
+        cancelShouldPauseDownload.set(true) // make work's CANCELLED state map to DownloadStatus.DOWNLOAD_PAUSED
+        workManager.cancelUniqueWork(WorkUniqueDownload)
+    }
+
+    /**
+     * This method is called in [MainActivity.onDestroy], to prune finished work.
+     */
+    fun maybePruneWork() {
+        if (workInfoWithStatus.value.downloadStatus.run { successful || failed }) {
+            workManager.pruneWork()
+        }
+    }
+
+    fun logDownloadError(data: Data) = viewModelScope.launch(Dispatchers.IO) {
+        maybePruneWork() // prune to avoid re-sending the same error on recompose
+        serverRepository.logDownloadError(
+            data.getString(WorkDataDownloadFailureExtraUrl),
+            data.getString(WorkDataDownloadFailureExtraFilename),
+            data.getString(WorkDataDownloadFailureExtraVersion),
+            data.getString(WorkDataDownloadFailureExtraOtaVersion),
+            data.getInt(WorkDataDownloadFailureExtraHttpCode, NotSet),
+            data.getString(WorkDataDownloadFailureExtraHttpMessage),
+        )
+    }.let {}
+
+    fun getPref(key: String, default: String) = sharedPreferences[key, default]
+    fun getPref(key: String, default: Boolean) = sharedPreferences[key, default]
+    fun persist(key: String, value: Boolean) = sharedPreferences.set(key, value)
+
+    fun openEmail(context: Context) {
+        val chosenDevice = sharedPreferences[KeyDevice, "<UNKNOWN>"]
+        val chosenMethod = sharedPreferences[KeyUpdateMethod, "<UNKNOWN>"]
+        val advancedMode = sharedPreferences[KeyAdvancedMode, false]
+        val osVersionWithType = SystemVersionProperties.osVersion + SystemVersionProperties.osType.let {
+            if (it.isNotEmpty()) " ($it)" else ""
+        }
+
+        // Don't localize any part of this, it'll be an annoyance for us while reading emails
+        val emailBody = """
+--------------------
+• Device: $chosenDevice (${SystemVersionProperties.deviceProductName}/${Build.DEVICE})
+• Method: $chosenMethod
+• OS version: $osVersionWithType
+• OTA version: ${SystemVersionProperties.otaVersion}
+• Advanced mode: $advancedMode
+• App version: ${BuildConfig.VERSION_NAME}
+--------------------
+
+<write your query here>"""
+
+        try {
+            context.startActivity(
+                Intent(Intent.ACTION_SENDTO, "mailto:".toUri())
+                    .putExtra(Intent.EXTRA_EMAIL, arrayOf("support@oxygenupdater.com"))
+                    .putExtra(Intent.EXTRA_TEXT, emailBody)
+            )
+        } catch (_: ActivityNotFoundException) {
+            // TODO(translate)
+            context.showToast("You don't appear to have an email client installed on your phone")
+        }
+    }
+
+    companion object {
+        private const val TAG = "MainViewModel"
+    }
+}

@@ -176,7 +176,7 @@
 
 		<!-- Receiver to auto start RootFileService at device startup or app update -->
 		<receiver
-			android:name="com.oxygenupdater.receivers.DeviceBootOrAppUpdateReceiver"
+			android:name="com.ozyern.evolution.receivers.DeviceBootOrAppUpdateReceiver"
 			android:exported="false">
 			<intent-filter>
 				<action android:name="android.intent.action.BOOT_COMPLETED" />
