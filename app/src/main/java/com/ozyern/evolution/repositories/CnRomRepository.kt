@@ -64,17 +64,18 @@ class CnRomRepository @Inject constructor() {
     }
 
     /**
+     * @param deviceKey [CnRomDevice.key]
      * @param index position of the build in [CnRomDevice.builds]
      * @return the build's details, or `null` on failure
      */
-    suspend fun resolve(device: CnRomDevice, index: Int): CnRomBuild? = withContext(Dispatchers.IO) {
+    suspend fun resolve(deviceKey: String, index: Int): CnRomBuild? = withContext(Dispatchers.IO) {
         mutex.withLock {
             try {
                 // Ensure we have a session cookie before submitting the form
                 if (cachedDevices == null) get(CnRomParser.OtaPageUrl)
 
                 val body = FormBody.Builder()
-                    .add("device", device.key)
+                    .add("device", deviceKey)
                     .add("region", CnRegion)
                     .add("version_index", index.toString())
                     .build()
@@ -82,7 +83,7 @@ class CnRomRepository @Inject constructor() {
 
                 CnRomParser.parseBuild(get(CnRomParser.OtaPageUrl))
             } catch (e: Exception) {
-                logInfo(TAG, "Couldn't resolve ${device.key} #$index", e)
+                logInfo(TAG, "Couldn't resolve $deviceKey #$index", e)
                 null
             }
         }

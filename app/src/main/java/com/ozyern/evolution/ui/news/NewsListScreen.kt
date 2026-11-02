@@ -32,7 +32,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
@@ -82,6 +81,7 @@ import com.ozyern.evolution.internal.NotSetL
 import com.ozyern.evolution.models.Article
 import com.ozyern.evolution.ui.RefreshAwareState
 import com.ozyern.evolution.ui.common.ConditionalNavBarPadding
+import com.ozyern.evolution.ui.common.ContextMenu
 import com.ozyern.evolution.ui.common.DropdownMenuItem
 import com.ozyern.evolution.ui.common.ErrorState
 import com.ozyern.evolution.ui.common.GroupedCardShape
@@ -473,10 +473,9 @@ private fun ItemMenu(
     onDismiss: () -> Unit,
     item: Article,
     onToggleReadClick: () -> Unit,
-) = DropdownMenu(
+) = ContextMenu(
     expanded = expanded,
     onDismissRequest = onDismiss,
-    shape = RoundedRectangle(14.dp),
     modifier = Modifier.testTag(NewsListScreen_ItemMenuTestTag)
 ) {
     DropdownMenuItem(
@@ -511,6 +510,7 @@ private fun ItemMenu(
     DropdownMenuItem(
         icon = Symbols.Link,
         textResId = androidx.browser.R.string.fallback_menu_item_copy_link,
+        separator = false,
         onClick = {
             context.copyToClipboard(item.webUrl)
             onDismiss()

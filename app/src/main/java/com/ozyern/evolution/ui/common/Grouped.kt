@@ -226,9 +226,10 @@ fun GroupedRow(
 
 /** iOS disclosure indicator */
 @Composable
-fun Chevron(color: Color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)) = Canvas(
-    Modifier.size(8.dp, 14.dp)
-) {
+fun Chevron(
+    color: Color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+    modifier: Modifier = Modifier.size(8.dp, 14.dp),
+) = Canvas(modifier) {
     val stroke = 2.dp.toPx()
     val w = size.width
     val h = size.height
@@ -391,7 +392,10 @@ fun CapsuleButton(
         .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
         .padding(horizontal = 18.dp, vertical = 10.dp)
 ) {
-    val contentColor = if (filled) Color.White else color
+    // Dynamic primaries can be pale, so white text isn't always readable on them
+    val contentColor = if (!filled) color else MaterialTheme.colorScheme.run {
+        if (color == primary) onPrimary else Color.White
+    }
     if (icon != null) Icon(icon, null, tint = contentColor, modifier = Modifier.size(18.dp))
     Text(
         text = text,

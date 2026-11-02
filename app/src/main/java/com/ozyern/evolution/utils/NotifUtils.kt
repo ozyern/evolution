@@ -222,6 +222,8 @@ object NotificationIds {
     const val LocalMd5Verification = 2 * LocalIdMultiplier
     const val LocalContribution = 3 * LocalIdMultiplier
     const val LocalInstallationStatus = 4 * LocalIdMultiplier
+    const val LocalCnRomDownload = 5 * LocalIdMultiplier
+    const val LocalCnRomDownloadForeground = 50 * LocalIdMultiplier
 
     const val RemoteNewUpdate = 1 * RemoteIdMultiplier
 

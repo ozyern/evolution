@@ -6,13 +6,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.requiredWidth
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -23,6 +24,7 @@ import com.ozyern.evolution.icons.PlaylistAddCheck
 import com.ozyern.evolution.icons.ReleaseAlert
 import com.ozyern.evolution.icons.Symbols
 import com.ozyern.evolution.models.ServerMessage
+import com.ozyern.evolution.ui.common.ContextMenu
 import com.ozyern.evolution.ui.common.DropdownMenuItem
 import com.ozyern.evolution.ui.common.rememberState
 import com.ozyern.evolution.ui.dialogs.ContributorSheet
@@ -59,10 +61,16 @@ fun RowScope.MainMenu(
                 .requiredWidth(40.dp)
                 .testTag(MainMenu_OverflowButtonTestTag)
         ) {
-            Icon(Symbols.MoreVert, stringResource(androidx.compose.ui.R.string.dropdown_menu))
+            // Horizontal ellipsis, like iOS' "more" button
+            Icon(
+                imageVector = Symbols.MoreVert,
+                contentDescription = stringResource(androidx.compose.ui.R.string.dropdown_menu),
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.rotate(90f)
+            )
         }
 
-        DropdownMenu(
+        ContextMenu(
             expanded = showMenu,
             onDismissRequest = { showMenu = false },
             modifier = Modifier.testTag(MainMenu_DropdownMenuTestTag)
@@ -71,6 +79,7 @@ fun RowScope.MainMenu(
             if (showMarkAllRead) DropdownMenuItem(
                 icon = Symbols.PlaylistAddCheck,
                 textResId = R.string.news_mark_all_read,
+                separator = showBecomeContributor,
             ) {
                 onMarkAllReadClick()
                 showMenu = false
@@ -112,7 +121,7 @@ private fun ContributorMenuItem(
 ) {
     var showSheet by rememberState(false)
 
-    DropdownMenuItem(Symbols.Crowdsource, R.string.contribute) {
+    DropdownMenuItem(Symbols.Crowdsource, R.string.contribute, separator = false) {
         showSheet = true
     }
 

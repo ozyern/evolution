@@ -1,12 +1,13 @@
 package com.ozyern.evolution.ui.cnroms
 
 import android.app.DownloadManager
-import android.content.Context
+import android.content.Intent
 import android.os.Build
-import android.os.Environment
+import android.text.format.DateUtils
 import android.text.format.Formatter
 import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -23,33 +25,32 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.getSystemService
-import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kyant.shapes.RoundedRectangle
 import com.ozyern.evolution.R
 import com.ozyern.evolution.extensions.copyToClipboard
 import com.ozyern.evolution.extensions.launch
-import com.ozyern.evolution.extensions.openLink
 import com.ozyern.evolution.extensions.rememberCustomTabsIntent
 import com.ozyern.evolution.extensions.showToast
 import com.ozyern.evolution.icons.Download
@@ -63,6 +64,7 @@ import com.ozyern.evolution.models.CnRomDevice
 import com.ozyern.evolution.models.CnRomParser
 import com.ozyern.evolution.ui.RefreshAwareState
 import com.ozyern.evolution.ui.SettingsListConfig
+import com.ozyern.evolution.ui.common.ActivityIndicator
 import com.ozyern.evolution.ui.common.CapsuleButton
 import com.ozyern.evolution.ui.common.ConditionalNavBarPadding
 import com.ozyern.evolution.ui.common.GroupedFooter
@@ -70,6 +72,7 @@ import com.ozyern.evolution.ui.common.GroupedHeader
 import com.ozyern.evolution.ui.common.GroupedRow
 import com.ozyern.evolution.ui.common.GroupedSection
 import com.ozyern.evolution.ui.common.PillLabel
+import com.ozyern.evolution.ui.common.ProgressBar
 import com.ozyern.evolution.ui.common.PullRefresh
 import com.ozyern.evolution.ui.common.groupedBackground
 import com.ozyern.evolution.ui.common.groupedCardColor
@@ -80,26 +83,184 @@ import com.ozyern.evolution.ui.dialogs.SelectableSheet
 import com.ozyern.evolution.ui.main.NavType
 import com.ozyern.evolution.ui.theme.PreviewAppTheme
 import com.ozyern.evolution.ui.theme.PreviewThemes
+import com.ozyern.evolution.workers.CnRomDownloadWorker
 
 @Composable
 fun CnRomsScreen(navType: NavType, viewModel: CnRomsViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val detail by viewModel.detail.collectAsStateWithLifecycle()
-    CnRomsScreen(
-        navType = navType,
-        state = state,
-        onRefresh = { viewModel.refresh() },
-        onSelectDevice = viewModel::select,
-        onOpenBuild = viewModel::open,
-    )
+    val download by viewModel.download.collectAsStateWithLifecycle()
+    val actions = remember(viewModel) {
+        DownloadActions(
+            start = viewModel::startDownload,
+            pause = viewModel::pauseDownload,
+            resume = viewModel::resumeDownload,
+            cancel = viewModel::cancelDownload,
+            open = viewModel::openDownload,
+        )
+    }
+    Box(Modifier.fillMaxSize()) {
+        CnRomsScreen(
+            navType = navType,
+            state = state,
+            onRefresh = { viewModel.refresh() },
+            onSelectDevice = viewModel::select,
+            onOpenBuild = viewModel::open,
+            // Keep the end of the list scrollable out from under the floating card
+            listBottomPadding = if (download != null) DownloadCardClearance else 0.dp,
+        )
+
+        // App Store-style progress card, floating above the list while a download exists
+        download?.let {
+            DownloadCard(
+                download = it,
+                actions = actions,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .navigationBarsPadding()
+                    .padding(bottom = 12.dp)
+            )
+        }
+    }
 
     detail?.let {
         ModalBottomSheet(viewModel::closeDetail) { _ ->
             CnRomDetailSheet(
                 state = it,
+                download = download?.takeIf { d -> d.job.label == it.label },
+                // Only one download at a time: starting this build would kill the active one
+                otherDownloadActive = download.let { d ->
+                    (d is CnRomDownload.Queued || d is CnRomDownload.Running) && d.job.label != it.label
+                },
+                actions = actions,
                 onRetry = viewModel::retryDetail,
                 fetchDownloadUrl = viewModel::fetchDownloadUrl,
             )
+        }
+    }
+}
+
+@Immutable
+class DownloadActions(
+    val start: () -> Unit,
+    val pause: () -> Unit,
+    val resume: () -> Unit,
+    val cancel: () -> Unit,
+    val open: () -> Unit,
+)
+
+/** Roughly the height of [DownloadCard] with its margins */
+private val DownloadCardClearance = 176.dp
+
+/** Progress & controls for the in-app download, like the App Store's download rows */
+@Composable
+private fun DownloadCard(
+    download: CnRomDownload,
+    actions: DownloadActions,
+    modifier: Modifier = Modifier,
+    showTitle: Boolean = true,
+) = Column(
+    modifier
+        .padding(horizontal = 16.dp)
+        .widthIn(max = 640.dp)
+        .fillMaxWidth()
+        .shadow(if (showTitle) 8.dp else 0.dp, RoundedRectangle(20.dp))
+        .clip(RoundedRectangle(20.dp))
+        .background(groupedCardColor)
+        .clickable(enabled = showTitle, onClick = actions.open)
+        .padding(16.dp)
+        .testTag(CnRomsScreen_DownloadCardTestTag)
+) {
+    val context = LocalContext.current
+    val colorScheme = MaterialTheme.colorScheme
+    if (showTitle) Text(download.job.title, fontSize = 17.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
+
+    val status = when (download) {
+        is CnRomDownload.Queued -> stringResource(R.string.cn_roms_waiting)
+        is CnRomDownload.Running -> when (download.phase) {
+            CnRomDownloadWorker.PhaseVerifying -> stringResource(R.string.cn_roms_verifying)
+            CnRomDownloadWorker.PhaseSaving -> stringResource(R.string.cn_roms_saving)
+            else -> buildString {
+                val done = Formatter.formatShortFileSize(context, download.bytesDone)
+                // Total is 0 if the server didn't report a size
+                if (download.totalBytes > 0) {
+                    append(stringResource(R.string.cn_roms_progress, done, Formatter.formatShortFileSize(context, download.totalBytes)))
+                } else append(done)
+                if (download.bytesPerSecond > 0) append(" · ").append(Formatter.formatShortFileSize(context, download.bytesPerSecond)).append("/s")
+                download.secondsLeft.takeIf { it >= 0 }?.let {
+                    append(" · ").append(DateUtils.formatElapsedTime(it))
+                }
+            }
+        }
+
+        is CnRomDownload.Paused -> stringResource(R.string.cn_roms_paused, Formatter.formatShortFileSize(context, download.bytesDone))
+        is CnRomDownload.Done -> stringResource(R.string.cn_roms_saved_to, download.path)
+        is CnRomDownload.Failed -> stringResource(
+            when (download.error) {
+                CnRomDownloadWorker.ErrorLink -> R.string.cn_roms_link_failed
+                CnRomDownloadWorker.ErrorChecksum -> R.string.cn_roms_error_checksum
+                CnRomDownloadWorker.ErrorStorage -> R.string.cn_roms_error_storage
+                else -> R.string.cn_roms_error_network
+            }
+        )
+    }
+    Text(
+        text = status,
+        color = if (download is CnRomDownload.Failed) Color(0xFFFF3B30) else colorScheme.onSurfaceVariant,
+        fontSize = 14.sp,
+        modifier = Modifier.padding(top = 2.dp)
+    )
+
+    // Thin iOS-style progress bar
+    val fraction = when (download) {
+        is CnRomDownload.Running -> when {
+            download.phase != CnRomDownloadWorker.PhaseDownloading -> 1f
+            download.totalBytes > 0 -> download.fraction
+            else -> null // unknown size
+        }
+
+        is CnRomDownload.Done -> 1f
+        else -> null
+    }
+    if (fraction != null || download is CnRomDownload.Queued || download is CnRomDownload.Running) ProgressBar(
+        progress = fraction?.let { { it } },
+        color = if (download is CnRomDownload.Done) Color(0xFF34C759) else colorScheme.primary,
+        modifier = Modifier
+            .padding(top = 10.dp)
+            .fillMaxWidth()
+    )
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = Modifier.padding(top = 12.dp)
+    ) {
+        val red = Color(0xFFFF3B30)
+        when (download) {
+            is CnRomDownload.Queued, is CnRomDownload.Running -> {
+                CapsuleButton(stringResource(R.string.cn_roms_pause), actions.pause, Modifier.weight(1f))
+                CapsuleButton(stringResource(android.R.string.cancel), actions.cancel, Modifier.weight(1f), color = red)
+            }
+
+            is CnRomDownload.Paused, is CnRomDownload.Failed -> {
+                CapsuleButton(stringResource(R.string.cn_roms_resume), actions.resume, Modifier.weight(1f), filled = true)
+                CapsuleButton(stringResource(android.R.string.cancel), actions.cancel, Modifier.weight(1f), color = red)
+            }
+
+            is CnRomDownload.Done -> {
+                CapsuleButton(
+                    text = stringResource(R.string.cn_roms_open_downloads),
+                    onClick = {
+                        try {
+                            context.startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                        } catch (_: Exception) {
+                            // no Downloads app
+                        }
+                    },
+                    modifier = Modifier.weight(1f),
+                    filled = true,
+                )
+                CapsuleButton(stringResource(R.string.cn_roms_dismiss), actions.cancel, Modifier.weight(1f))
+            }
         }
     }
 }
@@ -116,6 +277,7 @@ fun CnRomsScreen(
     onRefresh: () -> Unit,
     onSelectDevice: (CnRomDevice) -> Unit,
     onOpenBuild: (index: Int) -> Unit,
+    listBottomPadding: Dp = 0.dp,
 ) = Box(
     Modifier
         .fillMaxSize()
@@ -169,7 +331,7 @@ fun CnRomsScreen(
                     text = stringResource(R.string.cn_roms_source_footer),
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
-                Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.height(24.dp + listBottomPadding))
                 ConditionalNavBarPadding(navType)
             }
         }
@@ -183,6 +345,7 @@ private fun DeviceSection(state: CnRomsState, onSelect: (CnRomDevice) -> Unit) {
     val isThisDevice = selected != null && selected.key == state.thisDeviceKey
 
     GroupedSection(
+        modifier = Modifier.padding(top = 16.dp),
         footer = if (state.thisDeviceKey == null) stringResource(R.string.cn_roms_no_match) else null,
     ) {
         GroupedRow(
@@ -245,6 +408,9 @@ private fun ErrorContent(navType: NavType, onRetry: () -> Unit) = Column(
 @Composable
 private fun CnRomDetailSheet(
     state: CnRomDetailState,
+    download: CnRomDownload?,
+    otherDownloadActive: Boolean,
+    actions: DownloadActions,
     onRetry: () -> Unit,
     fetchDownloadUrl: (onResult: (String?) -> Unit) -> Unit,
 ) = Column(
@@ -286,7 +452,7 @@ private fun CnRomDetailSheet(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.padding(24.dp)
         ) {
-            CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
+            ActivityIndicator(size = 20.dp)
             Text(stringResource(R.string.cn_roms_loading), color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         return@Column
@@ -294,7 +460,20 @@ private fun CnRomDetailSheet(
 
     BuildInfo(build)
     build.arbIndex?.let { ArbWarning(it) }
-    Actions(build = build, fetchingLink = state.fetchingLink, fetchDownloadUrl = fetchDownloadUrl)
+    if (download != null) DownloadCard(
+        download = download,
+        actions = actions,
+        showTitle = false,
+        modifier = Modifier.padding(top = 20.dp)
+    )
+    Actions(
+        build = build,
+        fetchingLink = state.fetchingLink,
+        showDownload = download == null,
+        downloadEnabled = !otherDownloadActive,
+        onDownload = actions.start,
+        fetchDownloadUrl = fetchDownloadUrl,
+    )
 }
 
 @Composable
@@ -359,6 +538,9 @@ private fun ArbWarning(index: Int) = Row(
 private fun Actions(
     build: CnRomBuild,
     fetchingLink: Boolean,
+    showDownload: Boolean,
+    downloadEnabled: Boolean,
+    onDownload: () -> Unit,
     fetchDownloadUrl: (onResult: (String?) -> Unit) -> Unit,
 ) = Column(
     verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -368,19 +550,12 @@ private fun Actions(
         .fillMaxWidth()
 ) {
     val context = LocalContext.current
-    CapsuleButton(
+    if (showDownload) CapsuleButton(
         text = stringResource(R.string.cn_roms_download),
         icon = Symbols.Download,
         filled = true,
-        enabled = !fetchingLink,
-        onClick = {
-            fetchDownloadUrl { url ->
-                if (url == null) context.showToast(context.getString(R.string.cn_roms_link_failed))
-                else if (context.enqueueDownload(url, build)) {
-                    context.showToast(context.getString(R.string.cn_roms_download_started))
-                } else context.openLink(url) // no DownloadManager: let the browser handle it
-            }
-        },
+        enabled = downloadEnabled,
+        onClick = onDownload,
         modifier = Modifier
             .fillMaxWidth()
             .testTag(CnRomsScreen_DownloadButtonTestTag)
@@ -412,28 +587,6 @@ private fun Actions(
             )
         }
     }
-
-    if (fetchingLink) Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
-    }
-}
-
-/**
- * Hands the (multi-GB) download to the system's DownloadManager, which survives the app being closed,
- * and saves to the public Downloads folder.
- *
- * @return `false` if DownloadManager is unavailable or refused the request
- */
-private fun Context.enqueueDownload(url: String, build: CnRomBuild) = try {
-    val request = DownloadManager.Request(url.toUri())
-        .setTitle(build.fileName)
-        .setDescription(build.deviceName.ifEmpty { build.label })
-        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-        .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, build.fileName)
-        .setMimeType("application/zip")
-    getSystemService<DownloadManager>()?.enqueue(request) != null
-} catch (_: Exception) {
-    false
 }
 
 @VisibleForTesting
@@ -462,6 +615,9 @@ const val CnRomsScreen_ArbWarningTestTag = TAG + "_ArbWarning"
 
 @VisibleForTesting
 const val CnRomsScreen_DownloadButtonTestTag = TAG + "_DownloadButton"
+
+@VisibleForTesting
+const val CnRomsScreen_DownloadCardTestTag = TAG + "_DownloadCard"
 
 @VisibleForTesting
 val PreviewCnRomDevices = listOf(

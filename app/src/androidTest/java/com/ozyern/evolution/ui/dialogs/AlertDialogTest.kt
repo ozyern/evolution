@@ -14,7 +14,6 @@ import com.ozyern.evolution.R
 import com.ozyern.evolution.get
 import com.ozyern.evolution.icons.Logos
 import com.ozyern.evolution.icons.PlayStore
-import com.ozyern.evolution.ui.common.IconTextButtonTestTag
 import org.junit.Test
 
 class AlertDialogTest : ComposeBaseTest() {
@@ -43,13 +42,13 @@ class AlertDialogTest : ComposeBaseTest() {
         rule[AlertDialog_DismissButtonTestTag].assertExists()
 
         // First we test for the default null values of state variables
-        rule[IconTextButtonTestTag].assertDoesNotExist()
+        rule[AlertDialog_ConfirmButtonTestTag].assertDoesNotExist()
         rule[AlertDialog_ContentTestTag].assertDoesNotExist()
 
         // Then for non-null
         confirmIconAndResId = Logos.PlayStore to R.string.error_google_play_button_text
         content = {}
-        rule[IconTextButtonTestTag].assertExists()
+        rule[AlertDialog_ConfirmButtonTestTag].assertExists()
         rule[AlertDialog_ContentTestTag].assertExists()
     }
 }

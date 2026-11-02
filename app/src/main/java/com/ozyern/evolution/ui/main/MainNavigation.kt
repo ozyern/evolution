@@ -4,18 +4,16 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.AnimationConstants
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.unveilIn
 import androidx.compose.material3.ColorScheme
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.navigation3.scene.Scene
 import androidx.navigationevent.NavigationEvent
 import com.ozyern.evolution.ui.theme.light
@@ -24,49 +22,54 @@ typealias TransitionSpecReceiver<T> = AnimatedContentTransitionScope<Scene<T>>
 typealias TransitionSpecFn = TransitionSpecReceiver<Route>.() -> ContentTransform
 typealias PredictiveTransitionSpecFn = TransitionSpecReceiver<Route>.(@NavigationEvent.SwipeEdge Int) -> ContentTransform
 
+/** Approximates `UINavigationController`'s push/pop curve: a quick start with a long, soft landing */
+private val NavigationEasing = CubicBezierEasing(0.32f, 0.72f, 0f, 1f)
+private const val NavigationMillis = 400
+
+/** How much of its width the screen underneath moves by, and how dimmed it gets */
+private const val ParallaxDivisor = 3
+private const val DimmedAlpha = 0.6f
+
 /**
- * Simple transition to convey the back stack to the user: when popping, both the outgoing and
- * incoming screens scale down while simultaneously fading in/out respectively.
- *
- * The outgoing screen scales down to 0.7x its original size, and the incoming screen scales down
- * from 1.1x its final size.
- *
- * Should be paired with [scaleChildTransitionSpec] for child routes.
+ * iOS' push: the new screen slides over from the trailing edge, while the current one drifts a little
+ * towards the leading edge and dims. Should be paired with [iosPopTransitionSpec] for the pop transition.
  */
-fun scalePopTransitionSpec(): TransitionSpecFn = {
+fun iosPushTransitionSpec(): TransitionSpecReceiver<*>.() -> ContentTransform = {
     ContentTransform(
-        targetContentEnter = scaleIn(initialScale = 1.1f) + fadeIn(),
-        initialContentExit = scaleOut(targetScale = 0.7f) + fadeOut(),
+        targetContentEnter = slideIntoContainer(
+            towards = AnimatedContentTransitionScope.SlideDirection.Start,
+            animationSpec = tween(NavigationMillis, easing = NavigationEasing),
+            initialOffset = { it },
+        ),
+        initialContentExit = slideOutOfContainer(
+            towards = AnimatedContentTransitionScope.SlideDirection.Start,
+            animationSpec = tween(NavigationMillis, easing = NavigationEasing),
+            targetOffset = { it / ParallaxDivisor },
+        ) + fadeOut(tween(NavigationMillis, easing = NavigationEasing), targetAlpha = DimmedAlpha),
+        targetContentZIndex = 1f,
     )
 }
 
-fun directionalScalePredictivePopTransitionSpec(): PredictiveTransitionSpecFn = { edge ->
+/** The reverse of [iosPushTransitionSpec]: the top screen slides away, uncovering the previous one */
+fun iosPopTransitionSpec(): TransitionSpecFn = {
     ContentTransform(
-        targetContentEnter = scaleIn(initialScale = 1.1f) + fadeIn(),
-        initialContentExit = scaleOut(
-            targetScale = 0.7f, transformOrigin = when (edge) {
-                NavigationEvent.EDGE_LEFT -> TransformOrigin(1f, 0.5f)
-                NavigationEvent.EDGE_RIGHT -> TransformOrigin(0f, 0.5f)
-                else -> TransformOrigin.Center
-            }
-        ) + fadeOut(),
+        targetContentEnter = slideIntoContainer(
+            towards = AnimatedContentTransitionScope.SlideDirection.End,
+            animationSpec = tween(NavigationMillis, easing = NavigationEasing),
+            initialOffset = { it / ParallaxDivisor },
+        ) + fadeIn(tween(NavigationMillis, easing = NavigationEasing), initialAlpha = DimmedAlpha),
+        initialContentExit = slideOutOfContainer(
+            towards = AnimatedContentTransitionScope.SlideDirection.End,
+            animationSpec = tween(NavigationMillis, easing = NavigationEasing),
+            targetOffset = { it },
+        ),
+        targetContentZIndex = -1f,
     )
 }
 
-/**
- * Simple transition to convey the back stack to the user: when navigating, both the outgoing and
- * incoming screens scale up while simultaneously fading in/out respectively.
- *
- * The outgoing screen scales up to 1.1x its original size, and the incoming screen scales up
- * from 0.7x its final size.
- *
- * Should be paired with [scalePopTransitionSpec] for the pop transition.
- */
-fun scaleChildTransitionSpec(): TransitionSpecReceiver<*>.() -> ContentTransform = {
-    ContentTransform(
-        targetContentEnter = scaleIn(initialScale = 0.7f) + fadeIn(),
-        initialContentExit = scaleOut(targetScale = 1.1f) + fadeOut(),
-    )
+/** iOS follows the finger the same way regardless of edge, so the swipe's edge is ignored */
+fun iosPredictivePopTransitionSpec(): PredictiveTransitionSpecFn = {
+    iosPopTransitionSpec().invoke(this)
 }
 
 /**

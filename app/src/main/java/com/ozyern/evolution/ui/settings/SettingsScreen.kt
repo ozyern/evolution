@@ -108,6 +108,7 @@ fun SettingsScreen(
     onPureBlackChange: (Boolean) -> Unit,
     onAdvancedModeChange: (Boolean) -> Unit,
     openAboutScreen: () -> Unit,
+    openCnRoms: () -> Unit,
     getPrefStr: (key: String, default: String) -> String,
     getPrefBool: (key: String, default: Boolean) -> Boolean,
     persistBool: (key: String, value: Boolean) -> Unit,
@@ -120,6 +121,20 @@ fun SettingsScreen(
         DeviceChooser(config = deviceConfig, getPrefStr = getPrefStr, onSelect = onDeviceSelect)
         MethodChooser(config = methodConfig, getPrefStr = getPrefStr, onSelect = onMethodSelect)
         Notifications()
+    }
+
+    // Full China firmware, which the update server doesn't carry
+    GroupedSection(
+        header = stringResource(R.string.about_firmware_header),
+        footer = stringResource(R.string.cn_roms_row_subtitle),
+    ) {
+        SettingsItem(
+            onClick = openCnRoms,
+            icon = Symbols.CloudDownload,
+            iconTint = IconRed,
+            titleResId = R.string.cn_roms_title,
+            subtitle = null,
+        )
     }
 
     GroupedSection(header = stringResource(R.string.preference_header_ui)) {
@@ -606,6 +621,7 @@ fun PreviewSettingsScreen() = PreviewAppTheme {
         onPureBlackChange = {},
         onAdvancedModeChange = {},
         openAboutScreen = {},
+        openCnRoms = {},
         getPrefStr = PreviewGetPrefStr,
         getPrefBool = PreviewGetPrefBool,
         persistBool = { _, _ -> },

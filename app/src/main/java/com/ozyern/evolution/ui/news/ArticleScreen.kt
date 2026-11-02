@@ -13,7 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -41,6 +40,7 @@ import com.ozyern.evolution.icons.Symbols
 import com.ozyern.evolution.models.Article
 import com.ozyern.evolution.ui.RefreshAwareState
 import com.ozyern.evolution.ui.common.CapsuleButton
+import com.ozyern.evolution.ui.common.ProgressBar
 import com.ozyern.evolution.ui.common.PullRefresh
 import com.ozyern.evolution.ui.common.modifierDefaultPaddingTop
 import com.ozyern.evolution.ui.common.modifierMaxWidth
@@ -226,9 +226,10 @@ private fun RefreshAwareWebView(
 
     val loading = webViewState.loadingState
     val paddingTop = if (showDivider) Modifier.padding(top = 13.dp) else Modifier
-    if (refreshing || loading == LoadingState.Initializing) LinearProgressIndicator(
-        paddingTop then modifierMaxWidth
-    ) else if (loading is LoadingState.Loading) LinearProgressIndicator(
+    if (refreshing || loading == LoadingState.Initializing) ProgressBar(
+        progress = null,
+        modifier = paddingTop then modifierMaxWidth
+    ) else if (loading is LoadingState.Loading) ProgressBar(
         progress = { loading.progress },
         modifier = paddingTop then modifierMaxWidth
     ) else if (loading == LoadingState.Finished) {

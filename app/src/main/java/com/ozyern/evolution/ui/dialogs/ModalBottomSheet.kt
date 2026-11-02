@@ -7,14 +7,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
@@ -28,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ozyern.evolution.ui.common.CapsuleButton
 import com.ozyern.evolution.ui.common.GroupedFooter
 import com.ozyern.evolution.ui.common.IconTextButton
 import com.ozyern.evolution.ui.common.groupedBackground
@@ -75,7 +73,7 @@ fun SheetButtons(
     onConfirm: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) = Row(
-    horizontalArrangement = Arrangement.End,
+    horizontalArrangement = Arrangement.spacedBy(10.dp),
     verticalAlignment = Alignment.CenterVertically,
     modifier = (modifier then modifierMaxWidth).padding(
         start = 16.dp,
@@ -84,19 +82,20 @@ fun SheetButtons(
         bottom = 16.dp,
     )
 ) {
-    TextButton(
+    // Equal-width capsules, with the prominent action at the trailing edge
+    CapsuleButton(
+        text = stringResource(dismissResId),
         onClick = onDismiss,
-        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
-        modifier = (if (onConfirm != null) Modifier.padding(end = 16.dp) else Modifier)
+        modifier = Modifier
+            .weight(1f)
             .testTag(BottomSheet_DismissButtonTestTag),
-    ) {
-        Text(stringResource(dismissResId))
-    }
+    )
 
     if (onConfirm != null) IconTextButton(
         onClick = onConfirm,
         icon = confirmIcon,
         textResId = confirmResId,
+        modifier = Modifier.weight(1f),
     )
 }
 

@@ -79,12 +79,12 @@ class AppBarTest : ComposeBaseTest() {
             fetchSemanticsNode().assertMaxLines(LineHeightForTextStyle.titleLarge)
         }
 
-        rule[AppBar_SubtitleTestTag].run {
-            assertHasTextExactly("v${BuildConfig.VERSION_NAME}")
-            subtitleResId = R.string.settings; advanceFrame()
-            assertHasTextExactly(subtitleResId)
-            fetchSemanticsNode().assertMaxLines(LineHeightForTextStyle.bodyMedium)
-        }
+        rule[AppBar_SubtitleTestTag].assertHasTextExactly("v${BuildConfig.VERSION_NAME}")
+
+        // Screens replace the title, and there's no version line
+        subtitleResId = R.string.settings; advanceFrame()
+        rule[AppBar_TitleTestTag].assertHasTextExactly(subtitleResId)
+        rule[AppBar_SubtitleTestTag].assertDoesNotExist()
     }
 
     @Test

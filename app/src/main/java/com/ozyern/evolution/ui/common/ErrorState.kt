@@ -15,12 +15,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.ozyern.evolution.R
 import com.ozyern.evolution.icons.Error
 import com.ozyern.evolution.icons.FullCoverage
@@ -43,26 +44,28 @@ fun ErrorState(
     Icon(
         imageVector = icon,
         contentDescription = stringResource(R.string.icon),
-        tint = MaterialTheme.colorScheme.primary,
+        tint = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier
-            .requiredSize(192.dp)
+            .padding(32.dp)
+            .requiredSize(64.dp)
             .testTag(ErrorState_IconTestTag)
     )
 
     Column(modifierDefaultPadding.verticalScroll(rememberScrollState())) {
         Text(
             text = stringResource(titleResId),
-            style = MaterialTheme.typography.titleLarge,
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier.testTag(ErrorState_TitleTestTag)
         )
 
         if (rich) RichText(
             text = stringResource(textResId),
-            textAlign = TextAlign.Justify,
             modifier = Modifier.padding(top = 4.dp, bottom = 16.dp)
         ) else Text(
             text = stringResource(textResId),
-            textAlign = TextAlign.Justify,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontSize = 15.sp,
             modifier = Modifier
                 .padding(top = 4.dp, bottom = 16.dp)
                 .testTag(ErrorState_TextTestTag)
@@ -80,33 +83,33 @@ fun ErrorState(
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = modifierMaxSize.testTag(ErrorStateTestTag)
 ) {
-    // Referential equality is faster, we only check for the default param value
-    val error = icon === Symbols.Error
-
+    // Like iOS' `ContentUnavailableView`: a muted symbol over a bold title & secondary text
     Icon(
         imageVector = icon,
         contentDescription = stringResource(R.string.icon),
-        tint = if (error) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+        tint = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier
-            .requiredSize(150.dp)
+            .requiredSize(64.dp)
             .testTag(ErrorState_IconTestTag)
     )
 
     Text(
         text = stringResource(titleResId),
-        color = if (error) MaterialTheme.colorScheme.error else Color.Unspecified,
+        fontSize = 22.sp,
+        fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Center,
-        style = MaterialTheme.typography.titleLarge,
         modifier = modifierDefaultPadding.testTag(ErrorState_TitleTestTag)
     )
 
     if (rich) RichText(
         text = stringResource(textResId),
-        textAlign = TextAlign.Justify,
+        textAlign = TextAlign.Center,
         modifier = modifierDefaultPadding
     ) else Text(
         text = stringResource(textResId),
-        textAlign = TextAlign.Justify,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        fontSize = 15.sp,
+        textAlign = TextAlign.Center,
         modifier = modifierDefaultPadding.testTag(ErrorState_TextTestTag)
     )
 

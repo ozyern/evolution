@@ -12,9 +12,8 @@ import com.ozyern.evolution.ComposeBaseTest
 import com.ozyern.evolution.R
 import com.ozyern.evolution.get
 import com.ozyern.evolution.models.ServerStatus.Status
-import com.ozyern.evolution.ui.common.IconTextButtonTestTag
-import com.ozyern.evolution.ui.common.IconTextButton_TextTestTag
 import com.ozyern.evolution.ui.dialogs.AlertDialogTestTag
+import com.ozyern.evolution.ui.dialogs.AlertDialog_ConfirmButtonTestTag
 import com.ozyern.evolution.ui.dialogs.AlertDialog_TextTestTag
 import com.ozyern.evolution.ui.dialogs.AlertDialog_TitleTestTag
 import org.junit.Test
@@ -58,6 +57,6 @@ class ServerStatusDialogsTest : ComposeBaseTest() {
         root.onParent().assert(isDialog())
         rule[AlertDialog_TitleTestTag].assertHasTextExactly(titleResId)
         rule[AlertDialog_TextTestTag].assertHasTextExactly(textResId)
-        rule[IconTextButtonTestTag].assertDoesNotExist()
+        rule[AlertDialog_ConfirmButtonTestTag].assertDoesNotExist()
     }
 }

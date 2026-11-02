@@ -3,7 +3,10 @@ package com.ozyern.evolution.ui.theme
 import android.content.res.Configuration
 import android.os.Build
 import android.os.PowerManager
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -67,8 +70,15 @@ fun AppTheme(
                 )
             },
             typography = remember { appTypography() },
-            content = content,
-        )
+        ) {
+            // iOS has no ripples: `clickable` gets a flat highlight, and Material components no ripple
+            @OptIn(ExperimentalMaterial3Api::class)
+            CompositionLocalProvider(
+                LocalIndication provides PressHighlight,
+                LocalRippleConfiguration provides null,
+                content = content,
+            )
+        }
     }
 }
 

@@ -12,7 +12,6 @@ import androidx.compose.animation.core.animateDecay
 import androidx.compose.animation.core.animateTo
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -35,9 +34,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RichTooltip
@@ -64,11 +61,14 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -79,12 +79,14 @@ import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.lerp
 import com.ozyern.evolution.BuildConfig
 import com.ozyern.evolution.R
-import com.ozyern.evolution.icons.ArrowBack
-import com.ozyern.evolution.icons.Symbols
+import com.ozyern.evolution.ui.common.Chevron
 import com.ozyern.evolution.ui.common.rememberState
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
+/**
+ * @param subtitleResId the screen's title; `0` shows the app's name, with its version below
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBar(
@@ -122,9 +124,6 @@ fun TopAppBar(
             // Nav icon
             if (onNavIconClick != null) IconButton(
                 onClick = onNavIconClick,
-                colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = if (root) colorScheme.primary else colorScheme.onSurface,
-                ),
                 modifier = layoutIdNavIconModifier
                     .padding(horizontal = 4.dp)
                     .testTag(AppBar_IconButtonTestTag)
@@ -136,31 +135,27 @@ fun TopAppBar(
                         .size(32.dp)
                         .clip(CircleShape)
                 )
-                else Icon(Symbols.ArrowBack, null)
+                else BackChevron()
             }
 
-            // Title & subtitle
+            // Centred title, like an iOS navigation bar
             Column(
                 verticalArrangement = Arrangement.Center,
-                modifier = layoutIdTextModifier.padding(
-                    /** Ensure it's offset even if nav icon isn't shown (i.e. when [onNavIconClick] is null) */
-                    start = if (onNavIconClick != null) 0.dp else 16.dp,
-                    end = 4.dp,
-                )
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = layoutIdTextModifier.padding(horizontal = 4.dp)
             ) {
                 Text(
-                    stringResource(R.string.app_name),
+                    stringResource(if (subtitleResId == 0) R.string.app_name else subtitleResId),
                     overflow = TextOverflow.Ellipsis, maxLines = 1,
-                    style = typography.titleLarge,
+                    style = typography.titleLarge.copy(fontSize = 17.sp, fontWeight = FontWeight.SemiBold),
                     modifier = Modifier.testTag(AppBar_TitleTestTag)
                 )
-                Text(
-                    if (subtitleResId == 0) "v${BuildConfig.VERSION_NAME}" else stringResource(subtitleResId),
+                if (subtitleResId == 0) Text(
+                    "v${BuildConfig.VERSION_NAME}",
                     maxLines = 1,
-                    style = typography.bodyMedium,
-                    modifier = Modifier
-                        .basicMarquee()
-                        .testTag(AppBar_SubtitleTestTag)
+                    color = colorScheme.onSurfaceVariant,
+                    style = typography.bodySmall.copy(fontSize = 11.sp, lineHeight = 13.sp),
+                    modifier = Modifier.testTag(AppBar_SubtitleTestTag)
                 )
             }
 
@@ -194,12 +189,14 @@ fun TopAppBar(
         val navIconWidth = navIconPlaceable?.width ?: 0
         val actionsWidth = actionsPlaceable?.width ?: 0
         val maxWidth = constraints.maxWidth
+        // Reserve the wider side on both sides, so that the title stays centred on screen
+        val sideWidth = maxOf(navIconWidth, actionsWidth)
         val textPlaceable = measurables
             .fastFirst { it.layoutId == LayoutIdText }
             .measure(
                 constraints.copy(
                     minWidth = 0,
-                    maxWidth = (maxWidth - navIconWidth - actionsWidth).fastCoerceAtLeast(0)
+                    maxWidth = (maxWidth - 2 * sideWidth).fastCoerceAtLeast(0)
                 )
             )
 
@@ -210,7 +207,7 @@ fun TopAppBar(
             )
 
             textPlaceable.placeRelative(
-                x = navIconWidth,
+                x = (maxWidth - textPlaceable.width) shr 1,
                 y = yOffset + (layoutHeight - textPlaceable.height) shr 1,
             )
 
@@ -223,7 +220,19 @@ fun TopAppBar(
 
     // Perf: `if (showDivider) HorizontalDivider()` causes recomposition; we avoid that by "hiding" via graphicsLayer alpha
     val dividerAlpha = if (collapsedFraction != 1f) 1f else 0f
-    HorizontalDivider(Modifier.graphicsLayer { alpha = dividerAlpha })
+    HorizontalDivider(Modifier.graphicsLayer { alpha = dividerAlpha }, thickness = 0.5.dp)
+}
+
+/** iOS' back chevron, tinted with the accent colour. Points towards the leading edge. */
+@Composable
+private fun BackChevron() {
+    val mirror = LocalLayoutDirection.current == LayoutDirection.Ltr
+    Chevron(
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier
+            .size(11.dp, 20.dp)
+            .graphicsLayer { scaleX = if (mirror) -1f else 1f }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -282,7 +291,7 @@ fun CollapsingAppBar(
                 .height(CollapsingAppBarMinHeight)
                 .padding(horizontal = 4.dp)
         ) {
-            Icon(Symbols.ArrowBack, null)
+            BackChevron()
         }
 
         Column(
@@ -416,17 +425,17 @@ private val layoutIdNavIconModifier = Modifier
 private val layoutIdTextModifier = Modifier.layoutId(LayoutIdText)
 private val layoutIdActionsModifier = Modifier.layoutId(LayoutIdActions)
 
-/** same as [androidx.compose.material3.tokens.AppBarSmallTokens.ContainerHeight] */
+/** A little taller than iOS' 44pt navigation bar, to fit 48dp touch targets */
 @VisibleForTesting
-val CollapsingAppBarMinHeight = 64.dp
+val CollapsingAppBarMinHeight = 52.dp
 
 private val CollapsingAppBarMaxHeight = 256.dp
 
 /** same as [androidx.compose.material3.LargeTitleBottomPadding] */
 private val CollapsingAppBarBottomPadding = 28.dp
 
-/** [androidx.compose.material3.Typography.titleLarge] */
-private const val CollapsingAppBarMinTitleSize = 22f
+/** iOS navigation bar title */
+private const val CollapsingAppBarMinTitleSize = 17f
 
 /** [androidx.compose.material3.Typography.headlineSmall] */
 private const val CollapsingAppBarMaxTitleSize = 24f

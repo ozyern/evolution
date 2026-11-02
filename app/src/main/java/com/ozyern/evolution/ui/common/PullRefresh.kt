@@ -4,20 +4,20 @@ import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.ozyern.evolution.R
 import com.ozyern.evolution.ui.RefreshAwareState
 
@@ -35,10 +35,12 @@ fun <T> PullRefresh(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifierMaxSize.testTag(PullRefresh_ProgressIndicatorTestTag)
     ) {
-        CircularProgressIndicator(Modifier.size(64.dp), strokeWidth = 6.dp)
+        ActivityIndicator(size = 28.dp)
         Text(
             text = stringResource(R.string.loading),
-            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontSize = 15.sp,
+            modifier = Modifier.padding(top = 8.dp)
         )
     } else rememberPullToRefreshState().let {
         PullToRefreshBox(
@@ -46,12 +48,16 @@ fun <T> PullRefresh(
             onRefresh = onRefresh,
             state = it,
             indicator = {
-                PullToRefreshDefaults.Indicator(
-                    state = it,
-                    isRefreshing = refreshing,
-                    color = MaterialTheme.colorScheme.primary,
+                // `UIRefreshControl`: spokes appear one by one while pulling, then spin
+                ActivityIndicator(
+                    size = 28.dp,
+                    revealed = { if (refreshing) 1f else it.distanceFraction },
                     modifier = Modifier
                         .align(Alignment.TopCenter)
+                        .graphicsLayer {
+                            alpha = it.distanceFraction.coerceIn(0f, 1f)
+                            translationY = (it.distanceFraction.coerceAtMost(1.5f) * 56.dp.toPx()) - 28.dp.toPx()
+                        }
                         .testTag(PullRefresh_IndicatorContainerTestTag)
                 )
             },

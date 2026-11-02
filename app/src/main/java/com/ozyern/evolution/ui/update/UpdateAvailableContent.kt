@@ -38,7 +38,6 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
@@ -86,6 +85,7 @@ import com.ozyern.evolution.ui.common.ConditionalNavBarPadding
 import com.ozyern.evolution.ui.common.GroupedColumn
 import com.ozyern.evolution.ui.common.GroupedRow
 import com.ozyern.evolution.ui.common.GroupedSection
+import com.ozyern.evolution.ui.common.ProgressBar
 import com.ozyern.evolution.ui.common.RichText
 import com.ozyern.evolution.ui.common.RichTextType
 import com.ozyern.evolution.ui.common.animatedClickable
@@ -448,15 +448,16 @@ private fun DownloadButton(
         }
 
         progress?.let {
-            if (it == NotSetF) LinearProgressIndicator(
-                modifierMaxWidth.testTag(UpdateAvailableContent_ProgressIndicatorTestTag)
+            if (it == NotSetF) ProgressBar(
+                progress = null,
+                modifier = modifierMaxWidth.testTag(UpdateAvailableContent_ProgressIndicatorTestTag)
             ) else {
                 val animatedProgress by animateFloatAsState(
                     targetValue = it,
                     animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
                     label = "DownloadProgressAnimation",
                 )
-                LinearProgressIndicator(
+                ProgressBar(
                     progress = { animatedProgress },
                     modifier = modifierMaxWidth.testTag(UpdateAvailableContent_ProgressIndicatorTestTag)
                 )

@@ -145,9 +145,9 @@ import com.ozyern.evolution.ui.main.OuScheme
 import com.ozyern.evolution.ui.main.Route
 import com.ozyern.evolution.ui.main.ServerStatusBanner
 import com.ozyern.evolution.ui.main.ServerStatusDialogs
-import com.ozyern.evolution.ui.main.directionalScalePredictivePopTransitionSpec
-import com.ozyern.evolution.ui.main.scaleChildTransitionSpec
-import com.ozyern.evolution.ui.main.scalePopTransitionSpec
+import com.ozyern.evolution.ui.main.iosPredictivePopTransitionSpec
+import com.ozyern.evolution.ui.main.iosPushTransitionSpec
+import com.ozyern.evolution.ui.main.iosPopTransitionSpec
 import com.ozyern.evolution.ui.news.ArticleScreen
 import com.ozyern.evolution.ui.news.ArticleViewModel
 import com.ozyern.evolution.ui.news.NewsListScreen
@@ -429,8 +429,8 @@ class MainActivity : AppCompatActivity() {
                             if (backStack.shouldStopNavigateAwayFromSettings) showSettingsWarning()
                             else backStack.removeLastOrNull() // default behaviour
                         },
-                        popTransitionSpec = remember(calculation = ::scalePopTransitionSpec),
-                        predictivePopTransitionSpec = remember(calculation = ::directionalScalePredictivePopTransitionSpec),
+                        popTransitionSpec = remember(calculation = ::iosPopTransitionSpec),
+                        predictivePopTransitionSpec = remember(calculation = ::iosPredictivePopTransitionSpec),
                         entryProvider = entryProvider {
                             updateScreen(
                                 navType = navType,
@@ -474,6 +474,7 @@ class MainActivity : AppCompatActivity() {
                                 cachedEnabledDevices = enabledDevices,
                                 updateMismatchStatus = viewModel::updateDeviceMismatch,
                                 openAboutScreen = dropUnlessResumed { backStack.navigate(MainRoute.About) },
+                                openCnRoms = dropUnlessResumed { backStack.navigate(CnRomsRoute) },
                             )
 
                             articleScreen(scrollBehavior = scrollBehavior)
@@ -681,6 +682,7 @@ class MainActivity : AppCompatActivity() {
         cachedEnabledDevices: List<Device>?,
         updateMismatchStatus: () -> Unit,
         openAboutScreen: () -> Unit,
+        openCnRoms: () -> Unit,
     ) = surfacedEntry<MainRoute.Settings> {
         PassthroughEnabledDevicesToSettingsViewModel(cachedEnabledDevices)
 
@@ -709,6 +711,7 @@ class MainActivity : AppCompatActivity() {
             onPureBlackChange = settingsViewModel::updatePureBlack,
             onAdvancedModeChange = { viewModel.persist(KeyAdvancedMode, it) },
             openAboutScreen = openAboutScreen,
+            openCnRoms = openCnRoms,
             getPrefStr = viewModel::getPref,
             getPrefBool = viewModel::getPref,
             persistBool = viewModel::persist,
@@ -731,7 +734,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun EntryProviderScope<Route>.installGuideScreen() = surfacedEntry<GuideRoute>(
-        metadata = NavDisplay.transitionSpec(scaleChildTransitionSpec()),
+        metadata = NavDisplay.transitionSpec(iosPushTransitionSpec()),
     ) {
         InstallGuideScreen(
             viewModel = hiltViewModel<InstallGuideViewModel>(this@MainActivity),
@@ -740,7 +743,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun EntryProviderScope<Route>.faqScreen() = surfacedEntry<FaqRoute>(
-        metadata = NavDisplay.transitionSpec(scaleChildTransitionSpec()),
+        metadata = NavDisplay.transitionSpec(iosPushTransitionSpec()),
     ) {
         FaqScreen(
             viewModel = hiltViewModel<FaqViewModel>(this@MainActivity),
@@ -748,7 +751,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun EntryProviderScope<Route>.cnRomsScreen(navType: NavType) = surfacedEntry<CnRomsRoute>(
-        metadata = NavDisplay.transitionSpec(scaleChildTransitionSpec()),
+        metadata = NavDisplay.transitionSpec(iosPushTransitionSpec()),
     ) {
         CnRomsScreen(
             navType = navType,

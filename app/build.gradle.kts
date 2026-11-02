@@ -143,7 +143,8 @@ android {
         }
         buildConfigField("String[]", "SUPPORTED_LANGUAGES", "{\"en\", $languages}")
 
-        testApplicationId = "$namespace.$testBuildType"
+        // Must differ from the app under test (`$applicationId.$testBuildType`), or installing it fails as a downgrade
+        testApplicationId = "$namespace.$testBuildType.test"
         testHandleProfiling = true
 
         proguardFiles(

@@ -47,6 +47,7 @@ class SettingsScreenTest : UsesSharedPreferencesTest() {
                 onPureBlackChange = { trackCallback("onPureBlackChange: $it") },
                 onAdvancedModeChange = { trackCallback("onAdvancedModeChange: $it") },
                 openAboutScreen = { trackCallback("openAboutScreen") },
+                openCnRoms = {},
                 getPrefStr = ::getPrefStr,
                 getPrefBool = ::getPrefBool,
                 persistBool = ::persistBool,
